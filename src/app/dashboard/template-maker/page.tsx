@@ -159,11 +159,11 @@ export default function TemplateMakerPage() {
             designer.current = new Designer({
               domContainer: designerRef.current,
               template: selectedTemplate.template,
-              plugins: {
-                  table,
-              },
               options: {
                 font: fonts,
+                plugins: {
+                    table,
+                },
                 tool: {
                   schema: ['text', 'image', 'table'],
                   layout: ['column']
