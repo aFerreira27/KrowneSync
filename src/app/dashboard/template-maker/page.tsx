@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 
 const BLANK_TEMPLATE: Template = {
   basePdf: BLANK_PDF,
@@ -113,6 +114,7 @@ export default function TemplateMakerPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<SavedTemplate | null>(null);
   
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [templateToDelete, setTemplateToDelete] = useState<SavedTemplate | null>(null);
   const [isNewTemplateDialogOpen, setIsNewTemplateDialogOpen] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState("");
 
@@ -245,19 +247,34 @@ export default function TemplateMakerPage() {
   };
 
   const handleDeleteTemplate = () => {
-    if (!selectedTemplate || templates.length <= 1) {
+    if (!templateToDelete) return;
+
+    if (templates.length <= 1) {
         toast({ variant: 'destructive', title: 'Cannot Delete', description: 'You must have at least one template.' });
         setIsDeleteAlertOpen(false);
+        setTemplateToDelete(null);
         return;
     }
 
-    const updatedTemplates = templates.filter(t => t.name !== selectedTemplate.name);
+    const updatedTemplates = templates.filter(t => t.name !== templateToDelete.name);
     setTemplates(updatedTemplates);
     localStorage.setItem('specSheetTemplates', JSON.stringify(updatedTemplates));
     
-    toast({ title: 'Template Deleted', description: `Template "${selectedTemplate.name}" has been deleted.` });
-    setSelectedTemplate(updatedTemplates[0] || null);
+    toast({ title: 'Template Deleted', description: `Template "${templateToDelete.name}" has been deleted.` });
+    
+    // If the deleted template was the selected one, select the first of the remaining templates
+    if (selectedTemplate?.name === templateToDelete.name) {
+      setSelectedTemplate(updatedTemplates[0] || null);
+    }
+
     setIsDeleteAlertOpen(false);
+    setTemplateToDelete(null);
+  };
+
+  const openDeleteDialog = (template: SavedTemplate, e: React.MouseEvent) => {
+      e.stopPropagation(); // Prevent the dropdown from closing
+      setTemplateToDelete(template);
+      setIsDeleteAlertOpen(true);
   };
 
   return (
@@ -278,26 +295,25 @@ export default function TemplateMakerPage() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-64">
                   <DropdownMenuLabel>Manage Templates</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onSelect={() => setIsNewTemplateDialogOpen(true)}>
-                    <Plus className="mr-2"/>
-                    Create New Template
+                    <Plus className="mr-2 h-4 w-4"/>
+                    <span>Create New Template</span>
                   </DropdownMenuItem>
-                  {templates.length > 0 && <DropdownMenuSeparator />}
-                  <DropdownMenuLabel>Edit Template</DropdownMenuLabel>
+                   <DropdownMenuSeparator />
                   {templates.map(t => (
-                    <DropdownMenuItem key={t.name} onSelect={() => setSelectedTemplate(t)}>
-                      {t.name}
+                    <DropdownMenuItem key={t.name} onSelect={() => setSelectedTemplate(t)} className={cn("justify-between", selectedTemplate?.name === t.name && "bg-accent")}>
+                      <span>{t.name}</span>
+                      <button 
+                        onClick={(e) => openDeleteDialog(t, e)} 
+                        className="p-1 rounded hover:bg-destructive/80 hover:text-destructive-foreground text-muted-foreground"
+                        disabled={templates.length <= 1}
+                        title={`Delete "${t.name}"`}
+                      >
+                          <Trash2 className="h-4 w-4"/>
+                      </button>
                     </DropdownMenuItem>
                   ))}
-                  {selectedTemplate && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onSelect={() => setIsDeleteAlertOpen(true)} className="text-red-600 focus:text-red-600">
-                        <Trash2 className="mr-2"/>
-                        Delete Current Template
-                      </DropdownMenuItem>
-                    </>
-                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -323,12 +339,12 @@ export default function TemplateMakerPage() {
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
                         This action cannot be undone. This will permanently delete the 
-                        <span className="font-semibold"> {selectedTemplate?.name} </span> 
+                        <span className="font-semibold"> {templateToDelete?.name} </span> 
                         template.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel onClick={() => setTemplateToDelete(null)}>Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDeleteTemplate} className="bg-destructive hover:bg-destructive/90">
                         Delete
                     </AlertDialogAction>
@@ -366,5 +382,3 @@ export default function TemplateMakerPage() {
     </div>
   );
 }
-
-    
