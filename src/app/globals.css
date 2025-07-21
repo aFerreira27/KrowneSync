@@ -118,3 +118,10 @@
     -moz-osx-font-smoothing: grayscale;
   }
 }
+
+@layer utilities {
+  /* Align pdfme designer to the left */
+  div[class^="viewer"] > div {
+    margin-left: 0 !important;
+  }
+}
