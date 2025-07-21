@@ -13,13 +13,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { logout } from "@/lib/actions";
-import { LogOut, User as UserIcon, Settings, LifeBuoy } from "lucide-react";
+import LogoutButton from '@/components/logout-button'; // Import the LogoutButton
+import { User as UserIcon, Settings, LifeBuoy } from "lucide-react";
 
 type User = {
     name: string;
     email: string;
     initials: string;
+    photoURL?: string; // Add photoURL to the User type
 } | null;
 
 export function UserNav({ user }: { user: User }) {
@@ -30,7 +31,7 @@ export function UserNav({ user }: { user: User }) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-9 w-9">
-             <AvatarImage src={`https://placehold.co/40x40.png`} alt={user.name} />
+             <AvatarImage src={user.photoURL} alt={user.name} />{/* Use user.photoURL */}
             <AvatarFallback>{user.initials}</AvatarFallback>
           </Avatar>
         </Button>
@@ -61,14 +62,9 @@ export function UserNav({ user }: { user: User }) {
             <span>Support</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <form action={logout}>
-            <button type="submit" className="w-full">
-                <DropdownMenuItem>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
-                </DropdownMenuItem>
-            </button>
-        </form>
+        <DropdownMenuItem asChild> {/* Use asChild to render Button inside DropdownMenuItem */}
+          <LogoutButton /> {/* Include the LogoutButton component */}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

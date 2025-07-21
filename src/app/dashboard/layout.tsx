@@ -1,3 +1,6 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import {
   SidebarProvider,
   Sidebar,
@@ -11,31 +14,52 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Logo from "@/components/logo";
-import { Home, Settings, LifeBuoy, BarChart3 } from "lucide-react";
+import { Home, Settings, LifeBuoy, BarChart3, Loader2 } from "lucide-react";
 import { UserNav } from "@/components/dashboard/user-nav";
-import { getAuth } from 'firebase/auth';
-import { redirect } from 'next/navigation';
+import { auth } from '@/lib/firebase';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default async function DashboardLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Check for authenticated user using Firebase Authentication
-  const auth = getAuth();
-  const user = auth.currentUser;
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // If no user is authenticated, redirect to the login page
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+      } else {
+        router.push('/');
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+  
   if (!user) {
-    redirect('/');
+    return null; // or a redirect component, though the effect handles it
   }
 
-  // Basic user data for display (you might fetch more detailed data if needed)
   const userData = {
     name: user.displayName || 'User',
     email: user.email || '',
-    initials: user.displayName ? user.displayName.charAt(0) : 'U', // Basic initials
-    photoURL: user.photoURL || `https://placehold.co/40x40.png` // Use user.photoURL if available
+    initials: user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U',
+    photoURL: user.photoURL || `https://placehold.co/40x40.png`
   };
 
   return (

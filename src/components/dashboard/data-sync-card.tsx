@@ -9,8 +9,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Info, Lightbulb, Loader2, RefreshCw, Send } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { auth } from '@/lib/firebase';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -43,6 +44,22 @@ export function DataSyncCard() {
   const [state, formAction] = useFormState(getSyncData, initialState);
   const [isSyncing, setIsSyncing] = useState(false);
   const { toast } = useToast();
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleFormAction = async (formData: FormData) => {
+    const user = auth.currentUser;
+    if (user) {
+      const idToken = await user.getIdToken();
+      formData.append('idToken', idToken);
+      formAction(formData);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Authentication Error",
+        description: "You must be signed in to perform this action.",
+      });
+    }
+  };
 
   const handleSync = () => {
     setIsSyncing(true);
@@ -57,12 +74,15 @@ export function DataSyncCard() {
   
   useEffect(() => {
     if (state?.error) {
-        const errorMessages = Object.values(state.error).flat().join(' ');
-        toast({
-            variant: "destructive",
-            title: "Validation Error",
-            description: errorMessages || "An unexpected error occurred.",
-        });
+      const errorMessage = typeof state.error === 'string' 
+        ? state.error 
+        : Object.values(state.error).flat().join(' ');
+
+      toast({
+          variant: "destructive",
+          title: "Error",
+          description: errorMessage || "An unexpected error occurred.",
+      });
     }
   }, [state, toast]);
 
@@ -74,7 +94,7 @@ export function DataSyncCard() {
           Paste product data from two platforms to identify and resolve discrepancies.
         </CardDescription>
       </CardHeader>
-      <form action={formAction}>
+      <form ref={formRef} action={handleFormAction}>
         <CardContent className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">

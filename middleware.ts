@@ -1,20 +1,10 @@
+// NOTE: This middleware is currently not compatible with onAuthStateChanged
+// and client-side auth checks in layouts. It's best to handle redirection
+// within the client components (e.g., DashboardLayout) for a smoother UX.
+// We are keeping the file but its logic is now handled in the layout.
 import { NextResponse, type NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get('auth_token');
-
-  const { pathname } = request.nextUrl;
-
-  // If user is not logged in and tries to access dashboard, redirect to login page
-  if (!token && pathname.startsWith('/dashboard')) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-
-  // If user is logged in and tries to access login page, redirect to dashboard
-  if (token && pathname === '/') {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-
   return NextResponse.next();
 }
 
