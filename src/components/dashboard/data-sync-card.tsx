@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useFormStatus } from 'react-dom';
 import { getSyncData } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -41,14 +41,12 @@ const initialState = {
 };
 
 export function DataSyncCard() {
-  const [state, formAction] = useFormState(getSyncData, initialState);
+  const [state, formAction] = useActionState(getSyncData, initialState);
   const [isSyncing, setIsSyncing] = useState(false);
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
 
-  const handleFormAction = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+  const handleFormAction = async (formData: FormData) => {
     const user = auth.currentUser;
     if (user) {
       try {
@@ -105,7 +103,7 @@ export function DataSyncCard() {
           Paste product data from two platforms to identify and resolve discrepancies.
         </CardDescription>
       </CardHeader>
-      <form ref={formRef} onSubmit={handleFormAction}>
+      <form ref={formRef} action={handleFormAction}>
         <CardContent className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
