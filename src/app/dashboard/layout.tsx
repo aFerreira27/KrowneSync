@@ -24,6 +24,8 @@ import LogoutButton from '@/components/logout-button';
 import { SupportDialog } from '@/components/dashboard/support-dialog';
 import { DataSyncCard } from '@/components/dashboard/data-sync-card';
 import { Separator } from '@/components/ui/separator';
+import { ConnectedPlatforms } from '@/components/dashboard/connected-platforms';
+import { PdfActions } from '@/components/dashboard/pdf-actions';
 
 export type Platform = {
   name: string;
@@ -177,9 +179,12 @@ export default function DashboardLayout({
                    <DataSyncCard />
                 </div>
                 <div className="flex flex-col gap-6">
-                  {React.cloneElement(children as React.ReactElement, { platforms })}
+                  <ConnectedPlatforms platforms={platforms} />
+                  <PdfActions />
                 </div>
               </div>
+              {/* This is a placeholder for any page-specific content that might be needed later */}
+              {children}
             </div>
         </main>
       </SidebarInset>
