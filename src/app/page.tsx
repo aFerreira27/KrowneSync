@@ -35,6 +35,12 @@ export default function LoginPage() {
         router.push('/dashboard');
       })
       .catch((error) => {
+        // If the user closes the popup, don't show an error toast.
+        if (error.code === 'auth/popup-closed-by-user') {
+          setIsLoading(false);
+          return;
+        }
+
         const errorMessage = error.message;
         console.error('Error during Microsoft sign-in:', error.code, errorMessage);
         toast({
