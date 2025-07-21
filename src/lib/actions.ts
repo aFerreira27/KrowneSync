@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { summarizeDataDifferences } from '@/ai/flows/summarize-data-differences';
 import { suggestDataUpdates } from '@/ai/flows/suggest-data-updates';
-import { getFirebaseAuth } from '@/lib/firebase-admin';
+import { getFirebaseAuth, getFirestore } from '@/lib/firebase-admin';
 
 export async function logout() {
   // Client-side will handle the redirect upon auth state change.
@@ -73,4 +73,41 @@ export async function getSyncData(prevState: any, formData: FormData) {
       error: 'Authentication failed or an unexpected error occurred. Please try again.',
     };
   }
+}
+
+const contactSchema = z.object({
+    name: z.string().min(1, 'Name is required.'),
+    email: z.string().email('Invalid email address.'),
+    message: z.string().min(10, 'Message must be at least 10 characters long.'),
+});
+
+export async function saveContactMessage(prevState: any, formData: FormData) {
+    try {
+        const validatedFields = contactSchema.safeParse({
+            name: formData.get('name'),
+            email: formData.get('email'),
+            message: formData.get('message'),
+        });
+
+        if (!validatedFields.success) {
+            return {
+                error: validatedFields.error.flatten().fieldErrors,
+            };
+        }
+
+        const { name, email, message } = validatedFields.data;
+        const db = getFirestore();
+        await db.collection('contact_messages').add({
+            name,
+            email,
+            message,
+            submittedAt: new Date(),
+        });
+        
+        return { message: "Thanks for reaching out. We'll get back to you soon." };
+
+    } catch (e: any) {
+        console.error("Error saving contact message:", e);
+        return { error: 'Failed to send message. Please try again later.' };
+    }
 }

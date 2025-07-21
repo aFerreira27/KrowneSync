@@ -24,7 +24,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import React, { useState } from "react";
+import React, { useEffect, useRef } from "react";
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
+import { saveContactMessage } from "@/lib/actions";
+import { Loader2 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const faqData = [
   {
@@ -84,25 +89,53 @@ type SupportDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" className="w-full" disabled={pending}>
+      {pending ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Sending...
+        </>
+      ) : (
+        "Send Message"
+      )}
+    </Button>
+  );
+}
+
+const initialState = {
+    message: null,
+    error: null,
+};
+
 export function SupportDialog({ open, onOpenChange }: SupportDialogProps) {
     const { toast } = useToast();
-    const [formState, setFormState] = useState({ name: '', email: '', message: '' });
+    const [state, formAction] = useActionState(saveContactMessage, initialState);
+    const formRef = useRef<HTMLFormElement>(null);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormState(prevState => ({ ...prevState, [name]: value }));
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log("Contact form submitted:", formState);
-        toast({
-            title: "Message Sent!",
-            description: "Thanks for reaching out. We'll get back to you soon.",
-        });
-        setFormState({ name: '', email: '', message: '' });
-        onOpenChange(false);
-    };
+    useEffect(() => {
+        if (state.message) {
+            toast({
+                title: "Message Sent!",
+                description: state.message,
+            });
+            formRef.current?.reset();
+            onOpenChange(false);
+        }
+        if (state.error) {
+            const errorMessage = typeof state.error === 'string' 
+                ? state.error 
+                : Object.values(state.error).flat().join(' ');
+            
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: errorMessage || "An unexpected error occurred.",
+            });
+        }
+    }, [state, toast, onOpenChange]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -135,22 +168,22 @@ export function SupportDialog({ open, onOpenChange }: SupportDialogProps) {
             </div>
           </TabsContent>
           <TabsContent value="contact" className="mt-4">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form ref={formRef} action={formAction} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                         <Label htmlFor="name">Name</Label>
-                        <Input id="name" name="name" value={formState.name} onChange={handleInputChange} placeholder="Your Name" required />
+                        <Input id="name" name="name" placeholder="Your Name" required />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
-                        <Input id="email" name="email" type="email" value={formState.email} onChange={handleInputChange} placeholder="your.email@example.com" required/>
+                        <Input id="email" name="email" type="email" placeholder="your.email@example.com" required/>
                     </div>
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="message">Message</Label>
-                    <Textarea id="message" name="message" value={formState.message} onChange={handleInputChange} placeholder="How can we help you?" required/>
+                    <Textarea id="message" name="message" placeholder="How can we help you?" required/>
                 </div>
-                <Button type="submit" className="w-full">Send Message</Button>
+                <SubmitButton />
             </form>
           </TabsContent>
         </Tabs>
