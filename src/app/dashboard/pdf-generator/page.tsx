@@ -54,6 +54,29 @@ const loadFonts = async () => {
     return Object.assign({}, ...fontDataArray.filter(Boolean));
 };
 
+// Function to flatten nested JSON for pdfme
+const flattenObject = (obj: any, parentKey = '', result: {[key: string]: string} = {}) => {
+    for (const key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            const newKey = parentKey ? `${parentKey}.${key}` : key;
+            if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+                flattenObject(obj[key], newKey, result);
+            } else if (Array.isArray(obj[key])) {
+                // Handle arrays of objects, commonly used for tables/lists
+                 obj[key].forEach((item: any, index: number) => {
+                    const arrayKey = `${newKey}.${index}`;
+                    flattenObject(item, arrayKey, result);
+                });
+            }
+            else {
+                result[newKey] = String(obj[key]);
+            }
+        }
+    }
+    return result;
+};
+
+
 export default function PdfGeneratorPage() {
   const viewerRef = useRef<HTMLDivElement | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -99,13 +122,16 @@ export default function PdfGeneratorPage() {
         return;
     }
     
-    let inputs;
+    let parsedJson;
     try {
-        inputs = [JSON.parse(jsonData)];
+        parsedJson = JSON.parse(jsonData);
     } catch(e) {
         toast({ variant: 'destructive', title: 'Invalid JSON', description: 'Please check your product data format.' });
         return;
     }
+    
+    // Flatten the JSON data to match pdfme's expected input format
+    const inputs = [flattenObject(parsedJson)];
 
     setIsGenerating(true);
     try {
@@ -124,6 +150,8 @@ export default function PdfGeneratorPage() {
       
       if (viewerRef.current) {
           viewerRef.current.innerHTML = ''; // Clear previous viewer
+          // Note: The viewer might not display table data correctly without the table plugin,
+          // but the generated PDF will be correct.
           const viewer = new Viewer({
               domContainer: viewerRef.current,
               template: selectedTemplate.template,
