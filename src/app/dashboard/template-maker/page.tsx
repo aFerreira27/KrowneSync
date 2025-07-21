@@ -294,8 +294,6 @@ export default function TemplateMakerPage() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-64">
-                  <DropdownMenuLabel>Manage Templates</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
                   <DropdownMenuItem onSelect={() => setIsNewTemplateDialogOpen(true)}>
                     <Plus className="mr-2 h-4 w-4"/>
                     <span>Create New Template</span>
