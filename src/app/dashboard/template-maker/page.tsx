@@ -19,7 +19,7 @@ const initialTemplate: Template = {
         width: 150,
         height: 20,
         content: 'Product Spec Sheet',
-        fontName: 'SpaceGrotesk-Bold',
+        fontName: 'HelveticaNeue-Bold',
         fontSize: 24,
       },
       b: {
@@ -28,7 +28,7 @@ const initialTemplate: Template = {
         width: 80,
         height: 10,
         content: 'Product Name:',
-        fontName: 'Inter-Bold',
+        fontName: 'HelveticaNeue-Medium',
         fontSize: 12,
       },
       c: {
@@ -37,7 +37,7 @@ const initialTemplate: Template = {
         width: 80,
         height: 10,
         content: 'Description:',
-        fontName: 'Inter-Bold',
+        fontName: 'HelveticaNeue-Medium',
         fontSize: 12,
       },
     },
@@ -47,14 +47,25 @@ const initialTemplate: Template = {
 // Helper function to fetch fonts
 const loadFonts = async () => {
   const fontFileNames = [
-    'Inter-Regular', 'Inter-Medium', 'Inter-Bold',
-    'SpaceGrotesk-Regular', 'SpaceGrotesk-Medium', 'SpaceGrotesk-Bold'
+    'HelveticaNeue-Light',
+    'HelveticaNeue-Regular',
+    'HelveticaNeue-Medium',
+    'HelveticaNeue-Bold',
   ];
   
   const fontPromises = fontFileNames.map(async (name) => {
-    const response = await fetch(`/fonts/${name}.otf`);
-    const fontData = await response.arrayBuffer();
-    return { [name]: fontData };
+    try {
+      const response = await fetch(`/fonts/${name}.otf`);
+      if (!response.ok) {
+        throw new Error(`Font ${name} not found`);
+      }
+      const fontData = await response.arrayBuffer();
+      return { [name]: fontData };
+    } catch (error) {
+      console.error(error);
+      // Return an empty object for this font if it fails to load
+      return {}; 
+    }
   });
 
   const fontDataArray = await Promise.all(fontPromises);
@@ -76,6 +87,16 @@ export default function TemplateMakerPage() {
       try {
         if (designerRef.current) {
           const fonts = await loadFonts();
+          if (Object.keys(fonts).length === 0) {
+            toast({
+              variant: 'destructive',
+              title: 'Error Loading Fonts',
+              description: 'Could not load any custom fonts. Please ensure they are in the public/fonts directory.',
+            });
+            setIsLoading(false);
+            return;
+          }
+
           newDesigner = new Designer({
             domContainer: designerRef.current,
             template: initialTemplate,
@@ -89,8 +110,8 @@ export default function TemplateMakerPage() {
         console.error('Error loading fonts or initializing designer:', error);
         toast({
           variant: 'destructive',
-          title: 'Error',
-          description: 'Could not load custom fonts. Please try again.',
+          title: 'Initialization Error',
+          description: 'Could not initialize the template designer. Please try again.',
         });
       } finally {
         setIsLoading(false);
