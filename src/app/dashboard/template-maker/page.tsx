@@ -64,21 +64,20 @@ const loadFonts = async () => {
     try {
       const response = await fetch(`/fonts/${name}.otf`);
       if (!response.ok) {
-        // Log the error instead of throwing, making it non-blocking
         console.warn(`Could not load font: ${name}.otf. File not found.`);
-        return {}; // Return empty object if font is not found
+        return null; 
       }
       const fontData = await response.arrayBuffer();
       return { [name]: fontData };
     } catch (error) {
       console.error(`An error occurred while fetching font ${name}:`, error);
-      // Return an empty object for this font if it fails to load
-      return {}; 
+      return null; 
     }
   });
 
   const fontDataArray = await Promise.all(fontPromises);
-  return Object.assign({}, ...fontDataArray);
+  // Filter out nulls and merge the font data objects
+  return Object.assign({}, ...fontDataArray.filter(Boolean));
 };
 
 
