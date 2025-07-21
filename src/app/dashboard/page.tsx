@@ -10,8 +10,8 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(auth.currentUser);
+  const [loading, setLoading] = useState(!auth.currentUser);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {

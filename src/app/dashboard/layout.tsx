@@ -33,10 +33,10 @@ export default function DashboardLayout({
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+        setLoading(false);
       } else {
         router.push('/');
       }
-      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -51,7 +51,9 @@ export default function DashboardLayout({
   }
   
   if (!user) {
-    return null; // or a redirect component, though the effect handles it
+    // This case should theoretically be handled by the redirect in the effect,
+    // but it's good practice to have a fallback.
+    return null;
   }
 
   const userData = {

@@ -20,7 +20,6 @@ export default function LoginPage() {
     setIsLoading(true);
     const provider = new OAuthProvider('microsoft.com');
 
-    // Add this block to handle single-tenant apps
     const tenantId = process.env.NEXT_PUBLIC_FIREBASE_TENANT_ID;
     if (tenantId) {
       provider.setCustomParameters({
@@ -35,14 +34,12 @@ export default function LoginPage() {
         router.push('/dashboard');
       })
       .catch((error) => {
-        // If the user closes the popup, don't show an error toast.
         if (error.code === 'auth/popup-closed-by-user') {
           setIsLoading(false);
           return;
         }
 
-        const errorMessage = error.message;
-        console.error('Error during Microsoft sign-in:', error.code, errorMessage);
+        console.error('Error during Microsoft sign-in:', error.code, error.message);
         toast({
           variant: 'destructive',
           title: 'Sign-in Failed',
