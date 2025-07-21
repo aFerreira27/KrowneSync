@@ -12,7 +12,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
@@ -134,12 +133,6 @@ export default function TemplateMakerPage() {
 
   }, []);
 
-  const loadTemplateInDesigner = useCallback((template: Template) => {
-    if (designer.current) {
-      designer.current.updateTemplate(template);
-    }
-  }, []);
-
   useEffect(() => {
     let newDesigner: Designer | null = null;
     if (!selectedTemplate) return;
@@ -187,12 +180,6 @@ export default function TemplateMakerPage() {
       }
     };
   }, [toast, selectedTemplate]);
-
-  useEffect(() => {
-    if(selectedTemplate && designer.current) {
-      loadTemplateInDesigner(selectedTemplate.template);
-    }
-  }, [selectedTemplate, loadTemplateInDesigner]);
 
   const onSaveTemplate = () => {
     if (!designer.current || !selectedTemplate) return;
@@ -262,7 +249,6 @@ export default function TemplateMakerPage() {
     
     toast({ title: 'Template Deleted', description: `Template "${templateToDelete.name}" has been deleted.` });
     
-    // If the deleted template was the selected one, select the first of the remaining templates
     if (selectedTemplate?.name === templateToDelete.name) {
       setSelectedTemplate(updatedTemplates[0] || null);
     }
@@ -272,7 +258,7 @@ export default function TemplateMakerPage() {
   };
 
   const openDeleteDialog = (template: SavedTemplate, e: React.MouseEvent) => {
-      e.stopPropagation(); // Prevent the dropdown from closing
+      e.stopPropagation(); 
       setTemplateToDelete(template);
       setIsDeleteAlertOpen(true);
   };
@@ -330,7 +316,6 @@ export default function TemplateMakerPage() {
         )}
         <div ref={designerRef} className={`w-full h-full border rounded-lg overflow-hidden ${isLoading ? 'hidden' : ''}`} />
 
-        {/* Delete Confirmation Dialog */}
         <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
             <AlertDialogContent>
                 <AlertDialogHeader>
@@ -350,7 +335,6 @@ export default function TemplateMakerPage() {
             </AlertDialogContent>
         </AlertDialog>
 
-        {/* New Template Name Dialog */}
         <Dialog open={isNewTemplateDialogOpen} onOpenChange={setIsNewTemplateDialogOpen}>
           <DialogContent>
             <DialogHeader>
