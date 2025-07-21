@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -16,12 +17,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Logo from "@/components/logo";
 import { Home, Link, LifeBuoy, BarChart3, Loader2, User as UserIcon, Database, ShoppingCart, Presentation, Globe } from "lucide-react";
 import { auth } from '@/lib/firebase';
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { onAuthStateChanged, User, updateProfile } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { ConnectionsSheet } from '@/components/dashboard/connections-sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import LogoutButton from '@/components/logout-button';
 import { SupportDialog } from '@/components/dashboard/support-dialog';
+import { ProfileDialog } from '@/components/dashboard/profile-dialog';
 import { DataSyncCard } from '@/components/dashboard/data-sync-card';
 import { Separator } from '@/components/ui/separator';
 import { ConnectedPlatforms } from '@/components/dashboard/connected-platforms';
@@ -51,6 +53,7 @@ export default function DashboardLayout({
   const [loading, setLoading] = useState(true);
   const [isConnectionsOpen, setIsConnectionsOpen] = useState(false);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [platforms, setPlatforms] = useState<Platform[]>(initialPlatforms);
 
   const handlePlatformUpdate = useCallback((updatedPlatforms: Platform[]) => {
@@ -138,7 +141,7 @@ export default function DashboardLayout({
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setIsProfileOpen(true)}>
                       <UserIcon className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </DropdownMenuItem>
@@ -195,6 +198,7 @@ export default function DashboardLayout({
         onPlatformUpdate={handlePlatformUpdate}
       />
       <SupportDialog open={isSupportOpen} onOpenChange={setIsSupportOpen} />
+      <ProfileDialog user={user} open={isProfileOpen} onOpenChange={setIsProfileOpen} />
     </SidebarProvider>
   );
 }
