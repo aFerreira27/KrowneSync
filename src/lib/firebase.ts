@@ -2,7 +2,7 @@
 'use client';
 
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth, updateProfile } from 'firebase/auth';
+import { getAuth, Auth, updateProfile, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -23,4 +23,4 @@ if (!getApps().length) {
 
 const auth: Auth = getAuth(app);
 
-export { app, auth, updateProfile };
+export { app, auth, updateProfile, signInWithEmailAndPassword, createUserWithEmailAndPassword };
