@@ -68,7 +68,7 @@ export function ProfileDialog({ user, open, onOpenChange }: ProfileDialogProps) 
 
     setIsSaving(true);
     try {
-        const resizedDataUrl = await resizeImage(newPhoto, 128, 128); // Resize to a higher quality for display flexibility
+        const resizedDataUrl = await resizeImage(newPhoto, 40, 40); // Resize to 40x40 to avoid URL length limit
         await updateProfile(auth.currentUser, {
             photoURL: resizedDataUrl,
         });
