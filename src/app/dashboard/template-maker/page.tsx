@@ -42,28 +42,11 @@ const BLANK_TEMPLATE: Template = {
   schemas: [
     {
       "header": {
-        type: 'group',
-        position: { x: 25, y: 15 },
-        width: 160,
-        height: 20,
-        children: {
-          "logo": {
-            type: 'image',
-            position: { x: 0, y: 0 },
-            width: 40,
-            height: 20,
-            content: 'https://placehold.co/100x50.png',
-          },
-          "title": {
-            type: 'text',
-            position: { x: 50, y: 5 },
-            width: 110,
-            height: 10,
-            content: 'Product Spec Sheet',
-            fontName: 'HelveticaNeueLTStd-Bd',
-            fontSize: 14,
-          },
-        },
+        type: 'image',
+        position: { x: 0, y: 0 },
+        width: 210,
+        height: 40,
+        content: '/images/header.svg',
       },
       "productName": {
         type: 'text',
@@ -76,22 +59,11 @@ const BLANK_TEMPLATE: Template = {
         dataKey: 'product.name'
       },
       "footer": {
-        type: 'group',
-        position: { x: 25, y: 260 },
-        width: 160,
-        height: 10,
-        children: {
-          "copyright": {
-            type: 'text',
-            position: { x: 0, y: 0 },
-            width: 160,
-            height: 10,
-            content: '© 2024 KrowneSync. All rights reserved.',
-            fontName: 'HelveticaNeueLTStd-Roman',
-            fontSize: 8,
-            horizontalAlign: 'center',
-          }
-        }
+        type: 'image',
+        position: { x: 0, y: 257 },
+        width: 210,
+        height: 40,
+        content: '/images/footer.svg',
       }
     },
   ],
