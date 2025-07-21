@@ -20,6 +20,14 @@ export default function LoginPage() {
     setIsLoading(true);
     const provider = new OAuthProvider('microsoft.com');
 
+    // Add this block to handle single-tenant apps
+    const tenantId = process.env.NEXT_PUBLIC_FIREBASE_TENANT_ID;
+    if (tenantId) {
+      provider.setCustomParameters({
+        tenant: tenantId,
+      });
+    }
+
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
