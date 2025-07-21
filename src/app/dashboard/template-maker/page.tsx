@@ -39,28 +39,30 @@ import { cn } from '@/lib/utils';
 
 const BLANK_TEMPLATE: Template = {
   basePdf: BLANK_PDF,
-  schemas: [{
-    headerImage: {
-      type: 'image',
-      position: { x: 0, y: 0 },
-      width: 210,
-      height: 40,
+  schemas: [
+    {
+      headerImage: {
+        type: 'image',
+        position: { x: 0, y: 0 },
+        width: 210,
+        height: 40,
+      },
+      productName: {
+        type: 'text',
+        position: { x: 25, y: 50 },
+        width: 150,
+        height: 15,
+        fontName: 'HelveticaNeueLTStd-Bd',
+        fontSize: 18,
+      },
+      footerImage: {
+        type: 'image',
+        position: { x: 0, y: 257 },
+        width: 210,
+        height: 40,
+      },
     },
-    productName: {
-      type: 'text',
-      position: { x: 25, y: 50 },
-      width: 150,
-      height: 15,
-      fontName: 'HelveticaNeueLTStd-Bd',
-      fontSize: 18,
-    },
-    footerImage: {
-      type: 'image',
-      position: { x: 0, y: 257 },
-      width: 210,
-      height: 40,
-    },
-  }],
+  ],
 };
 
 // Helper function to fetch fonts
