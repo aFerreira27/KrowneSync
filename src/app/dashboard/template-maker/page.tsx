@@ -39,33 +39,35 @@ import { cn } from '@/lib/utils';
 
 const BLANK_TEMPLATE: Template = {
   basePdf: BLANK_PDF,
-  schemas: [
-    {
-      headerImage: {
-        type: 'image',
-        position: { x: 0, y: 0 },
-        width: 210,
-        height: 40,
-      },
-      productName: {
-        type: 'text',
-        position: { x: 25, y: 50 },
-        width: 150,
-        height: 15,
-        fontName: 'HelveticaNeueLTStd-Bd',
-        fontSize: 18,
-      },
-      footerImage: {
-        type: 'image',
-        position: { x: 0, y: 257 },
-        width: 210,
-        height: 40,
-      },
+  schemas: [{
+    headerImage: {
+      type: 'image',
+      position: { x: 0, y: 0 },
+      width: 210,
+      height: 40,
     },
-  ],
+    productName: {
+      type: 'text',
+      position: { x: 25, y: 50 },
+      width: 150,
+      height: 15,
+      fontName: 'HelveticaNeueLTStd-Bd',
+      fontSize: 18,
+    },
+    footerImage: {
+      type: 'image',
+      position: { x: 0, y: 257 },
+      width: 210,
+      height: 40,
+    },
+  }],
 };
 
-// Helper function to fetch fonts
+type SavedTemplate = {
+  name: string;
+  template: Template;
+};
+
 const loadFonts = async () => {
   const fontFileNames = [
     'HelveticaNeueLTStd-Bd',
@@ -107,11 +109,6 @@ const loadFonts = async () => {
   return Object.assign({}, ...fontDataArray.filter(Boolean));
 };
 
-type SavedTemplate = {
-  name: string;
-  template: Template;
-};
-
 export default function TemplateMakerPage() {
   const designerRef = useRef<HTMLDivElement | null>(null);
   const designer = useRef<Designer | null>(null);
@@ -126,7 +123,6 @@ export default function TemplateMakerPage() {
   const [templateToDelete, setTemplateToDelete] = useState<SavedTemplate | null>(null);
   const [isNewTemplateDialogOpen, setIsNewTemplateDialogOpen] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState("");
-
 
   useEffect(() => {
     const savedTemplatesJson = localStorage.getItem('specSheetTemplates');
@@ -362,7 +358,7 @@ export default function TemplateMakerPage() {
               <DialogDescription>
                 Enter a name for your new template.
               </DialogDescription>
-            </Header>
+            </DialogHeader>
             <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="template-name" className="text-right">Name</Label>
@@ -384,3 +380,5 @@ export default function TemplateMakerPage() {
     </div>
   );
 }
+
+    
