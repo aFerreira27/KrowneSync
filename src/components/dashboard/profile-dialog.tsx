@@ -56,7 +56,8 @@ export function ProfileDialog({ user, open, onOpenChange }: ProfileDialogProps) 
                     return reject(new Error('Could not get canvas context'));
                 }
                 ctx.drawImage(img, 0, 0, width, height);
-                resolve(canvas.toDataURL(file.type));
+                // Convert to JPEG with compression to ensure the data URL is not too long.
+                resolve(canvas.toDataURL('image/jpeg', 0.8));
             };
         };
         reader.onerror = (error) => reject(error);
