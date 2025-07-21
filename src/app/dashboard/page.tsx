@@ -12,17 +12,17 @@ import type { Platform } from './layout';
 
 export default function DashboardPage({ platforms }: { platforms: Platform[] }) {
   const [user, setUser] = useState<User | null>(auth.currentUser);
-  const [loading, setLoading] = useState(!auth.currentUser);
-
+  
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
-      setLoading(false);
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
     });
     return () => unsubscribe();
   }, []);
 
-  if (loading || !platforms) {
+  // The main layout now handles the primary loading state.
+  // We just show a skeleton if props aren't ready yet for this specific page.
+  if (!platforms || !user) {
     return (
       <div className="flex flex-col gap-8">
         <div>
