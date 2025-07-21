@@ -22,7 +22,7 @@ export default function DashboardPage() {
            <DataSyncCard />
         </div>
         <div className="flex flex-col gap-6">
-          <ConnectedPlatforms />
+          <ConnectedPlatforms platforms={[]} />
           <PdfActions />
         </div>
       </div>
