@@ -1,3 +1,4 @@
+
 'use client';
 
 import { signInWithPopup, OAuthProvider } from 'firebase/auth';
@@ -5,11 +6,11 @@ import { auth } from '@/lib/firebase'; // Import initialized auth
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import Logo from '@/components/logo';
 import { LogIn } from 'lucide-react';
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -56,7 +57,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
-             <Logo className="h-12 w-auto" />
+             <Image src="/images/krowneSync.svg" alt="Synchromatic Logo" width={164} height={40} className="h-12 w-auto" />
           </div>
           <CardTitle className="font-headline text-3xl">Welcome to Synchromatic</CardTitle>
           <CardDescription>Sign in with your Microsoft account to access your dashboard.</CardDescription>
