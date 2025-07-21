@@ -19,7 +19,7 @@ const initialTemplate: Template = {
         width: 150,
         height: 20,
         content: 'Product Spec Sheet',
-        fontName: 'HelveticaNeue-Bold',
+        fontName: 'HelveticaNeueLTStd-Bd',
         fontSize: 24,
       },
       b: {
@@ -28,7 +28,7 @@ const initialTemplate: Template = {
         width: 80,
         height: 10,
         content: 'Product Name:',
-        fontName: 'HelveticaNeue-Medium',
+        fontName: 'HelveticaNeueLTStd-Roman',
         fontSize: 12,
       },
       c: {
@@ -37,7 +37,7 @@ const initialTemplate: Template = {
         width: 80,
         height: 10,
         content: 'Description:',
-        fontName: 'HelveticaNeue-Regular',
+        fontName: 'HelveticaNeueLTStd-Roman',
         fontSize: 12,
       },
     },
@@ -47,10 +47,17 @@ const initialTemplate: Template = {
 // Helper function to fetch fonts
 const loadFonts = async () => {
   const fontFileNames = [
-    'HelveticaNeue-Light',
-    'HelveticaNeue-Regular',
-    'HelveticaNeue-Medium',
-    'HelveticaNeue-Bold',
+    'HelveticaNeueLTStd-Bd',
+    'HelveticaNeueLTStd-BdCn',
+    'HelveticaNeueLTStd-Hv',
+    'HelveticaNeueLTStd-HvCn',
+    'HelveticaNeueLTStd-Lt',
+    'HelveticaNeueLTStd-LtCnO',
+    'HelveticaNeueLTStd-Md',
+    'HelveticaNeueLTStd-MdCnO',
+    'HelveticaNeueLTStd-Roman',
+    'HelveticaNeueLTStd-Th',
+    'HelveticaNeueLTStd-UltLt',
   ];
   
   const fontPromises = fontFileNames.map(async (name) => {
