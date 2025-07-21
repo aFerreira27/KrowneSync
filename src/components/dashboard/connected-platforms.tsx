@@ -26,8 +26,13 @@ export function ConnectedPlatforms({ platforms, onConnectClick }: { platforms: P
                   Connected
                 </Badge>
               ) : (
-                <Button variant="outline" size="sm" onClick={onConnectClick}>
-                  <Link className="mr-2 h-3 w-3" />
+                <Button 
+                  variant="secondary" 
+                  size="sm" 
+                  onClick={onConnectClick}
+                  className="h-auto px-2.5 py-0.5 bg-red-100/50 text-red-800 dark:bg-red-900/50 dark:text-red-200 border-red-200/50 hover:bg-red-100"
+                >
+                  <Link className="mr-1 h-3 w-3" />
                   Connect
                 </Button>
               )}
