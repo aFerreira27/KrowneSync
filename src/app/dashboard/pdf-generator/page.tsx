@@ -157,7 +157,7 @@ export default function PdfGeneratorPage() {
               template: selectedTemplate.template,
               inputs: inputs,
           });
-          viewer.setPdf(pdf);
+          viewer.update(pdf);
       }
        
       toast({ title: 'PDF Generated', description: 'The PDF has been generated successfully.' });
