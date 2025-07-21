@@ -76,9 +76,9 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
-             <Image src="/images/krowneSync.svg" alt="Synchromatic Logo" width={164} height={40} className="h-12 w-auto" />
+             <Image src="/images/krowneSync.svg" alt="KrowneSync Logo" width={164} height={40} className="h-12 w-auto" />
           </div>
-          <CardTitle className="font-headline text-3xl">Welcome to Synchromatic</CardTitle>
+          <CardTitle className="font-headline text-3xl">Welcome to KrowneSync</CardTitle>
           <CardDescription>Sign in with your Microsoft account to access your dashboard.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

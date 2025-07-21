@@ -54,13 +54,13 @@ const faqData = [
   },
 ];
 
-const readmeContent = `# Synchromatic: AI-Powered Data Synchronization
+const readmeContent = `# KrowneSync: AI-Powered Data Synchronization
 
-Welcome to Synchromatic, an intelligent application designed to streamline and automate the process of keeping your product data consistent across multiple platforms.
+Welcome to KrowneSync, an intelligent application designed to streamline and automate the process of keeping your product data consistent across multiple platforms.
 
 ## Intended Functionality
 
-Synchromatic solves the common and critical problem of data drift between different business systems. By leveraging the power of generative AI, it provides a centralized dashboard to:
+KrowneSync solves the common and critical problem of data drift between different business systems. By leveraging the power of generative AI, it provides a centralized dashboard to:
 
 1.  **Connect Platforms:** Securely connect to various data sources like Salesforce, Salespad, Autoquotes, and your Website CMS using authentication tokens.
 2.  **Compare Data:** Paste product data (in JSON format) from two different platforms into the Data Synchronization tool.

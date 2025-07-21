@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Synchromatic',
+  title: 'KrowneSync',
   description: 'Synchronize your product data seamlessly.',
 };
 
