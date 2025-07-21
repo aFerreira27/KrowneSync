@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Logo from "@/components/logo";
-import { Home, Link, LifeBuoy, BarChart3, Loader2, User as UserIcon, Database, ShoppingCart, Presentation, Globe, LayoutTemplate } from "lucide-react";
+import { Home, Link as LinkIcon, LifeBuoy, BarChart3, Loader2, User as UserIcon, Database, ShoppingCart, Presentation, Globe, LayoutTemplate } from "lucide-react";
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, User, updateProfile } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { ConnectionsSheet } from '@/components/dashboard/connections-sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import LogoutButton from '@/components/logout-button';
@@ -28,6 +28,7 @@ import { DataSyncCard } from '@/components/dashboard/data-sync-card';
 import { Separator } from '@/components/ui/separator';
 import { ConnectedPlatforms } from '@/components/dashboard/connected-platforms';
 import { PdfActions } from '@/components/dashboard/pdf-actions';
+import Link from 'next/link';
 
 export type Platform = {
   name: string;
@@ -57,6 +58,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -99,6 +101,8 @@ export default function DashboardLayout({
       </div>
     );
   }
+  
+  const isDashboardPage = pathname === '/dashboard';
 
   return (
     <SidebarProvider>
@@ -109,22 +113,34 @@ export default function DashboardLayout({
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/dashboard" isActive>
-                <Home />
-                Dashboard
-              </SidebarMenuButton>
+              <Link href="/dashboard" passHref>
+                <SidebarMenuButton asChild isActive={pathname === '/dashboard'}>
+                  <span>
+                    <Home />
+                    Dashboard
+                  </span>
+                </SidebarMenuButton>
+              </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="#">
-                <BarChart3 />
-                Analytics
-              </SidebarMenuButton>
+               <Link href="#" passHref>
+                <SidebarMenuButton asChild isActive={pathname === '/dashboard/analytics'}>
+                  <span>
+                    <BarChart3 />
+                    Analytics
+                  </span>
+                </SidebarMenuButton>
+              </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/dashboard/template-maker">
-                <LayoutTemplate />
-                Template Maker
-              </SidebarMenuButton>
+              <Link href="/dashboard/template-maker" passHref>
+                <SidebarMenuButton asChild isActive={pathname === '/dashboard/template-maker'}>
+                  <span>
+                    <LayoutTemplate />
+                    Template Maker
+                  </span>
+                </SidebarMenuButton>
+              </Link>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
@@ -160,7 +176,7 @@ export default function DashboardLayout({
                       <span>Profile</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setIsConnectionsOpen(true)}>
-                      <Link className="mr-2 h-4 w-4" />
+                      <LinkIcon className="mr-2 h-4 w-4" />
                       <span>Connections</span>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
@@ -181,27 +197,30 @@ export default function DashboardLayout({
       </Sidebar>
       <SidebarInset>
         <main className="flex-1 overflow-auto p-4 md:p-8">
-          {children}
-          <div className="flex flex-col gap-8">
-            <div>
-              <h1 className="font-headline text-3xl font-bold tracking-tight">
-                Welcome back!
-              </h1>
-              <p className="text-muted-foreground">
-                Here's your data synchronization overview.
-              </p>
-            </div>
-            <Separator />
-            <div className="grid gap-6 lg:grid-cols-3">
-              <div className="lg:col-span-2">
-                <DataSyncCard />
+          {isDashboardPage ? (
+            <div className="flex flex-col gap-8">
+              <div>
+                <h1 className="font-headline text-3xl font-bold tracking-tight">
+                  Welcome back!
+                </h1>
+                <p className="text-muted-foreground">
+                  Here's your data synchronization overview.
+                </p>
               </div>
-              <div className="flex flex-col gap-6">
-                <ConnectedPlatforms platforms={platforms} onConnectClick={onConnectClick}/>
-                <PdfActions />
+              <Separator />
+              <div className="grid gap-6 lg:grid-cols-3">
+                <div className="lg:col-span-2">
+                  <DataSyncCard />
+                </div>
+                <div className="flex flex-col gap-6">
+                  <ConnectedPlatforms platforms={platforms} onConnectClick={onConnectClick}/>
+                  <PdfActions />
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            children
+          )}
         </main>
       </SidebarInset>
       <ConnectionsSheet 
