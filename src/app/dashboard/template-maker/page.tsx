@@ -2,9 +2,8 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import { Designer } from '@pdfme/ui';
-import { Template, BLANK_PDF } from '@pdfme/common';
-import { table } from '@pdfme/ui';
+import type { Designer, Template } from '@pdfme/ui';
+import { BLANK_PDF } from '@pdfme/common';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save, Plus, Trash2, ChevronDown, Edit } from 'lucide-react';
@@ -135,40 +134,42 @@ export default function TemplateMakerPage() {
   }, []);
 
   useEffect(() => {
-    let newDesigner: Designer | null = null;
-    if (!selectedTemplate) return;
+    if (!selectedTemplate || !designerRef.current) return;
 
     const initializeDesigner = async () => {
+      setIsLoading(true);
       try {
-        if (designerRef.current) {
-          designer.current?.destroy();
-          
-          const fonts = await loadFonts();
-          if (Object.keys(fonts).length === 0) {
-            toast({
-              variant: 'destructive',
-              title: 'Error Loading Fonts',
-              description: 'Could not load any custom fonts. Please ensure they are in the public/fonts directory.',
-            });
-            setIsLoading(false);
-            return;
-          }
+        const { Designer } = await import('@pdfme/ui');
+        const { table } = await import('@pdfme/ui');
 
-          newDesigner = new Designer({
-            domContainer: designerRef.current,
-            template: selectedTemplate.template,
-            plugins: {
-                table,
-            },
-            options: {
-              font: fonts,
-              tool: {
-                schema: ['text', 'image', 'table'],
-                layout: ['column']
-              }
-            }
+        if (designer.current) {
+          designer.current.destroy();
+        }
+        
+        const fonts = await loadFonts();
+        if (Object.keys(fonts).length === 0) {
+          toast({
+            variant: 'destructive',
+            title: 'Error Loading Fonts',
+            description: 'Could not load any custom fonts. Please ensure they are in the public/fonts directory.',
           });
-          designer.current = newDesigner;
+        }
+
+        if (designerRef.current) {
+            designer.current = new Designer({
+              domContainer: designerRef.current,
+              template: selectedTemplate.template,
+              plugins: {
+                  table,
+              },
+              options: {
+                font: fonts,
+                tool: {
+                  schema: ['text', 'image', 'table'],
+                  layout: ['column']
+                }
+              }
+            });
         }
       } catch (error) {
         console.error('Error loading fonts or initializing designer:', error);
@@ -185,7 +186,8 @@ export default function TemplateMakerPage() {
     initializeDesigner();
 
     return () => {
-      newDesigner?.destroy();
+      designer.current?.destroy();
+      designer.current = null;
     };
   }, [toast, selectedTemplate]);
 
