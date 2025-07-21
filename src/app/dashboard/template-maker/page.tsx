@@ -41,21 +41,23 @@ const BLANK_TEMPLATE: Template = {
   basePdf: BLANK_PDF,
   schemas: [
     {
-      header: {
+      "header": {
         type: 'group',
         position: { x: 25, y: 15 },
         width: 160,
         height: 20,
         children: [
           {
-            logo: {
+            "logo": {
               type: 'image',
               position: { x: 0, y: 0 },
               width: 40,
               height: 20,
               content: 'https://placehold.co/100x50.png',
             },
-            title: {
+          },
+          {
+            "title": {
               type: 'text',
               position: { x: 50, y: 5 },
               width: 110,
@@ -67,7 +69,7 @@ const BLANK_TEMPLATE: Template = {
           }
         ],
       },
-      productName: {
+      "productName": {
         type: 'text',
         position: { x: 25, y: 50 },
         width: 150,
@@ -77,13 +79,13 @@ const BLANK_TEMPLATE: Template = {
         fontSize: 18,
         dataKey: 'product.name'
       },
-      footer: {
+      "footer": {
         type: 'group',
         position: { x: 25, y: 260 },
         width: 160,
         height: 10,
         children: [{
-          copyright: {
+          "copyright": {
             type: 'text',
             position: { x: 0, y: 0 },
             width: 160,
