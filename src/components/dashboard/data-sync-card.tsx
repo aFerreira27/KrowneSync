@@ -46,12 +46,23 @@ export function DataSyncCard() {
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
 
-  const handleFormAction = async (formData: FormData) => {
+  const handleFormAction = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
     const user = auth.currentUser;
     if (user) {
-      const idToken = await user.getIdToken();
-      formData.append('idToken', idToken);
-      formAction(formData);
+      try {
+        const idToken = await user.getIdToken(true); // Force refresh token if needed
+        formData.append('idToken', idToken);
+        formAction(formData);
+      } catch (error) {
+        console.error("Error getting ID token:", error);
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: "Could not verify your session. Please sign in again.",
+        });
+      }
     } else {
       toast({
         variant: "destructive",
@@ -94,7 +105,7 @@ export function DataSyncCard() {
           Paste product data from two platforms to identify and resolve discrepancies.
         </CardDescription>
       </CardHeader>
-      <form ref={formRef} action={handleFormAction}>
+      <form ref={formRef} onSubmit={handleFormAction}>
         <CardContent className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">

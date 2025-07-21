@@ -19,7 +19,6 @@ import { UserNav } from "@/components/dashboard/user-nav";
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { Skeleton } from '@/components/ui/skeleton';
 
 export default function DashboardLayout({
   children,

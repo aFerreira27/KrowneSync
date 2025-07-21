@@ -13,17 +13,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import LogoutButton from '@/components/logout-button'; // Import the LogoutButton
+import LogoutButton from '@/components/logout-button';
 import { User as UserIcon, Settings, LifeBuoy } from "lucide-react";
 
-type User = {
+type UserData = {
     name: string;
     email: string;
     initials: string;
-    photoURL?: string; // Add photoURL to the User type
+    photoURL?: string;
 } | null;
 
-export function UserNav({ user }: { user: User }) {
+export function UserNav({ user }: { user: UserData }) {
   if (!user) return null;
 
   return (
@@ -31,7 +31,7 @@ export function UserNav({ user }: { user: User }) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-9 w-9">
-             <AvatarImage src={user.photoURL} alt={user.name} />{/* Use user.photoURL */}
+             <AvatarImage src={user.photoURL} alt={user.name} />
             <AvatarFallback>{user.initials}</AvatarFallback>
           </Avatar>
         </Button>
@@ -62,8 +62,8 @@ export function UserNav({ user }: { user: User }) {
             <span>Support</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild> {/* Use asChild to render Button inside DropdownMenuItem */}
-          <LogoutButton /> {/* Include the LogoutButton component */}
+        <DropdownMenuItem asChild>
+          <LogoutButton />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

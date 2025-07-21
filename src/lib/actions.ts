@@ -4,53 +4,32 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { summarizeDataDifferences } from '@/ai/flows/summarize-data-differences';
 import { suggestDataUpdates } from '@/ai/flows/suggest-data-updates';
-// Import Firebase Admin SDK
 import * as admin from 'firebase-admin';
 
-// Initialize Firebase Admin SDK (do this once in your application)
-// Check if a Firebase app has already been initialized to avoid errors in development with hot-reloading
 if (!admin.apps.length) {
-  admin.initializeApp(); // Assumes you have set up Application Default Credentials
+  // Assumes you have set up Application Default Credentials for the server environment
+  // https://firebase.google.com/docs/admin/setup#initialize-sdk
+  admin.initializeApp(); 
 }
-
-// Mock user data - No longer needed
-// const MOCK_VALID_TOKEN = 'sync-me-in-42';
-// const AUTH_TOKEN_KEY = 'auth_token';
-
-// login function is no longer needed as authentication is handled by Firebase on the client side
-// export async function login(prevState: any, formData: FormData) { ... }
 
 export async function logout() {
-  // Firebase client-side logout will handle clearing the session
-  // We might still need a server-side action if there are server-specific logout tasks
-  // For now, we'll just redirect to the login page
+  // Client-side will handle the redirect upon auth state change.
+  // This function can remain for server-side logout logic if needed in the future.
   redirect('/');
-}
-
-export async function getUser() {
-  // This function might not be needed in server actions if you verify token in each relevant action
-  // However, if you need a central place to get user info from a token, you can adapt this.
-  // For now, we will rely on token verification in individual actions like getSyncData.
-  return null; // Or adapt to take token as argument and verify
 }
 
 const syncSchema = z.object({
   platformAData: z.string().min(10, "Platform A data must not be empty."),
   platformBData: z.string().min(10, "Platform B data must not be empty."),
-  idToken: z.string().min(1, "Authentication token is missing."), // Add idToken to schema
+  idToken: z.string().min(1, "Authentication token is missing."),
 });
 
 export async function getSyncData(prevState: any, formData: FormData) {
-  // In a real application, you would typically use the authenticated user's information
-  // (e.g., UID) to fetch or process data relevant to that user.
-  // For this example, we will keep the data processing logic as is,
-  // but in a real scenario, you would incorporate user-specific data handling based on the UID.
-
   try {
     const validatedFields = syncSchema.safeParse({
       platformAData: formData.get('platformAData'),
       platformBData: formData.get('platformBData'),
-      idToken: formData.get('idToken'), // Get idToken from formData
+      idToken: formData.get('idToken'),
     });
 
     if (!validatedFields.success) {
@@ -59,21 +38,14 @@ export async function getSyncData(prevState: any, formData: FormData) {
       };
     }
     
-    const { platformAData, platformBData, idToken } = validatedFields.data; // Extract idToken
+    const { platformAData, platformBData, idToken } = validatedFields.data;
 
-    // Verify the ID token using Firebase Admin SDK
+    // Verify the ID token using Firebase Admin SDK to ensure the request is from an authenticated user.
     const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const uid = decodedToken.uid; // Get the authenticated user's UID
-
+    const uid = decodedToken.uid;
     console.log("Authenticated user UID:", uid);
 
-    // --- Start: User-specific data handling (Conceptual) ---
-    // Now that you have the `uid`, you can use it to:
-    // - Fetch user-specific data from your database
-    // - Save/update data associated with this user
-    // - Implement access control based on the user's identity
-    // For this example, we'll just log the UID. Replace this with your actual logic.
-    // --- End: User-specific data handling (Conceptual) ---
+    // In a real app, you would use the `uid` to perform user-specific operations.
 
     const differences = `Platform A: ${platformAData} | Platform B: ${platformBData}`;
     
@@ -96,9 +68,12 @@ export async function getSyncData(prevState: any, formData: FormData) {
       suggestions: suggestionsResult.suggestedUpdates,
       reasoning: suggestionsResult.reasoning,
     };
-  } catch (e) {
+  } catch (e: any) {
     console.error("Error verifying ID token or processing data:", e);
-    // Handle errors (e.g., invalid token, expired token)
+    // Handle specific Firebase Admin errors if needed
+    if (e.code === 'auth/id-token-expired') {
+        return { error: 'Your session has expired. Please sign in again.' };
+    }
     return {
       error: 'Authentication failed or an unexpected error occurred. Please try again.',
     };
