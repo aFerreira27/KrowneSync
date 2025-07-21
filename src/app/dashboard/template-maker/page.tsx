@@ -332,13 +332,15 @@ export default function TemplateMakerPage() {
               </Button>
             </div>
         </div>
-        {isLoading && (
-          <div className="w-full h-full border rounded-lg overflow-hidden p-4">
-              <Skeleton className="h-16 w-1/2 mb-4" />
-              <Skeleton className="h-full w-full" />
-          </div>
-        )}
-        <div ref={designerRef} className={`w-full h-full border rounded-lg overflow-hidden ${isLoading ? 'hidden' : ''}`} />
+        <div className="w-full h-full border rounded-lg overflow-hidden flex justify-start">
+          {isLoading && (
+            <div className="w-full h-full p-4">
+                <Skeleton className="h-16 w-1/2 mb-4" />
+                <Skeleton className="h-full w-full" />
+            </div>
+          )}
+          <div ref={designerRef} className={`w-full h-full ${isLoading ? 'hidden' : ''}`} />
+        </div>
 
         <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
             <AlertDialogContent>
@@ -388,3 +390,5 @@ export default function TemplateMakerPage() {
     </div>
   );
 }
+
+    
