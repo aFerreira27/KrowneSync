@@ -84,16 +84,16 @@ export default function DashboardLayout({
                 Analytics
               </SidebarMenuButton>
             </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+        <SidebarFooter>
+          <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton onClick={() => setIsSettingsOpen(true)}>
                 <Settings />
                 Settings
               </SidebarMenuButton>
             </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarContent>
-        <SidebarFooter>
-          <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton href="#">
                 <LifeBuoy />
