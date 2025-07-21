@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { LogIn } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
@@ -16,10 +16,31 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState(auth.currentUser);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+      if (user) {
+        router.push('/dashboard');
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
+
 
   const handleMicrosoftSignIn = () => {
     setIsLoading(true);
     const provider = new OAuthProvider('microsoft.com');
+    
+    // This is necessary for single-tenant applications.
+    // Your Tenant ID from Azure Portal should be in an environment variable.
+    const tenantId = process.env.NEXT_PUBLIC_FIREBASE_TENANT_ID;
+    if (tenantId) {
+      provider.setCustomParameters({
+        tenant: tenantId,
+      });
+    }
 
     signInWithPopup(auth, provider)
       .then((result) => {
@@ -29,7 +50,6 @@ export default function LoginPage() {
       })
       .catch((error) => {
         if (error.code === 'auth/popup-closed-by-user') {
-          setIsLoading(false);
           return;
         }
 
@@ -37,13 +57,21 @@ export default function LoginPage() {
         toast({
           variant: 'destructive',
           title: 'Sign-in Failed',
-          description: 'Could not sign you in with Microsoft. Please try again.',
+          description: 'Could not sign you in with Microsoft. Please check your configuration and try again.',
         });
       })
       .finally(() => {
         setIsLoading(false);
       });
   };
+
+  if (user) {
+     return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <main className="flex min-h-screen w-full items-center justify-center bg-background p-4">
