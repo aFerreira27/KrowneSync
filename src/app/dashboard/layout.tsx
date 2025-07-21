@@ -20,7 +20,7 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { SettingsSheet } from '@/components/dashboard/settings-sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import LogoutButton from '../logout-button';
+import LogoutButton from '@/components/logout-button';
 
 export default function DashboardLayout({
   children,
