@@ -68,8 +68,15 @@ const loadFonts = async () => {
         return null; 
       }
       const fontData = await response.arrayBuffer();
-      // pdfme expects the font data to be in an object with a 'data' property
-      return { [name]: { data: fontData } };
+      const fontObject: { [key: string]: any } = { data: fontData };
+      
+      // Designate one font as the fallback
+      if (name === 'HelveticaNeueLTStd-Roman') {
+        fontObject.fallback = true;
+      }
+      
+      return { [name]: fontObject };
+
     } catch (error) {
       console.error(`An error occurred while fetching font ${name}:`, error);
       return null; 
@@ -120,7 +127,7 @@ export default function TemplateMakerPage() {
         toast({
           variant: 'destructive',
           title: 'Initialization Error',
-          description: 'Could not initialize the template designer. Please try again.',
+          description: `Could not initialize the template designer. Error: ${error instanceof Error ? error.message : String(error)}`,
         });
       } finally {
         setIsLoading(false);
