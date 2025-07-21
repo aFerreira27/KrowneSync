@@ -23,7 +23,7 @@ export function ConnectedPlatforms() {
                 {platform.icon}
                 <span className="font-medium">{platform.name}</span>
               </div>
-              <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">Connected</Badge>
+              <Badge variant="secondary" className="bg-green-100/50 text-green-800 dark:text-green-200 border-green-200/50">Connected</Badge>
             </li>
           ))}
         </ul>
