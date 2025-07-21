@@ -75,6 +75,7 @@ const BLANK_TEMPLATE: Template = {
         content: 'Product Name Here',
         fontName: 'HelveticaNeueLTStd-Bd',
         fontSize: 18,
+        dataKey: 'product.name'
       },
       footer: {
         type: 'group',
@@ -183,8 +184,7 @@ export default function TemplateMakerPage() {
     const initializeDesigner = async () => {
       setIsLoading(true);
       try {
-        const { Designer, plugins } = await import('@pdfme/ui');
-        const { table, group } = plugins;
+        const { Designer, table, group } = await import('@pdfme/ui');
 
         if (designer.current) {
           designer.current.destroy();
