@@ -22,7 +22,7 @@ export default function DashboardPage({ platforms }: { platforms: Platform[] }) 
     return () => unsubscribe();
   }, []);
 
-  if (loading) {
+  if (loading || !platforms) {
     return (
       <div className="flex flex-col gap-8">
         <div>
