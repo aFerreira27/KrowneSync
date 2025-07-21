@@ -6,10 +6,12 @@ import { summarizeDataDifferences } from '@/ai/flows/summarize-data-differences'
 import { suggestDataUpdates } from '@/ai/flows/suggest-data-updates';
 import * as admin from 'firebase-admin';
 
+// Initialize Firebase Admin SDK only if it hasn't been initialized yet.
+// This prevents errors in hot-reload environments.
 if (!admin.apps.length) {
-  // Assumes you have set up Application Default Credentials for the server environment
-  // https://firebase.google.com/docs/admin/setup#initialize-sdk
-  admin.initializeApp(); 
+  // This configuration will use the service account credentials set in the environment
+  // on Firebase App Hosting. For local development, you would set GOOGLE_APPLICATION_CREDENTIALS.
+  admin.initializeApp();
 }
 
 export async function logout() {
