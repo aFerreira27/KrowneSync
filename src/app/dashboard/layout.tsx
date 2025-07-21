@@ -14,11 +14,11 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Logo from "@/components/logo";
-import { Home, Settings, LifeBuoy, BarChart3, Loader2, User as UserIcon } from "lucide-react";
+import { Home, Link, LifeBuoy, BarChart3, Loader2, User as UserIcon, Settings } from "lucide-react";
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { SettingsSheet } from '@/components/dashboard/settings-sheet';
+import { ConnectionsSheet } from '@/components/dashboard/connections-sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import LogoutButton from '@/components/logout-button';
 
@@ -30,7 +30,7 @@ export default function DashboardLayout({
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isConnectionsOpen, setIsConnectionsOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -89,9 +89,9 @@ export default function DashboardLayout({
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton onClick={() => setIsSettingsOpen(true)}>
-                <Settings />
-                Settings
+              <SidebarMenuButton onClick={() => setIsConnectionsOpen(true)}>
+                <Link />
+                Connections
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
@@ -129,9 +129,9 @@ export default function DashboardLayout({
                       <UserIcon className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setIsSettingsOpen(true)}>
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
+                    <DropdownMenuItem onClick={() => setIsConnectionsOpen(true)}>
+                      <Link className="mr-2 h-4 w-4" />
+                      <span>Connections</span>
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
@@ -154,7 +154,7 @@ export default function DashboardLayout({
           {children}
         </main>
       </SidebarInset>
-      <SettingsSheet open={isSettingsOpen} onOpenChange={setIsSettingsOpen} />
+      <ConnectionsSheet open={isConnectionsOpen} onOpenChange={setIsConnectionsOpen} />
     </SidebarProvider>
   );
 }
