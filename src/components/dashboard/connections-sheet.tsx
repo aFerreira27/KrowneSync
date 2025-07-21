@@ -12,32 +12,24 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Database, Globe, ShoppingCart, Presentation } from 'lucide-react';
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-
-type Platform = {
-  name: string;
-  icon: JSX.Element;
-  token: string;
-  connected: boolean;
-};
-
-const initialPlatforms: Platform[] = [
-  { name: 'Salesforce', icon: <Database className="h-6 w-6 text-blue-500" />, token: '', connected: false },
-  { name: 'Salespad', icon: <ShoppingCart className="h-6 w-6 text-red-500" />, token: '', connected: false },
-  { name: 'Autoquotes', icon: <Presentation className="h-6 w-6 text-yellow-500" />, token: '', connected: false },
-  { name: 'Website CMS', icon: <Globe className="h-6 w-6 text-green-500" />, token: '', connected: false },
-];
+import type { Platform } from '@/app/dashboard/layout';
 
 type ConnectionsSheetProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  platforms: Platform[];
+  onPlatformUpdate: (platforms: Platform[]) => void;
 };
 
-export function ConnectionsSheet({ open, onOpenChange }: ConnectionsSheetProps) {
+export function ConnectionsSheet({ open, onOpenChange, platforms: initialPlatforms, onPlatformUpdate }: ConnectionsSheetProps) {
   const [platforms, setPlatforms] = useState<Platform[]>(initialPlatforms);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setPlatforms(initialPlatforms);
+  }, [initialPlatforms]);
 
   const handleTokenChange = (platformName: string, value: string) => {
     setPlatforms(prevPlatforms =>
@@ -51,11 +43,11 @@ export function ConnectionsSheet({ open, onOpenChange }: ConnectionsSheetProps) 
     const platform = platforms.find(p => p.name === platformName);
     if (platform) {
         const isConnecting = platform.token.trim() !== '';
-        setPlatforms(prevPlatforms =>
-            prevPlatforms.map(p =>
-                p.name === platformName ? { ...p, connected: isConnecting } : p
-            )
+        const updatedPlatforms = platforms.map(p =>
+            p.name === platformName ? { ...p, connected: isConnecting } : p
         );
+        setPlatforms(updatedPlatforms);
+        onPlatformUpdate(updatedPlatforms); // Lift the state up
         toast({
             title: `${platformName} ${isConnecting ? 'Connected' : 'Disconnected'}`,
             description: `Authentication token for ${platformName} has been ${isConnecting ? 'saved' : 'cleared'}.`,

@@ -1,15 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Database, Globe, ShoppingCart, Presentation } from "lucide-react";
+import type { Platform } from "@/app/dashboard/layout";
 
-const platforms = [
-  { name: "Salesforce", icon: <Database className="h-6 w-6 text-blue-500" /> },
-  { name: "Salespad", icon: <ShoppingCart className="h-6 w-6 text-red-500" /> },
-  { name: "Autoquotes", icon: <Presentation className="h-6 w-6 text-yellow-500" /> },
-  { name: "Website CMS", icon: <Globe className="h-6 w-6 text-green-500" /> },
-];
-
-export function ConnectedPlatforms() {
+export function ConnectedPlatforms({ platforms }: { platforms: Platform[] }) {
   return (
     <Card>
       <CardHeader>
@@ -23,7 +16,14 @@ export function ConnectedPlatforms() {
                 {platform.icon}
                 <span className="font-medium">{platform.name}</span>
               </div>
-              <Badge variant="secondary" className="bg-green-100/50 text-green-800 dark:text-green-200 border-green-200/50">Connected</Badge>
+              <Badge 
+                variant={platform.connected ? 'secondary' : 'outline'} 
+                className={platform.connected 
+                  ? 'bg-green-100/50 text-green-800 dark:text-green-200 border-green-200/50' 
+                  : ''}
+              >
+                {platform.connected ? 'Connected' : 'Disconnected'}
+              </Badge>
             </li>
           ))}
         </ul>

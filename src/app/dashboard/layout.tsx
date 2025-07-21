@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   SidebarProvider,
   Sidebar,
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Logo from "@/components/logo";
-import { Home, Link, LifeBuoy, BarChart3, Loader2, User as UserIcon } from "lucide-react";
+import { Home, Link, LifeBuoy, BarChart3, Loader2, User as UserIcon, Database, ShoppingCart, Presentation, Globe } from "lucide-react";
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
@@ -22,6 +22,20 @@ import { ConnectionsSheet } from '@/components/dashboard/connections-sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import LogoutButton from '@/components/logout-button';
 import { SupportDialog } from '@/components/dashboard/support-dialog';
+
+export type Platform = {
+  name: string;
+  icon: JSX.Element;
+  token: string;
+  connected: boolean;
+};
+
+const initialPlatforms: Platform[] = [
+  { name: 'Salesforce', icon: <Database className="h-6 w-6 text-blue-500" />, token: '', connected: false },
+  { name: 'Salespad', icon: <ShoppingCart className="h-6 w-6 text-red-500" />, token: '', connected: false },
+  { name: 'Autoquotes', icon: <Presentation className="h-6 w-6 text-yellow-500" />, token: '', connected: false },
+  { name: 'Website CMS', icon: <Globe className="h-6 w-6 text-green-500" />, token: '', connected: false },
+];
 
 export default function DashboardLayout({
   children,
@@ -33,6 +47,11 @@ export default function DashboardLayout({
   const [loading, setLoading] = useState(true);
   const [isConnectionsOpen, setIsConnectionsOpen] = useState(false);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [platforms, setPlatforms] = useState<Platform[]>(initialPlatforms);
+
+  const handlePlatformUpdate = useCallback((updatedPlatforms: Platform[]) => {
+    setPlatforms(updatedPlatforms);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -141,10 +160,15 @@ export default function DashboardLayout({
       </Sidebar>
       <SidebarInset>
         <main className="flex-1 overflow-auto p-4 md:p-8">
-          {children}
+          {React.cloneElement(children as React.ReactElement, { platforms })}
         </main>
       </SidebarInset>
-      <ConnectionsSheet open={isConnectionsOpen} onOpenChange={setIsConnectionsOpen} />
+      <ConnectionsSheet 
+        open={isConnectionsOpen} 
+        onOpenChange={setIsConnectionsOpen} 
+        platforms={platforms}
+        onPlatformUpdate={handlePlatformUpdate}
+      />
       <SupportDialog open={isSupportOpen} onOpenChange={setIsSupportOpen} />
     </SidebarProvider>
   );

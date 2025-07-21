@@ -8,8 +8,9 @@ import { DataSyncCard } from "@/components/dashboard/data-sync-card";
 import { PdfActions } from "@/components/dashboard/pdf-actions";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from '@/components/ui/skeleton';
+import type { Platform } from './layout';
 
-export default function DashboardPage() {
+export default function DashboardPage({ platforms }: { platforms: Platform[] }) {
   const [user, setUser] = useState<User | null>(auth.currentUser);
   const [loading, setLoading] = useState(!auth.currentUser);
 
@@ -58,7 +59,7 @@ export default function DashboardPage() {
            <DataSyncCard />
         </div>
         <div className="flex flex-col gap-6">
-          <ConnectedPlatforms />
+          <ConnectedPlatforms platforms={platforms} />
           <PdfActions />
         </div>
       </div>
