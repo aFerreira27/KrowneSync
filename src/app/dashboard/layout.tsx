@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Logo from "@/components/logo";
-import { Home, Link, LifeBuoy, BarChart3, Loader2, User as UserIcon, Settings } from "lucide-react";
+import { Home, Link, LifeBuoy, BarChart3, Loader2, User as UserIcon } from "lucide-react";
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
@@ -88,18 +88,6 @@ export default function DashboardLayout({
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton onClick={() => setIsConnectionsOpen(true)}>
-                <Link />
-                Connections
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton href="#">
-                <LifeBuoy />
-                Help
-              </SidebarMenuButton>
-            </SidebarMenuItem>
             <SidebarMenuItem>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
