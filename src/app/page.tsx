@@ -1,7 +1,7 @@
 
 'use client';
 
-import { signInWithPopup, OAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithPopup, OAuthProvider, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase'; // Import initialized auth
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -22,7 +22,6 @@ export default function LoginPage() {
 
   // State for emergency email/password login
   const [showEmergencyLogin, setShowEmergencyLogin] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -81,11 +80,8 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     
-    const authAction = isSignUp 
-        ? createUserWithEmailAndPassword(auth, email, password)
-        : signInWithEmailAndPassword(auth, email, password);
-
-    authAction.then((userCredential) => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
         console.log('User credential:', userCredential);
         router.push('/dashboard');
     }).catch((error) => {
@@ -93,20 +89,15 @@ export default function LoginPage() {
         switch (error.code) {
             case 'auth/user-not-found':
             case 'auth/wrong-password':
+            case 'auth/invalid-credential':
                 errorMessage = 'Invalid email or password.';
-                break;
-            case 'auth/email-already-in-use':
-                errorMessage = 'An account with this email already exists.';
-                break;
-            case 'auth/weak-password':
-                errorMessage = 'Password should be at least 6 characters.';
                 break;
             default:
                 console.error('Email/Password Auth Error:', error);
         }
         toast({
             variant: 'destructive',
-            title: isSignUp ? 'Sign-up Failed' : 'Sign-in Failed',
+            title: 'Sign-in Failed',
             description: errorMessage,
         });
     }).finally(() => {
@@ -135,6 +126,7 @@ export default function LoginPage() {
         <CardContent className="space-y-4">
           {showEmergencyLogin && (
             <form onSubmit={handleEmailPasswordAuth} className="space-y-4 animate-in fade-in-50">
+              <CardDescription className="text-center">Emergency Admin Login</CardDescription>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input 
@@ -160,15 +152,12 @@ export default function LoginPage() {
                  {isLoading ? (
                     <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {isSignUp ? 'Signing up...' : 'Signing in...'}
+                        Signing in...
                     </>
                     ) : (
-                    isSignUp ? 'Sign Up' : 'Sign In'
+                    'Sign In'
                 )}
               </Button>
-               <Button variant="link" size="sm" type="button" className="w-full" onClick={() => setIsSignUp(!isSignUp)}>
-                    {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
-                </Button>
             </form>
           )}
         </CardContent>
