@@ -1,8 +1,10 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Platform } from "@/app/dashboard/layout";
+import { Link } from "lucide-react";
 
-export function ConnectedPlatforms({ platforms }: { platforms: Platform[] }) {
+export function ConnectedPlatforms({ platforms, onConnectClick }: { platforms: Platform[]; onConnectClick: () => void; }) {
   return (
     <Card>
       <CardHeader>
@@ -16,14 +18,19 @@ export function ConnectedPlatforms({ platforms }: { platforms: Platform[] }) {
                 {platform.icon}
                 <span className="font-medium">{platform.name}</span>
               </div>
-              <Badge 
-                variant={platform.connected ? 'secondary' : 'outline'} 
-                className={platform.connected 
-                  ? 'bg-green-100/50 text-green-800 dark:text-green-200 border-green-200/50' 
-                  : ''}
-              >
-                {platform.connected ? 'Connected' : 'Disconnected'}
-              </Badge>
+              {platform.connected ? (
+                <Badge 
+                  variant='secondary'
+                  className='bg-green-100/50 text-green-800 dark:text-green-200 border-green-200/50'
+                >
+                  Connected
+                </Badge>
+              ) : (
+                <Button variant="outline" size="sm" onClick={onConnectClick}>
+                  <Link className="mr-2 h-3 w-3" />
+                  Connect
+                </Button>
+              )}
             </li>
           ))}
         </ul>

@@ -186,7 +186,7 @@ export default function DashboardLayout({
                    <DataSyncCard />
                 </div>
                 <div className="flex flex-col gap-6">
-                  <ConnectedPlatforms platforms={platforms} />
+                  <ConnectedPlatforms platforms={platforms} onConnectClick={() => setIsConnectionsOpen(true)} />
                   <PdfActions />
                 </div>
               </div>
