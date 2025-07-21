@@ -37,41 +37,34 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
+
 const BLANK_TEMPLATE: Template = {
   basePdf: BLANK_PDF,
   schemas: [
     {
-      "header": {
+      headerImage: {
         type: 'image',
         position: { x: 0, y: 0 },
         width: 210,
         height: 40,
-        content: '/images/header.svg',
-      }
-    },
-    {
-      "productName": {
+      },
+      productName: {
         type: 'text',
         position: { x: 25, y: 50 },
         width: 150,
         height: 15,
         fontName: 'HelveticaNeueLTStd-Bd',
         fontSize: 18,
-        dataKey: 'product.name'
-      }
-    },
-    {
-      "footer": {
+      },
+      footerImage: {
         type: 'image',
         position: { x: 0, y: 257 },
         width: 210,
         height: 40,
-        content: '/images/footer.svg',
-      }
+      },
     }
   ],
 };
-
 
 // Helper function to fetch fonts
 const loadFonts = async () => {
@@ -296,7 +289,7 @@ export default function TemplateMakerPage() {
         <div className="flex justify-between items-center">
             <div className="flex-1">
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Template Maker</h1>
-                <p className="text-muted-foreground">Design your product spec sheet templates. Name fields like "product.name" to auto-populate them in the generator.</p>
+                <p className="text-muted-foreground">Design your product spec sheet templates. Name fields to auto-populate them in the generator.</p>
             </div>
             <div className="flex-1 flex justify-center">
               <DropdownMenu>
@@ -370,7 +363,7 @@ export default function TemplateMakerPage() {
               <DialogDescription>
                 Enter a name for your new template.
               </DialogDescription>
-            </DialogHeader>
+            </Header>
             <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="template-name" className="text-right">Name</Label>
