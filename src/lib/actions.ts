@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { summarizeDataDifferences } from '@/ai/flows/summarize-data-differences';
 import { suggestDataUpdates } from '@/ai/flows/suggest-data-updates';
-import { auth as adminAuth } from '@/lib/firebase-admin';
+import { getFirebaseAuth } from '@/lib/firebase-admin';
 
 export async function logout() {
   // Client-side will handle the redirect upon auth state change.
@@ -34,8 +34,9 @@ export async function getSyncData(prevState: any, formData: FormData) {
     
     const { platformAData, platformBData, idToken } = validatedFields.data;
 
+    const auth = getFirebaseAuth();
     // Verify the ID token using Firebase Admin SDK to ensure the request is from an authenticated user.
-    const decodedToken = await adminAuth.verifyIdToken(idToken);
+    const decodedToken = await auth.verifyIdToken(idToken);
     const uid = decodedToken.uid;
     console.log("Authenticated user UID:", uid);
 
