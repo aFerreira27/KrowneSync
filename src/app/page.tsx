@@ -33,8 +33,6 @@ export default function LoginPage() {
     setIsLoading(true);
     const provider = new OAuthProvider('microsoft.com');
     
-    // This is necessary for single-tenant applications.
-    // Your Tenant ID from Azure Portal should be in an environment variable.
     const tenantId = process.env.NEXT_PUBLIC_FIREBASE_TENANT_ID;
     if (tenantId) {
       provider.setCustomParameters({
