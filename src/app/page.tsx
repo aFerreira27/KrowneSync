@@ -13,6 +13,7 @@ import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,6 +25,7 @@ export default function LoginPage() {
   const [showEmergencyLogin, setShowEmergencyLogin] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isCtrlPressed, setIsCtrlPressed] = useState(false);
 
 
   useEffect(() => {
@@ -33,7 +35,26 @@ export default function LoginPage() {
         router.push('/dashboard');
       }
     });
-    return () => unsubscribe();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Control') {
+        setIsCtrlPressed(true);
+      }
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Control') {
+        setIsCtrlPressed(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+        unsubscribe();
+        window.removeEventListener('keydown', handleKeyDown);
+        window.removeEventListener('keyup', handleKeyUp);
+    };
   }, [router]);
 
   const handleLogoClick = (e: React.MouseEvent) => {
@@ -117,7 +138,11 @@ export default function LoginPage() {
     <main className="flex min-h-screen w-full items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 cursor-pointer" onClick={handleLogoClick} title="Hold CTRL and click for emergency login">
+          <div 
+            className={cn("mx-auto mb-4", isCtrlPressed && "cursor-pointer")} 
+            onClick={handleLogoClick} 
+            title="Hold CTRL and click for emergency login"
+          >
              <Image src="/images/krowneSync.svg" alt="KrowneSync Logo" width={164} height={40} className="h-12 w-auto" />
           </div>
           <CardTitle className="font-headline text-3xl">Welcome to KrowneSync</CardTitle>
