@@ -197,7 +197,7 @@ export default function DashboardLayout({
       </Sidebar>
       <SidebarInset>
         <main className="flex-1 overflow-auto p-4 md:p-8">
-          {isDashboardPage ? (
+          {isDashboardPage && (
             <div className="flex flex-col gap-8">
               <div>
                 <h1 className="font-headline text-3xl font-bold tracking-tight">
@@ -218,9 +218,8 @@ export default function DashboardLayout({
                 </div>
               </div>
             </div>
-          ) : (
-            children
           )}
+          {!isDashboardPage && children}
         </main>
       </SidebarInset>
       <ConnectionsSheet 
