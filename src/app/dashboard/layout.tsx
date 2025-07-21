@@ -14,12 +14,13 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Logo from "@/components/logo";
-import { Home, Settings, LifeBuoy, BarChart3, Loader2 } from "lucide-react";
-import { UserNav } from "@/components/dashboard/user-nav";
+import { Home, Settings, LifeBuoy, BarChart3, Loader2, User as UserIcon } from "lucide-react";
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { SettingsSheet } from '@/components/dashboard/settings-sheet';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import LogoutButton from '../logout-button';
 
 export default function DashboardLayout({
   children,
@@ -53,8 +54,6 @@ export default function DashboardLayout({
   }
   
   if (!user) {
-    // This case should theoretically be handled by the redirect in the effect,
-    // but it's good practice to have a fallback.
     return null;
   }
 
@@ -102,24 +101,55 @@ export default function DashboardLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <div className="flex items-center gap-3 px-2 py-1">
-                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={userData.photoURL} alt={userData.name} />
-                  <AvatarFallback>{userData.initials}</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col">
-                  <span className="text-sm font-semibold">{userData.name}</span>
-                  <span className="text-xs text-muted-foreground">{userData.email}</span>
-                </div>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex w-full items-center gap-3 rounded-md px-2 py-1 text-left transition-colors hover:bg-sidebar-accent">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={userData.photoURL} alt={userData.name} />
+                      <AvatarFallback>{userData.initials}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold">{userData.name}</span>
+                      <span className="text-xs text-muted-foreground">{userData.email}</span>
+                    </div>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 mb-2" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{userData.name}</p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {userData.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem>
+                      <UserIcon className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setIsSettingsOpen(true)}>
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                   <DropdownMenuItem>
+                      <LifeBuoy className="mr-2 h-4 w-4" />
+                      <span>Support</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <LogoutButton />
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="flex h-14 items-center justify-end border-b bg-card px-4 lg:px-6">
-           <UserNav user={userData} />
-        </header>
         <main className="flex-1 overflow-auto p-4 md:p-8">
           {children}
         </main>
