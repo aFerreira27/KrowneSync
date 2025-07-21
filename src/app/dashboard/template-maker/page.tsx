@@ -39,28 +39,33 @@ import { cn } from '@/lib/utils';
 
 const BLANK_TEMPLATE: Template = {
   basePdf: BLANK_PDF,
-  schemas: [{
-    headerImage: {
-      type: 'image',
-      position: { x: 0, y: 0 },
-      width: 210,
-      height: 40,
+  schemas: [
+    {
+      headerImage: {
+        type: 'image',
+        position: { x: 0, y: 0 },
+        width: 210,
+        height: 40,
+        content: "https://placehold.co/600x120.png",
+        data: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjEwIiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMjEwIDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMjEwIiBoZWlnaHQ9IjQwIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMCAwSDE4MC42MjVMMjEwIDQwSDBWMFoiIGZpbGw9IiNFQUVBRjYiLz4KPC9zdmc+Cg==',
+      },
+      productName: {
+        type: 'text',
+        position: { x: 25, y: 50 },
+        width: 150,
+        height: 15,
+        fontSize: 18,
+      },
+      footerImage: {
+        type: 'image',
+        position: { x: 0, y: 257 },
+        width: 210,
+        height: 40,
+        content: "https://placehold.co/600x120.png",
+        data: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjEwIiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMjEwIDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMjEwIiBoZWlnaHQ9IjQwIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMjEwIDQwSDI5LjM3NUwwIDBIMjEwVjQwWiIgZmlsbD0iI0VBRUFGNyIvPgo8L3N2Zz4K',
+      },
     },
-    productName: {
-      type: 'text',
-      position: { x: 25, y: 50 },
-      width: 150,
-      height: 15,
-      fontName: 'HelveticaNeueLTStd-Bd',
-      fontSize: 18,
-    },
-    footerImage: {
-      type: 'image',
-      position: { x: 0, y: 257 },
-      width: 210,
-      height: 40,
-    },
-  }],
+  ],
 };
 
 type SavedTemplate = {
@@ -166,6 +171,9 @@ export default function TemplateMakerPage() {
               template: selectedTemplate.template,
               options: {
                 font: fonts,
+                labels: {
+                  zoom: 'Fit to page',
+                },
                 plugins: {
                     table,
                     group,
@@ -380,5 +388,3 @@ export default function TemplateMakerPage() {
     </div>
   );
 }
-
-    
