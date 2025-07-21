@@ -47,17 +47,20 @@ const BLANK_TEMPLATE: Template = {
         width: 210,
         height: 40,
         content: '/images/header.svg',
-      },
+      }
+    },
+    {
       "productName": {
         type: 'text',
         position: { x: 25, y: 50 },
         width: 150,
         height: 15,
-        content: 'Product Name Here',
         fontName: 'HelveticaNeueLTStd-Bd',
         fontSize: 18,
         dataKey: 'product.name'
-      },
+      }
+    },
+    {
       "footer": {
         type: 'image',
         position: { x: 0, y: 257 },
@@ -65,7 +68,7 @@ const BLANK_TEMPLATE: Template = {
         height: 40,
         content: '/images/footer.svg',
       }
-    },
+    }
   ],
 };
 
