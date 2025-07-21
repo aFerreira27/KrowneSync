@@ -19,6 +19,7 @@ import { UserNav } from "@/components/dashboard/user-nav";
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
+import { SettingsSheet } from '@/components/dashboard/settings-sheet';
 
 export default function DashboardLayout({
   children,
@@ -28,6 +29,7 @@ export default function DashboardLayout({
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -84,7 +86,7 @@ export default function DashboardLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="#">
+              <SidebarMenuButton onClick={() => setIsSettingsOpen(true)}>
                 <Settings />
                 Settings
               </SidebarMenuButton>
@@ -122,6 +124,7 @@ export default function DashboardLayout({
           {children}
         </main>
       </SidebarInset>
+      <SettingsSheet open={isSettingsOpen} onOpenChange={setIsSettingsOpen} />
     </SidebarProvider>
   );
 }
