@@ -4,7 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Platform } from "@/app/dashboard/layout";
 import { Link } from "lucide-react";
 
-export function ConnectedPlatforms({ platforms, onConnectClick }: { platforms: Platform[]; onConnectClick: () => void; }) {
+export function ConnectedPlatforms({ onConnectClick }: { onConnectClick?: () => void; }) {
+  // This is a placeholder now. The actual platforms state is managed in the layout.
+  // This component could be adapted to receive platforms as props if needed.
+  const platforms: Platform[] = [
+    { name: 'Salesforce', icon: <svg/>, token: '', connected: false },
+    { name: 'Salespad', icon: <svg/>, token: '', connected: false },
+    { name: 'Autoquotes', icon: <svg/>, token: '', connected: false },
+    { name: 'Website CMS', icon: <svg/>, token: '', connected: false },
+  ];
+
   return (
     <Card>
       <CardHeader>

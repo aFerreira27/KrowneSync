@@ -117,7 +117,7 @@ export default function DashboardLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="#">
+              <SidebarMenuButton href="/dashboard/template-maker">
                 <LayoutTemplate />
                 Template Maker
               </SidebarMenuButton>
@@ -177,28 +177,7 @@ export default function DashboardLayout({
       </Sidebar>
       <SidebarInset>
         <main className="flex-1 overflow-auto p-4 md:p-8">
-            <div className="flex flex-col gap-8">
-              <div>
-                <h1 className="font-headline text-3xl font-bold tracking-tight">
-                  Welcome back, {user?.displayName?.split(' ')[0]}!
-                </h1>
-                <p className="text-muted-foreground">
-                  Here's your data synchronization overview.
-                </p>
-              </div>
-              <Separator />
-              <div className="grid gap-6 lg:grid-cols-3">
-                <div className="lg:col-span-2">
-                   <DataSyncCard />
-                </div>
-                <div className="flex flex-col gap-6">
-                  <ConnectedPlatforms platforms={platforms} onConnectClick={() => setIsConnectionsOpen(true)} />
-                  <PdfActions />
-                </div>
-              </div>
-              {/* This is a placeholder for any page-specific content that might be needed later */}
-              {children}
-            </div>
+          {children}
         </main>
       </SidebarInset>
       <ConnectionsSheet 
