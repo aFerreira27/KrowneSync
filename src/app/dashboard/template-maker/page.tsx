@@ -68,7 +68,8 @@ const loadFonts = async () => {
         return null; 
       }
       const fontData = await response.arrayBuffer();
-      return { [name]: fontData };
+      // pdfme expects the font data to be in an object with a 'data' property
+      return { [name]: { data: fontData } };
     } catch (error) {
       console.error(`An error occurred while fetching font ${name}:`, error);
       return null; 
