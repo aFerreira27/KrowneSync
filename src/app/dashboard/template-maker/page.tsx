@@ -37,7 +37,7 @@ const initialTemplate: Template = {
         width: 80,
         height: 10,
         content: 'Description:',
-        fontName: 'HelveticaNeue-Medium',
+        fontName: 'HelveticaNeue-Regular',
         fontSize: 12,
       },
     },
@@ -57,12 +57,14 @@ const loadFonts = async () => {
     try {
       const response = await fetch(`/fonts/${name}.otf`);
       if (!response.ok) {
-        throw new Error(`Font ${name} not found`);
+        // Log the error instead of throwing, making it non-blocking
+        console.warn(`Could not load font: ${name}.otf. File not found.`);
+        return {}; // Return empty object if font is not found
       }
       const fontData = await response.arrayBuffer();
       return { [name]: fontData };
     } catch (error) {
-      console.error(error);
+      console.error(`An error occurred while fetching font ${name}:`, error);
       // Return an empty object for this font if it fails to load
       return {}; 
     }
