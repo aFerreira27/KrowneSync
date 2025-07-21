@@ -26,7 +26,7 @@ export default async function DashboardLayout({
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
-          <Logo textClassName="text-foreground" />
+          <Logo textClassName="text-foreground" showText={false}/>
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>

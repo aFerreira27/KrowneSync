@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-const Logo = ({ className, textClassName }: { className?: string, textClassName?: string }) => (
+const Logo = ({ className, textClassName, showText = true }: { className?: string, textClassName?: string, showText?: boolean }) => (
   <div className={cn("flex items-center justify-center", className)}>
     <svg
       viewBox="0 0 164 40"
@@ -20,9 +20,9 @@ const Logo = ({ className, textClassName }: { className?: string, textClassName?
         SYNC
       </text>
     </svg>
-    <span className={cn("font-headline text-2xl font-bold ml-3 text-primary", textClassName)}>
+    {showText && <span className={cn("font-headline text-2xl font-bold ml-3 text-primary", textClassName)}>
       Synchromatic
-    </span>
+    </span>}
   </div>
 );
 

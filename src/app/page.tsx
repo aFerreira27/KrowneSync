@@ -28,8 +28,8 @@ export default function LoginPage() {
     <main className="flex min-h-screen w-full items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 h-12">
-             <Logo className="h-full w-auto" />
+          <div className="mx-auto mb-4">
+             <Logo className="h-12 w-auto" />
           </div>
           <CardTitle className="font-headline text-3xl">Welcome to Synchromatic</CardTitle>
           <CardDescription>Enter your secure token to access your dashboard.</CardDescription>
