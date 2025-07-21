@@ -21,6 +21,7 @@ import { useRouter } from 'next/navigation';
 import { ConnectionsSheet } from '@/components/dashboard/connections-sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import LogoutButton from '@/components/logout-button';
+import { SupportDialog } from '@/components/dashboard/support-dialog';
 
 export default function DashboardLayout({
   children,
@@ -31,6 +32,7 @@ export default function DashboardLayout({
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isConnectionsOpen, setIsConnectionsOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -123,7 +125,7 @@ export default function DashboardLayout({
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
-                   <DropdownMenuItem>
+                   <DropdownMenuItem onClick={() => setIsSupportOpen(true)}>
                       <LifeBuoy className="mr-2 h-4 w-4" />
                       <span>Support</span>
                   </DropdownMenuItem>
@@ -143,6 +145,7 @@ export default function DashboardLayout({
         </main>
       </SidebarInset>
       <ConnectionsSheet open={isConnectionsOpen} onOpenChange={setIsConnectionsOpen} />
+      <SupportDialog open={isSupportOpen} onOpenChange={setIsSupportOpen} />
     </SidebarProvider>
   );
 }
