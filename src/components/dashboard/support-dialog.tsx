@@ -49,11 +49,35 @@ const faqData = [
   },
 ];
 
-const readmeContent = `# Firebase Studio
+const readmeContent = `# Synchromatic: AI-Powered Data Synchronization
 
-This is a NextJS starter in Firebase Studio.
+Welcome to Synchromatic, an intelligent application designed to streamline and automate the process of keeping your product data consistent across multiple platforms.
 
-To get started, take a look at src/app/page.tsx.`;
+## Intended Functionality
+
+Synchromatic solves the common and critical problem of data drift between different business systems. By leveraging the power of generative AI, it provides a centralized dashboard to:
+
+1.  **Connect Platforms:** Securely connect to various data sources like Salesforce, Salespad, Autoquotes, and your Website CMS using authentication tokens.
+2.  **Compare Data:** Paste product data (in JSON format) from two different platforms into the Data Synchronization tool.
+3.  **AI-Powered Analysis:** The application sends the data to an AI model which intelligently identifies discrepancies between the two sources, using one as the "source of truth."
+4.  **Get Suggestions:** The AI provides a clear summary of the differences, an impact assessment, and a list of actionable, suggested updates to resolve the inconsistencies.
+5.  **Synchronize Data:** With a single click, apply the suggested changes to bring your data into alignment.
+6.  **Generate Reports:** Create and distribute standardized product data sheets (PDFs) to all connected platforms.
+
+## Tech Stack & Key Packages
+
+The application is built on a modern, robust, and scalable tech stack:
+
+-   **Frontend Framework:** Next.js (with App Router) provides a powerful React-based foundation for server-rendered pages and client-side interactivity.
+-   **UI Library:** React is used for building the user interface.
+-   **Styling:** Tailwind CSS is used for all styling, providing a utility-first approach for rapid and consistent design.
+-   **UI Components:** We use ShadCN UI, a collection of beautifully designed and accessible components that are built on top of Tailwind CSS.
+-   **Icons:** Lucide React provides a comprehensive and clean set of SVG icons.
+-   **Authentication:** Firebase Authentication handles secure user sign-in, currently configured for Microsoft accounts.
+-   **Generative AI:** Google's Gemini models are used via Genkit, an open-source AI framework that structures the calls to the large language models for analyzing data and generating suggestions.
+-   **Schema Validation:** Zod is used to define and validate the structure of data passed to and from the AI models, ensuring data integrity.
+-   **Language:** The entire application is written in TypeScript for enhanced code quality and type safety.
+`;
 
 type SupportDialogProps = {
   open: boolean;
