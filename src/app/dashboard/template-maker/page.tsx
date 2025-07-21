@@ -41,15 +41,59 @@ const BLANK_TEMPLATE: Template = {
   basePdf: BLANK_PDF,
   schemas: [
     {
-      a: {
-        type: 'text',
-        position: { x: 25, y: 25 },
-        width: 150,
+      header: {
+        type: 'group',
+        position: { x: 25, y: 15 },
+        width: 160,
         height: 20,
-        content: 'New Product Spec Sheet',
-        fontName: 'HelveticaNeueLTStd-Bd',
-        fontSize: 24,
+        children: [
+          {
+            logo: {
+              type: 'image',
+              position: { x: 0, y: 0 },
+              width: 40,
+              height: 20,
+              content: 'https://placehold.co/100x50.png',
+            },
+            title: {
+              type: 'text',
+              position: { x: 50, y: 5 },
+              width: 110,
+              height: 10,
+              content: 'Product Spec Sheet',
+              fontName: 'HelveticaNeueLTStd-Bd',
+              fontSize: 14,
+            },
+          }
+        ],
       },
+      productName: {
+        type: 'text',
+        position: { x: 25, y: 50 },
+        width: 150,
+        height: 15,
+        content: 'Product Name Here',
+        fontName: 'HelveticaNeueLTStd-Bd',
+        fontSize: 18,
+      },
+      footer: {
+        type: 'group',
+        position: { x: 25, y: 260 },
+        width: 160,
+        height: 10,
+        children: [{
+          copyright: {
+            type: 'text',
+            position: { x: 0, y: 0 },
+            width: 160,
+            height: 10,
+            content: '© 2024 KrowneSync. All rights reserved.',
+            fontName: 'HelveticaNeueLTStd-Roman',
+            fontSize: 8,
+            horizontalAlign: 'center',
+          }
+        }]
+      }
     },
   ],
 };
@@ -139,8 +183,8 @@ export default function TemplateMakerPage() {
     const initializeDesigner = async () => {
       setIsLoading(true);
       try {
-        const { Designer } = await import('@pdfme/ui');
-        const { table } = await import('@pdfme/ui');
+        const { Designer, plugins } = await import('@pdfme/ui');
+        const { table, group } = plugins;
 
         if (designer.current) {
           designer.current.destroy();
@@ -163,9 +207,10 @@ export default function TemplateMakerPage() {
                 font: fonts,
                 plugins: {
                     table,
+                    group,
                 },
                 tool: {
-                  schema: ['text', 'image', 'table'],
+                  schema: ['text', 'image', 'table', 'group'],
                   layout: ['column']
                 }
               }
@@ -278,7 +323,7 @@ export default function TemplateMakerPage() {
         <div className="flex justify-between items-center">
             <div className="flex-1">
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Template Maker</h1>
-                <p className="text-muted-foreground">Design your product spec sheet templates.</p>
+                <p className="text-muted-foreground">Design your product spec sheet templates. Name fields like "product.name" to auto-populate them in the generator.</p>
             </div>
             <div className="flex-1 flex justify-center">
               <DropdownMenu>

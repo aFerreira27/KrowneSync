@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Logo from "@/components/logo";
-import { Home, Link as LinkIcon, LifeBuoy, BarChart3, Loader2, User as UserIcon, Database, ShoppingCart, Presentation, Globe, LayoutTemplate } from "lucide-react";
+import { Home, Link as LinkIcon, LifeBuoy, BarChart3, Loader2, User as UserIcon, Database, ShoppingCart, Presentation, Globe, LayoutTemplate, FileText } from "lucide-react";
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, User, updateProfile } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
@@ -138,6 +138,16 @@ export default function DashboardLayout({
                   <span>
                     <LayoutTemplate />
                     Template Maker
+                  </span>
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <Link href="/dashboard/pdf-generator" passHref>
+                <SidebarMenuButton asChild isActive={pathname === '/dashboard/pdf-generator'}>
+                  <span>
+                    <FileText />
+                    PDF Generator
                   </span>
                 </SidebarMenuButton>
               </Link>
