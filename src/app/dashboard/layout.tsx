@@ -43,6 +43,14 @@ const initialPlatforms: Platform[] = [
   { name: 'Website CMS', icon: <Globe className="h-6 w-6 text-green-500" />, token: '', connected: false },
 ];
 
+type UserData = {
+  name: string;
+  email: string;
+  initials: string;
+  photoURL: string;
+};
+
+
 export default function DashboardLayout({
   children,
 }: {
@@ -50,6 +58,7 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [isConnectionsOpen, setIsConnectionsOpen] = useState(false);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
@@ -64,6 +73,12 @@ export default function DashboardLayout({
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+        setUserData({
+          name: currentUser.displayName || 'User',
+          email: currentUser.email || '',
+          initials: currentUser.displayName ? currentUser.displayName.charAt(0).toUpperCase() : 'U',
+          photoURL: currentUser.photoURL || `https://placehold.co/40x40.png`
+        });
         setLoading(false);
       } else {
         router.push('/');
@@ -73,24 +88,13 @@ export default function DashboardLayout({
     return () => unsubscribe();
   }, [router]);
 
-  if (loading) {
+  if (loading || !user || !userData) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
       </div>
     );
   }
-  
-  if (!user) {
-    return null;
-  }
-
-  const userData = {
-    name: user.displayName || 'User',
-    email: user.email || '',
-    initials: user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U',
-    photoURL: user.photoURL || `https://placehold.co/40x40.png`
-  };
 
   return (
     <SidebarProvider>
