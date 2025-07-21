@@ -1,9 +1,10 @@
 
 'use client';
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Designer } from '@pdfme/ui';
 import { Template, BLANK_PDF } from '@pdfme/common';
+import { table } from '@pdfme/ui';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save, Plus, Trash2, ChevronDown, Edit } from 'lucide-react';
@@ -140,6 +141,8 @@ export default function TemplateMakerPage() {
     const initializeDesigner = async () => {
       try {
         if (designerRef.current) {
+          designer.current?.destroy();
+          
           const fonts = await loadFonts();
           if (Object.keys(fonts).length === 0) {
             toast({
@@ -154,8 +157,15 @@ export default function TemplateMakerPage() {
           newDesigner = new Designer({
             domContainer: designerRef.current,
             template: selectedTemplate.template,
+            plugins: {
+                table,
+            },
             options: {
               font: fonts,
+              tool: {
+                schema: ['text', 'image', 'table'],
+                layout: ['column']
+              }
             }
           });
           designer.current = newDesigner;
@@ -175,9 +185,7 @@ export default function TemplateMakerPage() {
     initializeDesigner();
 
     return () => {
-      if (newDesigner) {
-        newDesigner.destroy();
-      }
+      newDesigner?.destroy();
     };
   }, [toast, selectedTemplate]);
 
