@@ -20,8 +20,8 @@ export function PdfActions() {
         setIsGenerating(false);
         setPdfGenerated(true);
         toast({
-            title: "PDF Generated",
-            description: "Product data PDF is ready for upload."
+            title: "Spec Sheet Generated",
+            description: "Spec Sheet is ready for upload."
         });
     }, 1500);
   };

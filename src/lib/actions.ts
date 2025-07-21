@@ -4,15 +4,7 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { summarizeDataDifferences } from '@/ai/flows/summarize-data-differences';
 import { suggestDataUpdates } from '@/ai/flows/suggest-data-updates';
-import * as admin from 'firebase-admin';
-
-// Initialize Firebase Admin SDK only if it hasn't been initialized yet.
-// This prevents errors in hot-reload environments.
-if (!admin.apps.length) {
-  // This configuration will use the service account credentials set in the environment
-  // on Firebase App Hosting. For local development, you would set GOOGLE_APPLICATION_CREDENTIALS.
-  admin.initializeApp();
-}
+import { auth as adminAuth } from '@/lib/firebase-admin';
 
 export async function logout() {
   // Client-side will handle the redirect upon auth state change.
@@ -43,7 +35,7 @@ export async function getSyncData(prevState: any, formData: FormData) {
     const { platformAData, platformBData, idToken } = validatedFields.data;
 
     // Verify the ID token using Firebase Admin SDK to ensure the request is from an authenticated user.
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const decodedToken = await adminAuth.verifyIdToken(idToken);
     const uid = decodedToken.uid;
     console.log("Authenticated user UID:", uid);
 
