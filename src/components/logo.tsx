@@ -7,14 +7,14 @@ const Logo = ({ className, textClassName, showText = true }: { className?: strin
       xmlns="http://www.w3.org/2000/svg"
       className="h-full w-auto"
     >
-      <rect width="164" height="40" rx="20" fill="#4CAF50" />
+      <rect width="164" height="40" rx="20" className="fill-primary" />
       <text
         x="82"
         y="27"
         fontFamily="'Space Grotesk', sans-serif"
         fontSize="24"
         fontWeight="bold"
-        fill="white"
+        className="fill-primary-foreground"
         textAnchor="middle"
       >
         SYNC
