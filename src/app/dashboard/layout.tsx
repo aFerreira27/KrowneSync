@@ -12,15 +12,31 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Logo from "@/components/logo";
 import { Home, Settings, LifeBuoy, BarChart3 } from "lucide-react";
-import { getUser } from "@/lib/actions";
 import { UserNav } from "@/components/dashboard/user-nav";
+import { getAuth } from 'firebase/auth';
+import { redirect } from 'next/navigation';
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getUser();
+  // Check for authenticated user using Firebase Authentication
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  // If no user is authenticated, redirect to the login page
+  if (!user) {
+    redirect('/');
+  }
+
+  // Basic user data for display (you might fetch more detailed data if needed)
+  const userData = {
+    name: user.displayName || 'User',
+    email: user.email || '',
+    initials: user.displayName ? user.displayName.charAt(0) : 'U', // Basic initials
+    photoURL: user.photoURL || `https://placehold.co/40x40.png` // Use user.photoURL if available
+  };
 
   return (
     <SidebarProvider>
@@ -61,12 +77,12 @@ export default async function DashboardLayout({
             <SidebarMenuItem>
               <div className="flex items-center gap-3 px-2 py-1">
                  <Avatar className="h-8 w-8">
-                  <AvatarImage src={`https://placehold.co/40x40.png`} alt={user?.name ?? ''} />
-                  <AvatarFallback>{user?.initials}</AvatarFallback>
+                  <AvatarImage src={userData.photoURL} alt={userData.name} />
+                  <AvatarFallback>{userData.initials}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
-                  <span className="text-sm font-semibold">{user?.name}</span>
-                  <span className="text-xs text-muted-foreground">{user?.email}</span>
+                  <span className="text-sm font-semibold">{userData.name}</span>
+                  <span className="text-xs text-muted-foreground">{userData.email}</span>
                 </div>
               </div>
             </SidebarMenuItem>
@@ -75,7 +91,7 @@ export default async function DashboardLayout({
       </Sidebar>
       <SidebarInset>
         <header className="flex h-14 items-center justify-end border-b bg-card px-4 lg:px-6">
-           <UserNav user={user} />
+           <UserNav user={userData} />
         </header>
         <main className="flex-1 overflow-auto p-4 md:p-8">
           {children}

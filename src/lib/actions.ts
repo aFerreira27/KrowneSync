@@ -1,60 +1,44 @@
-
 'use server';
 
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { summarizeDataDifferences } from '@/ai/flows/summarize-data-differences';
 import { suggestDataUpdates } from '@/ai/flows/suggest-data-updates';
+import { getAuth } from 'firebase/auth';
 
-const loginSchema = z.object({
-  token: z.string().min(1, 'Token is required.'),
-});
+// Mock user data - No longer needed
+// const MOCK_VALID_TOKEN = 'sync-me-in-42';
+// const AUTH_TOKEN_KEY = 'auth_token';
 
-// Mock user data
-const MOCK_VALID_TOKEN = 'sync-me-in-42';
-const AUTH_TOKEN_KEY = 'auth_token';
-
-export async function login(prevState: any, formData: FormData) {
-  const validatedFields = loginSchema.safeParse({
-    token: formData.get('token'),
-  });
-
-  if (!validatedFields.success) {
-    return {
-      error: 'A valid token is required.',
-    };
-  }
-  
-  if (validatedFields.data.token !== MOCK_VALID_TOKEN) {
-    return {
-      error: 'Invalid token. Please use the correct token to login.',
-    };
-  }
-
-  cookies().set(AUTH_TOKEN_KEY, validatedFields.data.token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 60 * 60 * 24, // 1 day
-    path: '/',
-  });
-
-  redirect('/dashboard');
-}
+// login function is no longer needed as authentication is handled by Firebase on the client side
+// export async function login(prevState: any, formData: FormData) { ... }
 
 export async function logout() {
-  cookies().delete(AUTH_TOKEN_KEY);
+  // Firebase client-side logout will handle clearing the session
+  // We might still need a server-side action if there are server-specific logout tasks
+  // For now, we'll just redirect to the login page
   redirect('/');
 }
 
 export async function getUser() {
-  const token = cookies().get(AUTH_TOKEN_KEY)?.value;
-  if (token === MOCK_VALID_TOKEN) {
-    return { name: 'Demo User', email: 'user@synchromatic.com', initials: 'DU' };
+  // Get the authenticated user from Firebase Authentication on the server side
+  // Note: Server-side access to Firebase Auth user requires careful setup
+  // with Admin SDK or similar approach to verify tokens securely.
+  // This is a simplified example and might need adjustments based on your setup.
+  const auth = getAuth();
+  const user = auth.currentUser; // This might not work directly in a server action context without proper setup
+
+  if (user) {
+    // Return relevant user data
+    return {
+      name: user.displayName || 'User',
+      email: user.email || '',
+      initials: user.displayName ? user.displayName.charAt(0) : 'U',
+      uid: user.uid,
+    };
   }
   return null;
 }
-
 
 const syncSchema = z.object({
   platformAData: z.string().min(10, "Platform A data must not be empty."),
@@ -62,6 +46,11 @@ const syncSchema = z.object({
 });
 
 export async function getSyncData(prevState: any, formData: FormData) {
+  // In a real application, you would typically use the authenticated user's information
+  // (e.g., UID) to fetch or process data relevant to that user.
+  // For this example, we will keep the data processing logic as is,
+  // but in a real scenario, you would incorporate user-specific data handling.
+
   try {
     const validatedFields = syncSchema.safeParse({
       platformAData: formData.get('platformAData'),
