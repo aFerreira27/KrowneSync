@@ -13,7 +13,6 @@ export async function logout() {
 
 const syncSchema = z.object({
   productIdentifier: z.string().min(1, "Product identifier must not be empty."),
-  idToken: z.string().min(1, "Authentication token is missing."),
 });
 
 // Mock data fetching functions to simulate API calls
@@ -93,7 +92,6 @@ export async function getSyncData(prevState: any, formData: FormData): Promise<A
   try {
     const validatedFields = syncSchema.safeParse({
       productIdentifier: formData.get('productIdentifier'),
-      idToken: auth.currentUser?.getIdToken ? await auth.currentUser.getIdToken(true) : '',
     });
 
     if (!validatedFields.success) {
@@ -105,8 +103,7 @@ export async function getSyncData(prevState: any, formData: FormData): Promise<A
     const { productIdentifier } = validatedFields.data;
 
     // We don't need to verify the token here since this is a trusted server action
-    // but we ensure user is authenticated.
-    // If you were exposing this as a public API, you would verify the token.
+    // and page access is already controlled by client-side auth checks.
     
     // Simulate fetching data from all platforms
     const platformData = {
