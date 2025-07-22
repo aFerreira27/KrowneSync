@@ -197,7 +197,7 @@ export function DataSyncCard() {
                 options={searchHistory}
                 value={productIdentifier}
                 onChange={setProductIdentifier}
-                placeholder="Select a previous product..."
+                placeholder="Enter a product SKU..."
                 searchPlaceholder="Search products..."
                 emptyPlaceholder="No recent products."
               />
