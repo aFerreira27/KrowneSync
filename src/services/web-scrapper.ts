@@ -18,8 +18,9 @@ export async function scrapeKrowneWebsite(sku: string) {
 
     try {
         // Connect to a remote browser instance to avoid local dependency issues.
+        // The stealth option helps bypass some anti-bot measures.
         browser = await puppeteer.connect({
-            browserWSEndpoint: `wss://chrome.browserless.io?token=${BROWSERLESS_TOKEN}`,
+            browserWSEndpoint: `wss://chrome.browserless.io?stealth`,
         });
 
         const page = await browser.newPage();
