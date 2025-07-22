@@ -1,29 +1,24 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { format, formatDistanceToNow } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DataSyncCard } from '@/components/dashboard/data-sync-card';
-import type { Platform } from '@/components/dashboard/dashboard-client-layout';
 import { ConnectedPlatforms } from '@/components/dashboard/connected-platforms';
+import { DashboardContext, type SyncRecord } from '@/components/dashboard/dashboard-provider';
 
-export type SyncRecord = {
-    sku: string;
-    syncedAt: string;
-    status: 'Synced' | 'Out of Sync';
-};
 
-type DashboardPageProps = {
-    platforms: Platform[];
-    onPlatformUpdate: (platforms: Platform[]) => void;
-    onConnectClick: (platformName: string) => void;
-}
+export default function DashboardPage() {
+    const context = useContext(DashboardContext);
+    if (!context) {
+        throw new Error('DashboardPage must be used within a DashboardProvider');
+    }
+    const { platforms, onConnectClick } = context;
 
-export default function DashboardPage({ platforms, onPlatformUpdate, onConnectClick }: DashboardPageProps) {
     const [syncHistory, setSyncHistory] = useState<SyncRecord[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 

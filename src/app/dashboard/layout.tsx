@@ -1,60 +1,19 @@
 
-'use client';
-
+import { DashboardProvider } from '@/components/dashboard/dashboard-provider';
 import { DashboardClientLayout } from '@/components/dashboard/dashboard-client-layout';
-import React, { useState, useCallback } from 'react';
-import type { Platform } from '@/components/dashboard/dashboard-client-layout';
-import { Database, ShoppingCart, Presentation, Globe, SearchCode } from "lucide-react";
-
-
-const initialPlatforms: Platform[] = [
-  { name: 'Salesforce', icon: <Database className="h-6 w-6 text-blue-500" />, token: '', connected: false },
-  { name: 'Salespad', icon: <ShoppingCart className="h-6 w-6 text-red-500" />, token: '', connected: false },
-  { name: 'Autoquotes', icon: <Presentation className="h-6 w-6 text-yellow-500" />, token: '', connected: false },
-  { name: 'Website CMS', icon: <Globe className="h-6 w-6 text-green-500" />, token: '', connected: false },
-  { name: 'Web Scrapper', icon: <SearchCode className="h-6 w-6 text-purple-500" />, token: '', connected: true }, // Web scrapper is always "connected"
-];
+import React from 'react';
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [platforms, setPlatforms] = useState<Platform[]>(initialPlatforms);
-  const [isConnectionsOpen, setIsConnectionsOpen] = useState(false);
-  const [focusedPlatform, setFocusedPlatform] = useState<string | null>(null);
-
-  const onConnectClick = useCallback((platformName: string) => {
-    setFocusedPlatform(platformName);
-    setIsConnectionsOpen(true);
-  }, []);
-
-  const clearFocus = useCallback(() => {
-    setFocusedPlatform(null);
-  }, []);
-
-  const childrenWithProps = React.Children.map(children, child => {
-    if (React.isValidElement(child)) {
-      // @ts-ignore
-      return React.cloneElement(child, { 
-        platforms, 
-        onPlatformUpdate: setPlatforms,
-        onConnectClick
-      });
-    }
-    return child;
-  });
 
   return (
-      <DashboardClientLayout 
-        platforms={platforms} 
-        onPlatformUpdate={setPlatforms}
-        isConnectionsOpen={isConnectionsOpen}
-        setIsConnectionsOpen={setIsConnectionsOpen}
-        focusedPlatform={focusedPlatform}
-        onClearFocus={clearFocus}
-      >
-        {childrenWithProps}
+    <DashboardProvider>
+      <DashboardClientLayout>
+        {children}
       </DashboardClientLayout>
+    </DashboardProvider>
   );
 }

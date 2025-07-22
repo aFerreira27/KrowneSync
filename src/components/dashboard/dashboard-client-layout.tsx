@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   SidebarProvider,
   Sidebar,
@@ -25,13 +25,7 @@ import LogoutButton from '@/components/logout-button';
 import { SupportDialog } from '@/components/dashboard/support-dialog';
 import { ProfileDialog } from '@/components/dashboard/profile-dialog';
 import Link from 'next/link';
-
-export type Platform = {
-  name: string;
-  icon: JSX.Element;
-  token: string;
-  connected: boolean;
-};
+import { DashboardContext } from '@/components/dashboard/dashboard-provider';
 
 type UserData = {
   name: string;
@@ -43,20 +37,8 @@ type UserData = {
 
 export function DashboardClientLayout({
   children,
-  platforms,
-  onPlatformUpdate,
-  isConnectionsOpen,
-  setIsConnectionsOpen,
-  focusedPlatform,
-  onClearFocus
 }: {
   children: React.ReactNode;
-  platforms: Platform[];
-  onPlatformUpdate: (platforms: Platform[]) => void;
-  isConnectionsOpen: boolean;
-  setIsConnectionsOpen: (open: boolean) => void;
-  focusedPlatform: string | null;
-  onClearFocus: () => void;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -65,6 +47,19 @@ export function DashboardClientLayout({
   const [loading, setLoading] = useState(true);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  const context = useContext(DashboardContext);
+  if (!context) {
+    throw new Error('DashboardClientLayout must be used within a DashboardProvider');
+  }
+  const { 
+    platforms, 
+    onPlatformUpdate, 
+    isConnectionsOpen, 
+    setIsConnectionsOpen, 
+    focusedPlatform, 
+    onClearFocus 
+  } = context;
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
