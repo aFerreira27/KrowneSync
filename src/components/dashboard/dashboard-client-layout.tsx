@@ -146,7 +146,6 @@ export function DashboardClientLayout({
                     </SidebarMenuButton>
                 </CollapsibleTrigger>
               </SidebarMenuItem>
-
               <CollapsibleContent asChild>
                 <SidebarMenuSub>
                   <SidebarMenuSubItem>
@@ -154,6 +153,22 @@ export function DashboardClientLayout({
                       Sync Status
                     </SidebarMenuSubLink>
                   </SidebarMenuSubItem>
+                </SidebarMenuSub>
+              </CollapsibleContent>
+            </Collapsible>
+            
+            <Collapsible>
+              <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                    <SidebarMenuButton>
+                        <FileText />
+                        Spec Sheet Tools
+                        <ChevronRight className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-90" />
+                    </SidebarMenuButton>
+                </CollapsibleTrigger>
+              </SidebarMenuItem>
+              <CollapsibleContent asChild>
+                <SidebarMenuSub>
                   <SidebarMenuSubItem>
                       <SidebarMenuSubLink href="/dashboard/template-maker" isActive={pathname === '/dashboard/template-maker'}>
                       Template Editor
