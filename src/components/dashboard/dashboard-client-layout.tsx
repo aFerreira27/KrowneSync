@@ -27,7 +27,6 @@ import { ProfileDialog } from '@/components/dashboard/profile-dialog';
 import { DataSyncCard } from '@/components/dashboard/data-sync-card';
 import { Separator } from '@/components/ui/separator';
 import { ConnectedPlatforms } from '@/components/dashboard/connected-platforms';
-import { PdfActions } from '@/components/dashboard/pdf-actions';
 import Link from 'next/link';
 
 export type Platform = {
@@ -224,7 +223,6 @@ export function DashboardClientLayout({
                 </div>
                 <div className="flex flex-col gap-6">
                   <ConnectedPlatforms platforms={platforms} onConnectClick={onConnectClick}/>
-                  <PdfActions />
                 </div>
               </div>
             </div>
