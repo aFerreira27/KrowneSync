@@ -74,14 +74,17 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
 
   useEffect(() => {
     if (state?.error) {
-      const errorMessage = typeof state.error === 'string' 
-        ? state.error 
-        : Object.values(state.error).flat().join(' ');
+      const errorMessage =
+        typeof state.error === 'string'
+          ? state.error
+          : typeof state.error === 'object' && state.error !== null
+          ? Object.values(state.error).flat().join(' ')
+          : 'An unexpected error occurred.';
 
       toast({
           variant: "destructive",
           title: "Error",
-          description: errorMessage || "An unexpected error occurred.",
+          description: errorMessage,
       });
     } else if (state?.productData && state?.syncedAt) {
       // Save successful search to history
