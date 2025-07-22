@@ -3,7 +3,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import type { Designer } from '@pdfme/ui';
-import { Template, BLANK_A4_PDF } from '@pdfme/common';
+import { Template } from '@pdfme/common';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
