@@ -6,7 +6,7 @@ import type { Designer, Template } from '@pdfme/ui';
 import { BLANK_PDF } from '@pdfme/common';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, Plus, Trash2, ChevronDown, Edit } from 'lucide-react';
+import { Loader2, Save, Plus, Trash2, ChevronDown, Edit, ArrowUpToLine, ArrowDownToLine } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   DropdownMenu,
@@ -227,16 +227,6 @@ export default function TemplateMakerPage() {
                     group,
                 },
                 tool: {
-                  'header': {
-                    icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-to-line"><path d="M5 3h14"/><path d="m18 13-6-6-6 6"/><path d="M12 7v14"/></svg>',
-                    label: 'Add Header',
-                    action: addHeader,
-                  },
-                  'footer': {
-                    icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-to-line"><path d="M5 21h14"/><path d="m18 11-6 6-6-6"/><path d="M12 17V3"/></svg>',
-                    label: 'Add Footer',
-                    action: addFooter,
-                  },
                   schema: ['text', 'image', 'table', 'group'],
                   layout: ['column']
                 }
@@ -261,7 +251,7 @@ export default function TemplateMakerPage() {
       designer.current?.destroy();
       designer.current = null;
     };
-  }, [toast, selectedTemplate, addHeader, addFooter]);
+  }, [toast, selectedTemplate]);
 
   const onSaveTemplate = () => {
     if (!designer.current || !selectedTemplate) return;
@@ -382,6 +372,8 @@ export default function TemplateMakerPage() {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
+              <Button variant="outline" size="icon" onClick={addHeader} disabled={isLoading}><ArrowUpToLine className="h-4 w-4" /></Button>
+              <Button variant="outline" size="icon" onClick={addFooter} disabled={isLoading}><ArrowDownToLine className="h-4 w-4" /></Button>
             </div>
             <div className="flex-1 flex justify-end items-center gap-2">
               <Button onClick={onSaveTemplate} disabled={isSaving || isLoading || !selectedTemplate}>
