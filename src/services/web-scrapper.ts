@@ -3,6 +3,9 @@
 
 import puppeteer from 'puppeteer';
 
+// To get a free token for more reliable access, visit https://www.browserless.io/
+const BROWSERLESS_TOKEN = 'YOUR_BROWSERLESS_TOKEN_HERE';
+
 export async function scrapeKrowneWebsite(sku: string) {
     if (!sku) {
         console.error('SKU is required for web scraping.');
@@ -14,10 +17,11 @@ export async function scrapeKrowneWebsite(sku: string) {
     let browser;
 
     try {
-        browser = await puppeteer.launch({ 
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox'] 
+        // Connect to a remote browser instance to avoid local dependency issues.
+        browser = await puppeteer.connect({
+            browserWSEndpoint: `wss://chrome.browserless.io?token=${BROWSERLESS_TOKEN}`,
         });
+
         const page = await browser.newPage();
         
         await page.goto(url, { waitUntil: 'networkidle2' });
@@ -74,7 +78,8 @@ export async function scrapeKrowneWebsite(sku: string) {
         return { error: `Failed to scrape product data for SKU ${sku}. Error: ${(error as Error).message}` };
     } finally {
         if (browser) {
-            await browser.close();
+            // Use disconnect for remote browsers instead of close
+            await browser.disconnect();
         }
     }
 }
