@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import type { Designer, Template } from '@pdfme/ui';
 import { BLANK_PDF } from '@pdfme/common';
 import { Button } from '@/components/ui/button';
@@ -147,7 +147,7 @@ export default function TemplateMakerPage() {
 
   }, []);
 
-  const addHeader = async () => {
+  const addHeader = useCallback(async () => {
     if (!designer.current) return;
     const headerDataUri = await getAssetAsDataUri('/images/Header.svg');
     if (!headerDataUri) {
@@ -168,9 +168,9 @@ export default function TemplateMakerPage() {
 
     designer.current.updateTemplate({ ...currentTemplate, schemas: newSchemas });
     toast({ title: 'Header Added', description: 'The header has been added to the template.' });
-  };
+  }, [toast]);
 
-  const addFooter = async () => {
+  const addFooter = useCallback(async () => {
     if (!designer.current) return;
     const footerDataUri = await getAssetAsDataUri('/images/Footer.svg');
     if (!footerDataUri) {
@@ -190,7 +190,7 @@ export default function TemplateMakerPage() {
     }];
     designer.current.updateTemplate({ ...currentTemplate, schemas: newSchemas });
     toast({ title: 'Footer Added', description: 'The footer has been added to the template.' });
-  };
+  }, [toast]);
 
   useEffect(() => {
     if (!selectedTemplate || !designerRef.current) return;
@@ -261,7 +261,7 @@ export default function TemplateMakerPage() {
       designer.current?.destroy();
       designer.current = null;
     };
-  }, [toast, selectedTemplate]);
+  }, [toast, selectedTemplate, addHeader, addFooter]);
 
   const onSaveTemplate = () => {
     if (!designer.current || !selectedTemplate) return;
