@@ -6,7 +6,9 @@ import { z } from 'zod';
 import { findDataDiscrepancies, type FindDataDiscrepanciesOutput } from '@/ai/flows/find-data-discrepancies';
 import { getFirebaseAuth, getFirestore } from '@/lib/firebase-admin';
 import { scrapeKrowneWebsite, type ScrapeResult, type ScrapeError } from '@/services/web-scrapper'; // Import types
-import { generatePdf } from '@/lib/pdf-generator';
+import { generate } from '@pdfme/generator';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 export async function logout() {
   redirect('/');
@@ -82,7 +84,7 @@ export type ActionState = {
   productData?: FindDataDiscrepanciesOutput['consolidatedData'];
   discrepancies?: Discrepancy[];
   summary?: string;
-  error?: string | any;
+  error?: string | Record<string, string[] | undefined> | null;
   syncedAt?: string;
 }
 
@@ -142,7 +144,7 @@ export async function getSyncData(prevState: any, formData: FormData): Promise<A
 
 
   // If no data is found on any platform, return an error.
-  if (Object.values(platformData).every(p => Object.keys(p).length === 0)) {
+  if (Object.values(platformData).every((p: any) => Object.keys(p as object).length === 0)) {
       return { error: `No product found with identifier "${productIdentifier}".` };
   }
 
@@ -211,56 +213,68 @@ interface ProductData {
 }
 
 export async function scrapeAndGeneratePdf(productData: ProductData): Promise<Uint8Array> {
-  // In a real-world scenario, you might scrape data here,
-  // but for this function, we assume productData is already available.
+  const templatePath = path.join(process.cwd(), 'public', 'templates', 'template.pdf');
+  const templatePdf = await fs.readFile(templatePath);
 
-  // Format the product data for the PDF
-  let pdfContent = `Product Name: ${productData.name}
-`;
-  pdfContent += `SKU: ${productData.sku}
-`;
-  if (productData.series) {
-    pdfContent += `Series: ${productData.series}
-`;
-  }
-  pdfContent += `
-Description: ${productData.description}
-`;
+  const template = {
+    basePdf: templatePdf,
+    schemas: [
+      {
+        productName: {
+          type: 'text',
+          position: { x: 0, y: 0 },
+          width: 100,
+          height: 10,
+        },
+        sku: {
+          type: 'text',
+          position: { x: 0, y: 10 },
+          width: 100,
+          height: 10,
+        },
+        description: {
+            type: 'text',
+            position: { x: 0, y: 20 },
+            width: 100,
+            height: 30,
+        },
+        standardFeatures: {
+            type: 'text',
+            position: { x: 0, y: 50 },
+            width: 100,
+            height: 50,
+        },
+        specifications: {
+            type: 'table',
+            position: { x: 0, y: 100 },
+            width: 100,
+            height: 50,
+            columns: [
+                { dataKey: 'name', title: 'Name', width: 50 },
+                { dataKey: 'value', title: 'Value', width: 50 },
+            ]
+        },
+        productImage: {
+            type: 'image',
+            position: { x: 120, y: 0 },
+            width: 80,
+            height: 80
+        },
+      },
+    ],
+  };
 
-  if (productData.images && productData.images.length > 0) {
-    pdfContent += `
-Product Image: ${productData.images[0]}
-`;
-  }
+  const inputs = [
+    {
+      productName: productData.name,
+      sku: productData.sku,
+      description: productData.description,
+      standardFeatures: productData.standardFeatures.join('\n'),
+      specifications: productData.specifications,
+      productImage: productData.images[0] || '',
+    },
+  ];
 
-  pdfContent += `
-2D Drawing: [Placeholder for 2D Drawing]
-`;
-  
-  if (productData.standardFeatures && productData.standardFeatures.length > 0) {
-      pdfContent += `
-Standard Features:
-${productData.standardFeatures.map(feature => `- ${feature}`).join('\n')}
-`;
-  }
-
-  if (productData.specifications && productData.specifications.length > 0) {
-      pdfContent += `
-Specifications:
-${productData.specifications.map(spec => `- ${spec.name}: ${spec.value}`).join('\n')}
-`;
-  }
-
-  if (productData.compliances && productData.compliances.length > 0) {
-      pdfContent += `
-Certifications:
-${productData.compliances.join(', ')}
-`;
-  }
-
-
-  // Generate the PDF using the generatePdf function
-  const pdfBytes = await generatePdf(pdfContent);
-
+  const pdfBytes = await generate({ template, inputs });
   return pdfBytes;
 }
