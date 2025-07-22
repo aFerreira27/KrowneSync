@@ -5,6 +5,7 @@ import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
 import { PanelLeft } from "lucide-react"
+import Link from "next/link"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -736,6 +737,25 @@ const SidebarMenuSubButton = React.forwardRef<
 })
 SidebarMenuSubButton.displayName = "SidebarMenuSubButton"
 
+const SidebarMenuSubLink = React.forwardRef<
+  HTMLAnchorElement,
+  React.ComponentProps<typeof Link> & {
+    size?: "sm" | "md"
+    isActive?: boolean
+    children: React.ReactNode
+  }
+>(({ size = "md", isActive, className, children, ...props }, ref) => {
+  return (
+    <Link {...props} passHref legacyBehavior>
+      <SidebarMenuSubButton ref={ref} asChild size={size} isActive={isActive}>
+        <span>{children}</span>
+      </SidebarMenuSubButton>
+    </Link>
+  )
+})
+SidebarMenuSubLink.displayName = "SidebarMenuSubLink"
+
+
 export {
   Sidebar,
   SidebarContent,
@@ -756,6 +776,7 @@ export {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  SidebarMenuSubLink,
   SidebarProvider,
   SidebarRail,
   SidebarSeparator,

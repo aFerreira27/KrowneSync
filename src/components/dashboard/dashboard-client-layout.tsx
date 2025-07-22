@@ -12,6 +12,9 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarInset,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubLink
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Logo from "@/components/logo";
@@ -28,6 +31,8 @@ import { DataSyncCard } from '@/components/dashboard/data-sync-card';
 import { Separator } from '@/components/ui/separator';
 import { ConnectedPlatforms } from '@/components/dashboard/connected-platforms';
 import Link from 'next/link';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ChevronRight } from 'lucide-react';
 
 export type Platform = {
   name: string;
@@ -122,36 +127,40 @@ export function DashboardClientLayout({
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
-            <SidebarMenuItem>
-               <Link href="/dashboard/sync-status" passHref>
-                <SidebarMenuButton asChild isActive={pathname === '/dashboard/sync-status'}>
-                  <span>
-                    <ShieldCheck />
-                    Sync Status
-                  </span>
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <Link href="/dashboard/template-maker" passHref>
-                <SidebarMenuButton asChild isActive={pathname === '/dashboard/template-maker'}>
-                  <span>
-                    <LayoutTemplate />
-                    Template Maker
-                  </span>
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <Link href="/dashboard/pdf-generator" passHref>
-                <SidebarMenuButton asChild isActive={pathname === '/dashboard/pdf-generator'}>
-                  <span>
-                    <FileText />
-                    PDF Generator
-                  </span>
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
+            
+            <Collapsible asChild>
+              <>
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                      <SidebarMenuButton>
+                          <ShieldCheck />
+                          Data Tools
+                          <ChevronRight className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-90" />
+                      </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                </SidebarMenuItem>
+
+                <CollapsibleContent asChild>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubLink href="/dashboard/sync-status" isActive={pathname === '/dashboard/sync-status'}>
+                        Sync Status
+                      </SidebarMenuSubLink>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                       <SidebarMenuSubLink href="/dashboard/template-maker" isActive={pathname === '/dashboard/template-maker'}>
+                        Template Maker
+                      </SidebarMenuSubLink>
+                    </SidebarMenuSubItem>
+                     <SidebarMenuSubItem>
+                      <SidebarMenuSubLink href="/dashboard/pdf-generator" isActive={pathname === '/dashboard/pdf-generator'}>
+                        PDF Generator
+                      </SidebarMenuSubLink>
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </>
+            </Collapsible>
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
