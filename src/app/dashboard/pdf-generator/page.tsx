@@ -79,8 +79,9 @@ const flattenObject = (obj: any, parentKey = '', result: {[key: string]: string}
 // Helper to fetch an image and convert it to a base64 data URI
 const fetchAndEncodeImage = async (url: string): Promise<string> => {
     try {
+        // Use a proxy to avoid CORS issues if fetching from external domains in the browser
         const response = await fetch(url);
-        if (!response.ok) throw new Error(`Failed to fetch image: ${url}`);
+        if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
         const blob = await response.blob();
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -90,9 +91,10 @@ const fetchAndEncodeImage = async (url: string): Promise<string> => {
         });
     } catch (error) {
         console.error(`Error loading image ${url}:`, error);
-        return url; // Return original URL on error
+        return ''; // Return an empty string or a placeholder data URI on error
     }
 };
+
 
 // Recursively processes the JSON data to find and replace image URLs with data URIs
 const processImagesInData = async (data: any): Promise<any> => {
@@ -101,7 +103,9 @@ const processImagesInData = async (data: any): Promise<any> => {
     } else if (typeof data === 'object' && data !== null) {
         const newData: { [key: string]: any } = {};
         for (const key in data) {
-            newData[key] = await processImagesInData(data[key]);
+             if (Object.prototype.hasOwnProperty.call(data, key)) {
+                newData[key] = await processImagesInData(data[key]);
+            }
         }
         return newData;
     } else if (typeof data === 'string' && (data.startsWith('http') || data.startsWith('/')) && /\.(jpg|jpeg|png|svg)$/i.test(data)) {
@@ -169,20 +173,18 @@ export default function PdfGeneratorPage() {
     try {
       const processedJson = await processImagesInData(parsedJson);
       const inputs = [flattenObject(processedJson)];
-
+      
       const fonts = await loadFonts();
       const { Viewer, table, group, image } = await import('@pdfme/ui');
       
+      const pdfPlugins = { table, group, image };
+
       const pdf = await generate({
         template: selectedTemplate.template,
         inputs: inputs,
         options: {
             font: fonts,
-            plugins: {
-              table,
-              group,
-              image,
-            }
+            plugins: pdfPlugins,
         }
       });
 
@@ -196,14 +198,9 @@ export default function PdfGeneratorPage() {
               inputs: inputs,
               options: {
                 font: fonts,
-                plugins: {
-                  table,
-                  group,
-                  image,
-                }
+                plugins: pdfPlugins,
               }
           });
-          // This seems redundant, but it's the most reliable way to display the generated pdf
           viewer.update(pdf); 
       }
        
