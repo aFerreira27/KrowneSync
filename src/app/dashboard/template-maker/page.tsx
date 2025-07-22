@@ -6,17 +6,82 @@ import type { Designer } from '@pdfme/ui';
 import { Template } from '@pdfme/common';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-
-import {
-  productNameSchema,
-  skuSchema,
-  descriptionSchema,
-  standardFeaturesSchema,
-  specificationsTableSchema,
-  headerImageSchema,
-  footerImageSchema,
-} from '@/lib/pdfSchemas';
 import { image, table, text } from '@pdfme/schemas';
+
+const headerImageSchema = {
+    type: 'image',
+    position: { x: 0, y: 0 },
+    width: 210,
+    height: 30,
+    key: 'header_image',
+    data: '/images/Header.svg',
+};
+
+const footerImageSchema = {
+    type: 'image',
+    position: { x: 0, y: 272 },
+    width: 210,
+    height: 25,
+    key: 'footer_image',
+    data: '/images/Footer.svg',
+};
+
+const productNameSchema = {
+    type: 'text',
+    position: { x: 15, y: 35 },
+    width: 180,
+    height: 12,
+    key: 'product.name',
+    fontSize: 24,
+    fontName: 'HelveticaNeueLTStd-Bd',
+};
+
+const skuSchema = {
+    type: 'text',
+    position: { x: 15, y: 48 },
+    width: 180,
+    height: 8,
+    key: 'product.sku',
+    fontSize: 14,
+    fontName: 'HelveticaNeueLTStd-Roman',
+    fontColor: '#888888',
+};
+
+const descriptionSchema = {
+    type: 'text',
+    position: { x: 15, y: 60 },
+    width: 180,
+    height: 30,
+    key: 'product.description',
+    fontSize: 12,
+    lineHeight: 1.5,
+    fontName: 'HelveticaNeueLTStd-Roman',
+};
+
+const standardFeaturesSchema = {
+    type: 'text',
+    position: { x: 15, y: 100 },
+    width: 180,
+    height: 40,
+    key: 'product.features',
+    fontSize: 12,
+    lineHeight: 1.5,
+    fontName: 'HelveticaNeueLTStd-Roman',
+};
+
+const specificationsTableSchema = {
+    type: 'table',
+    position: { x: 15, y: 150 },
+    width: 180,
+    height: 80,
+    key: 'specs',
+    content: [['Key', 'Value']],
+    showHead: true,
+    fontName: 'HelveticaNeueLTStd-Roman',
+    fontSize: 10,
+    headFontName: 'HelveticaNeueLTStd-Bd',
+    headFontSize: 11,
+};
 
 // This will serve as a fallback or initial structure, but the basePdf will be replaced.
 const BASE_SCHEMAS = [
@@ -104,24 +169,24 @@ export default function TemplateMakerPage() {
         
         const template: Template = {
             basePdf: basePdf,
-            schemas: BASE_SCHEMAS
+            schemas: BASE_SCHEMAS,
         };
-
+        
         if (designerRef.current) {
             designer.current = new Designer({
               domContainer: designerRef.current,
               template: template,
-              options: {
-                font: fonts,
-                labels: {
-                  zoom: 'Fit to page',
+                options: {
+                    font: fonts,
+                    labels: {
+                      zoom: 'Fit to page',
+                    },
+                    plugins: {
+                        image,
+                        table,
+                        text,
+                    },
                 },
-                plugins: {
-                    image,
-                    table,
-                    text,
-                },
-              }
             });
         }
       } catch (error) {
