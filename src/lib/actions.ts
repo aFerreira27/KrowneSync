@@ -19,7 +19,6 @@ const syncSchema = z.object({
 
 // Mock data fetching functions to simulate API calls
 const getSalesforceData = (sku: string) => {
-    if (sku.toUpperCase() !== 'SKU-12345') return null;
     return {
         product_name: 'Heavy Duty Faucet',
         sku: 'SKU-12345',
@@ -35,7 +34,6 @@ const getSalesforceData = (sku: string) => {
 };
 
 const getSalespadData = (sku: string) => {
-    if (sku.toUpperCase() !== 'SKU-12345') return null;
     return {
         item_id: 'SKU-12345',
         description: 'Heavy Duty Commercial Faucet',
@@ -50,7 +48,6 @@ const getSalespadData = (sku: string) => {
 };
 
 const getAutoquotesData = (sku: string) => {
-    if (sku.toUpperCase() !== 'SKU-12345') return null;
     return {
         model_number: 'SKU-12345',
         product_name: 'Heavy Duty Faucet',
@@ -62,7 +59,6 @@ const getAutoquotesData = (sku: string) => {
 };
 
 const getWebsiteData = (sku: string) => {
-    if (sku.toUpperCase() !== 'SKU-12345') return null;
     return {
         title: 'Heavy Duty Faucet - Commercial Grade',
         sku: 'SKU-12345',
@@ -202,13 +198,16 @@ export async function saveContactMessage(prevState: any, formData: FormData) {
     }
 }
 
-// Define a placeholder interface for your product data
+// Define the updated interface for your product data
 interface ProductData {
   sku: string;
   name: string;
+  series?: string;
+  images: string[];
   description: string;
-  price: number;
-  // Add other product properties here that you want in the PDF
+  standardFeatures: string[];
+  specifications: { name: string; value: string; }[];
+  compliances: string[];
 }
 
 export async function scrapeAndGeneratePdf(productData: ProductData): Promise<Uint8Array> {
@@ -216,17 +215,49 @@ export async function scrapeAndGeneratePdf(productData: ProductData): Promise<Ui
   // but for this function, we assume productData is already available.
 
   // Format the product data for the PDF
-  // You'll likely want to customize this to fit your PDF template or desired layout
-  let pdfContent = `Product SKU: ${productData.sku}
+  let pdfContent = `Product Name: ${productData.name}
 `;
-  pdfContent += `Product Name: ${productData.name}
+  pdfContent += `SKU: ${productData.sku}
 `;
-  pdfContent += `Description: ${productData.description}
+  if (productData.series) {
+    pdfContent += `Series: ${productData.series}
 `;
-  pdfContent += `Price: $${productData.price.toFixed(2)}
+  }
+  pdfContent += `
+Description: ${productData.description}
 `;
 
-  // Add other product data fields as needed
+  if (productData.images && productData.images.length > 0) {
+    pdfContent += `
+Product Image: ${productData.images[0]}
+`;
+  }
+
+  pdfContent += `
+2D Drawing: [Placeholder for 2D Drawing]
+`;
+  
+  if (productData.standardFeatures && productData.standardFeatures.length > 0) {
+      pdfContent += `
+Standard Features:
+${productData.standardFeatures.map(feature => `- ${feature}`).join('\n')}
+`;
+  }
+
+  if (productData.specifications && productData.specifications.length > 0) {
+      pdfContent += `
+Specifications:
+${productData.specifications.map(spec => `- ${spec.name}: ${spec.value}`).join('\n')}
+`;
+  }
+
+  if (productData.compliances && productData.compliances.length > 0) {
+      pdfContent += `
+Certifications:
+${productData.compliances.join(', ')}
+`;
+  }
+
 
   // Generate the PDF using the generatePdf function
   const pdfBytes = await generatePdf(pdfContent);
