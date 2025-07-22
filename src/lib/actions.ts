@@ -14,14 +14,16 @@ export async function logout() {
   redirect('/');
 }
 
+const platformConnectionSchema = z.record(z.boolean());
+
 const syncSchema = z.object({
   productIdentifier: z.string().min(1, "Product identifier must not be empty."),
-  includeWebScrapper: z.boolean(),
+  platformConnections: z.string().transform((str) => platformConnectionSchema.parse(JSON.parse(str))),
 });
 
 const bulkSyncSchema = z.object({
-    skus: z.string().transform((str) => JSON.parse(str)),
-    includeWebScrapper: z.boolean(),
+    skus: z.string().transform((str) => z.array(z.string()).parse(JSON.parse(str))),
+    platformConnections: z.string().transform((str) => platformConnectionSchema.parse(JSON.parse(str))),
 })
 
 // Mock data fetching functions to simulate API calls
@@ -80,14 +82,14 @@ const getWebsiteData = (sku: string) => {
     };
 };
 
-async function getProductDataFromSources(sku: string, includeWebScrapper: boolean) {
+async function getProductDataFromSources(sku: string, platformConnections: Record<string, boolean>) {
     const platformData: any = {};
-    platformData.salesforce = getSalesforceData(sku) || {};
-    platformData.salespad = getSalespadData(sku) || {};
-    platformData.autoquotes = getAutoquotesData(sku) || {};
-    platformData.website = getWebsiteData(sku) || {};
+    if (platformConnections.salesforce) platformData.salesforce = getSalesforceData(sku) || {};
+    if (platformConnections.salespad) platformData.salespad = getSalespadData(sku) || {};
+    if (platformConnections.autoquotes) platformData.autoquotes = getAutoquotesData(sku) || {};
+    if (platformConnections.websitecms) platformData.website = getWebsiteData(sku) || {};
 
-    if (includeWebScrapper) {
+    if (platformConnections.webscrapper) {
         const webScrapperData: ScrapeResult = await scrapeKrowneWebsite(sku);
         if (webScrapperData && 'error' in webScrapperData) {
             console.warn(`Web Scrapper Error for ${sku}: ${webScrapperData.error}`);
@@ -99,8 +101,16 @@ async function getProductDataFromSources(sku: string, includeWebScrapper: boolea
         platformData.webscrapper = {};
     }
 
-    if (Object.values(platformData).every((p: any) => Object.keys(p as object).length === 0)) {
+    if (Object.values(platformData).every((p: any) => !p || Object.keys(p as object).length === 0)) {
         return null; // Indicates no data found for this SKU
+    }
+    
+    // Ensure all platform keys exist for the AI prompt, even if empty
+    const allPlatformKeys = ['salesforce', 'salespad', 'autoquotes', 'website', 'webscrapper'];
+    for (const key of allPlatformKeys) {
+        if (!platformData[key]) {
+            platformData[key] = {};
+        }
     }
 
     return platformData;
@@ -136,7 +146,7 @@ export type BulkActionState = {
 export async function getSyncData(prevState: any, formData: FormData): Promise<ActionState> {
   const validatedFields = syncSchema.safeParse({
     productIdentifier: formData.get('productIdentifier'),
-    includeWebScrapper: formData.get('includeWebScrapper') === 'true',
+    platformConnections: formData.get('platformConnections'),
   });
 
   if (!validatedFields.success) {
@@ -145,10 +155,10 @@ export async function getSyncData(prevState: any, formData: FormData): Promise<A
     };
   }
   
-  const { productIdentifier, includeWebScrapper } = validatedFields.data;
+  const { productIdentifier, platformConnections } = validatedFields.data;
   
   try {
-    const platformData = await getProductDataFromSources(productIdentifier, includeWebScrapper);
+    const platformData = await getProductDataFromSources(productIdentifier, platformConnections);
     
     if (!platformData) {
       return { error: `No product found with identifier "${productIdentifier}".` };
@@ -171,7 +181,7 @@ export async function getSyncData(prevState: any, formData: FormData): Promise<A
 export async function getBulkSyncData(prevState: any, formData: FormData): Promise<BulkActionState> {
     const validatedFields = bulkSyncSchema.safeParse({
         skus: formData.get('skus'),
-        includeWebScrapper: formData.get('includeWebScrapper') === 'true',
+        platformConnections: formData.get('platformConnections'),
     });
 
     if (!validatedFields.success) {
@@ -180,12 +190,12 @@ export async function getBulkSyncData(prevState: any, formData: FormData): Promi
             error: "Invalid input for bulk sync.",
         };
     }
-    const { skus, includeWebScrapper } = validatedFields.data;
+    const { skus, platformConnections } = validatedFields.data;
     const results: SyncRecord[] = [];
 
     for (const sku of skus) {
         try {
-            const platformData = await getProductDataFromSources(sku, includeWebScrapper);
+            const platformData = await getProductDataFromSources(sku, platformConnections);
             if (!platformData) {
                 console.warn(`No data found for SKU ${sku} during bulk sync.`);
                 continue; // Skip to the next SKU

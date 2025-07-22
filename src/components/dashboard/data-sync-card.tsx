@@ -13,7 +13,7 @@ import { AlertTriangle, BadgeCheck, FileWarning, Loader2, Search, Info, FileDown
 import { useToast } from '@/hooks/use-toast';
 import type { Discrepancy } from '@/lib/actions';
 import { Combobox, ComboboxOption } from '@/components/ui/combobox';
-import type { Platform } from '@/components/dashboard/dashboard-client-layout';
+import type { Platform } from '@/components/dashboard/dashboard-provider';
 import Image from 'next/image';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Separator } from '@/components/ui/separator';
@@ -149,8 +149,6 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
   const [isSyncingAll, setIsSyncingAll] = useState(false);
 
   const atLeastOnePlatformConnected = platforms.some(p => p.connected);
-  const isWebScrapperEnabled = platforms.find(p => p.name === 'Web Scrapper')?.connected ?? false;
-
 
   useEffect(() => {
     try {
@@ -206,7 +204,7 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
       const syncRecord: SyncRecord = { sku: productIdentifier, syncedAt: state.syncedAt, status: syncStatus };
       onSyncComplete([syncRecord]);
     }
-  }, [singleSyncState]);
+  }, [singleSyncState, onSyncComplete, productIdentifier]);
 
    useEffect(() => {
     const state = bulkSyncState; // Process bulk sync results
@@ -227,7 +225,7 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
             description: `Successfully processed ${state.results.length} SKUs.`
         });
     }
-  }, [bulkSyncState]);
+  }, [bulkSyncState, onSyncComplete, toast]);
 
   const handleSyncAll = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -236,9 +234,19 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
 
     const formData = new FormData();
     formData.append('skus', JSON.stringify(skuHistory));
-    formData.append('includeWebScrapper', String(isWebScrapperEnabled));
+    const platformConnections = platforms.reduce((acc, p) => {
+        acc[p.name.toLowerCase().replace(/\s/g, '')] = p.connected;
+        return acc;
+    }, {} as Record<string, boolean>);
+    formData.append('platformConnections', JSON.stringify(platformConnections));
     bulkSyncFormAction(formData);
   };
+
+  const platformConnections = platforms.reduce((acc, p) => {
+    acc[p.name.toLowerCase().replace(/\s/g, '')] = p.connected;
+    return acc;
+  }, {} as Record<string, boolean>);
+
 
   return (
     <Card className="shadow-lg">
@@ -261,7 +269,7 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
                 emptyPlaceholder="No recent products."
               />
               <input type="hidden" name="productIdentifier" value={productIdentifier} />
-              <input type="hidden" name="includeWebScrapper" value={String(isWebScrapperEnabled)} />
+              <input type="hidden" name="platformConnections" value={JSON.stringify(platformConnections)} />
             </div>
             <SubmitButton atLeastOnePlatformConnected={atLeastOnePlatformConnected} />
             <SyncAllButton skus={skuHistory} onSyncAll={handleSyncAll} disabled={!atLeastOnePlatformConnected || isSyncingAll}/>
