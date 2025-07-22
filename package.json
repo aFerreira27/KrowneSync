@@ -31,7 +31,8 @@
     "@radix-ui/react-toast": "^1.2.1",
     "class-variance-authority": "^0.7.0",
     "cmdk": "^1.0.0",
-    "date-fns": "^3.6.0"
+    "date-fns": "^3.6.0",
+    "lucide-react": "^0.407.0"
   },
   "devDependencies": {
     "typescript": "5.8.3"
