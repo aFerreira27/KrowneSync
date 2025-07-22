@@ -143,7 +143,7 @@ export default function LoginPage() {
             onClick={handleLogoClick} 
             title="Hold CTRL and click for emergency login"
           >
-             <Image src="/images/krowneSync.svg" alt="KrowneSync Logo" width={164} height={40} className="h-12 w-auto" />
+             <Image src="/images/krowneSync.svg" alt="KrowneSync Logo" width={164} height={40} className="h-12 w-auto" priority />
           </div>
           <CardTitle className="font-headline text-3xl">Welcome to KrowneSync</CardTitle>
           <CardDescription>Sign in with your Microsoft account to access your dashboard.</CardDescription>

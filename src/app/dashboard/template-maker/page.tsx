@@ -3,8 +3,8 @@
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import type { Designer } from '@pdfme/ui';
-import type { Template, Schema } from '@pdfme/common';
-import { BLANK_PDF as BLANK_A4_PDF } from '@pdfme/common';
+import type { Template } from '@pdfme/common';
+import { BLANK_A4_PDF } from '@pdfme/common';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save, Plus, Trash2, ChevronDown, Edit, ArrowUpToLine, ArrowDownToLine } from 'lucide-react';
@@ -163,15 +163,21 @@ export default function TemplateMakerPage() {
             return;
         }
         
-        designer.current.updateTemplate({
-            ...designer.current.getTemplate(),
-            staticImages: [...(designer.current.getTemplate().staticImages || []), {
+        const currentTemplate = designer.current.getTemplate();
+        const updatedTemplate = {
+          ...currentTemplate,
+          staticImages: [
+            ...(currentTemplate.staticImages || []),
+            {
               image: headerDataUri,
               position: { x: 0, y: 0 },
               width: 210,
               height: 40,
-            }]
-        });
+            },
+          ],
+        };
+
+        designer.current.updateTemplate(updatedTemplate);
 
         toast({ title: 'Header Added', description: 'Header image has been added to the template.' });
     } catch (error) {
@@ -189,15 +195,20 @@ export default function TemplateMakerPage() {
             return;
         }
         
-        designer.current.updateTemplate({
-            ...designer.current.getTemplate(),
-            staticImages: [...(designer.current.getTemplate().staticImages || []), {
+        const currentTemplate = designer.current.getTemplate();
+        const updatedTemplate = {
+          ...currentTemplate,
+          staticImages: [
+            ...(currentTemplate.staticImages || []),
+            {
               image: footerDataUri,
               position: { x: 0, y: 257 },
               width: 210,
               height: 40,
-            }]
-        });
+            },
+          ],
+        };
+        designer.current.updateTemplate(updatedTemplate);
         
         toast({ title: 'Footer Added', description: 'Footer image has been added to the template.' });
     } catch (error) {
@@ -521,5 +532,3 @@ export default function TemplateMakerPage() {
     </div>
   );
 }
-
-    

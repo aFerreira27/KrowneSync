@@ -9,6 +9,14 @@ export const productNameSchema: Schema = {
   fontSize: 18,
 };
 
+export const productImageSchema: Schema = {
+  name: 'productImage',
+  type: 'image',
+  position: { x: 0, y: 0 }, // Example position, adjust as needed
+  width: 80,
+  height: 40,
+};
+
 export const skuSchema: Schema = {
   name: 'sku',
   type: 'text',
@@ -35,30 +43,22 @@ export const descriptionSchema: Schema = {
   fontSize: 10,
 };
 
-export const standardFeaturesSchema: Schema = {
-  name: 'standardFeatures',
-  type: 'text',
-  position: { x: 25, y: 190 }, // Example position, adjust as needed
-  width: 160,
-  height: 40,
-  fontSize: 10,
+export const headerImageSchema: Schema = {
+  name: 'headerImage',
+  type: 'image',
+  position: { x: 0, y: 0 }, 
+  width: 210, // Assuming A4 width in mm
+  height: 40, // Adjust height as needed
+  url: '/images/Header.svg'
 };
 
-export const specificationsTableSchema: Schema = {
-  name: 'specificationsTable',
-  type: 'table',
-  position: { x: 25, y: 240 }, // Example position, adjust as needed
-  width: 160,
-  height: 50, // Example height, adjust as needed
-  // Table specific properties (adjust as needed based on pdfme table schema options)
-  columnManagement: {
-    columns: [
-      { header: 'Header 1', minWidth: 50 }, // Default column 1
-      { header: 'Header 2', minWidth: 50 }, // Default column 2
-      // You can add more default columns here if needed
-    ],
-  },
-  // You might need to define data structure for rows if providing initial data
+export const footerImageSchema: Schema = {
+  name: 'footerImage',
+  type: 'image',
+  position: { x: 0, y: 257 }, // Positioned at the bottom of A4 (approx)
+  width: 210, // Assuming A4 width in mm
+  height: 40, // Adjust height as needed
+  url: '/images/Footer.svg'
 };
 
 export const compliancesSchema: Schema = {
@@ -94,4 +94,30 @@ export const revisionSchema: Schema = {
   width: 40,
   height: 10,
   fontSize: 8,
+};
+
+export const standardFeaturesSchema: Schema = {
+  name: 'standardFeatures',
+  type: 'text',
+  position: { x: 25, y: 200 }, // Example position, adjust as needed
+  width: 160,
+  height: 30,
+  fontSize: 10,
+};
+
+export const specificationsTableSchema: Schema = {
+  name: 'specificationsTable',
+  type: 'table', // Or 'table' if pdfme supports a table type
+  position: { x: 25, y: 250 }, // Example position, adjust as needed
+  width: 160,
+  height: 50,
+  fontSize: 10,
+  // Additional properties for table schema if 'table' type is supported
+  header: ['Property', 'Value'],
+  body: [
+    ['Property A', 'Value A'],
+    ['Property B', 'Value B'],
+    ['Property C', 'Value C'],
+  ],
+  tableColumns: [{}, {}], // Define columns here as needed
 };
