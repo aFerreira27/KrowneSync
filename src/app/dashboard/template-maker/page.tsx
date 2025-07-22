@@ -43,6 +43,7 @@ import {
   standardFeaturesSchema,
   specificationsTableSchema,
 } from '@/lib/pdfSchemas';
+import { image, table, text, group } from '@pdfme/schemas';
 
 
 // Helper to fetch an asset and convert it to a base64 data URI
@@ -248,9 +249,7 @@ export default function TemplateMakerPage() {
       setIsLoading(true);
       try {
         const { Designer } = await import('@pdfme/ui');
-        const { image, table, text, group } = await import('@pdfme/schemas');
-
-
+        
         if (designer.current) {
           designer.current.destroy();
           designer.current = null;
@@ -523,5 +522,3 @@ export default function TemplateMakerPage() {
     </div>
   );
 }
-
-    
