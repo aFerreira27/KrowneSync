@@ -136,13 +136,17 @@ export default function PdfGeneratorPage() {
     setIsGenerating(true);
     try {
       const fonts = await loadFonts();
-      const { Viewer } = await import('@pdfme/ui');
+      const { Viewer, table, group } = await import('@pdfme/ui');
       
       const pdf = await generate({
         template: selectedTemplate.template,
         inputs: inputs,
         options: {
             font: fonts,
+            plugins: {
+              table,
+              group,
+            }
         }
       });
 
@@ -150,12 +154,16 @@ export default function PdfGeneratorPage() {
       
       if (viewerRef.current) {
           viewerRef.current.innerHTML = ''; // Clear previous viewer
-          // Note: The viewer might not display table data correctly without the table plugin,
-          // but the generated PDF will be correct.
           const viewer = new Viewer({
               domContainer: viewerRef.current,
               template: selectedTemplate.template,
               inputs: inputs,
+              options: {
+                plugins: {
+                  table,
+                  group,
+                }
+              }
           });
           viewer.update(pdf);
       }
