@@ -6,7 +6,7 @@ import type { Designer, Template } from '@pdfme/ui';
 import { BLANK_PDF } from '@pdfme/common';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, Plus, Trash2, ChevronDown, Edit } from 'lucide-react';
+import { Loader2, Save, Plus, Trash2, ChevronDown, Edit, ArrowUpToLine, ArrowDownToLine } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   DropdownMenu,
@@ -41,28 +41,12 @@ const BLANK_TEMPLATE: Template = {
   basePdf: BLANK_PDF,
   schemas: [
     {
-      headerImage: {
-        type: 'image',
-        position: { x: 0, y: 0 },
-        width: 210,
-        height: 40,
-        content: "https://placehold.co/600x120.png",
-        data: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjEwIiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMjEwIDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMjEwIiBoZWlnaHQ9IjQwIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMCAwSDE4MC42MjVMMjEwIDQwSDBWMFoiIGZpbGw9IiNFQUVBRjYiLz4KPC9zdmc+Cg==',
-      },
       productName: {
         type: 'text',
         position: { x: 25, y: 50 },
         width: 150,
         height: 15,
         fontSize: 18,
-      },
-      footerImage: {
-        type: 'image',
-        position: { x: 0, y: 257 },
-        width: 210,
-        height: 40,
-        content: "https://placehold.co/600x120.png",
-        data: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjEwIiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMjEwIDQwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMjEwIiBoZWlnaHQ9IjQwIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMjEwIDQwSDI5LjM3NUwwIDBIMjEwVjQwWiIgZmlsbD0iI0VBRUFGNyIvPgo8L3N2Zz4K',
       },
     },
   ],
@@ -72,6 +56,25 @@ type SavedTemplate = {
   name: string;
   template: Template;
 };
+
+// Helper to fetch an asset and convert it to a base64 data URI
+const getAssetAsDataUri = async (path: string): Promise<string> => {
+    try {
+        const response = await fetch(path);
+        if (!response.ok) throw new Error(`Failed to fetch asset: ${path}`);
+        const blob = await response.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        console.error(`Error loading asset ${path}:`, error);
+        return '';
+    }
+};
+
 
 const loadFonts = async () => {
   const fontFileNames = [
@@ -235,6 +238,52 @@ export default function TemplateMakerPage() {
     }
   };
 
+  const addHeader = async () => {
+    if (!designer.current) return;
+    const headerDataUri = await getAssetAsDataUri('/images/Header.svg');
+    if (!headerDataUri) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not load header image.' });
+        return;
+    }
+    const currentTemplate = designer.current.getTemplate();
+    const newSchemas = [{
+        ...currentTemplate.schemas[0],
+        headerImage: {
+            type: 'image',
+            position: { x: 0, y: 0 },
+            width: 210,
+            height: 40,
+            data: headerDataUri,
+        }
+    }];
+
+    designer.current.updateTemplate({ ...currentTemplate, schemas: newSchemas });
+    toast({ title: 'Header Added', description: 'The header has been added to the template.' });
+  };
+
+  const addFooter = async () => {
+    if (!designer.current) return;
+    const footerDataUri = await getAssetAsDataUri('/images/Footer.svg');
+    if (!footerDataUri) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not load footer image.' });
+        return;
+    }
+    const currentTemplate = designer.current.getTemplate();
+    const newSchemas = [{
+        ...currentTemplate.schemas[0],
+        footerImage: {
+            type: 'image',
+            position: { x: 0, y: 257 },
+            width: 210,
+            height: 40,
+            data: footerDataUri,
+        }
+    }];
+    designer.current.updateTemplate({ ...currentTemplate, schemas: newSchemas });
+    toast({ title: 'Footer Added', description: 'The footer has been added to the template.' });
+  };
+
+
   const handleCreateNewTemplate = () => {
     if (!newTemplateName.trim()) {
       toast({ variant: 'destructive', title: 'Error', description: 'Template name cannot be empty.' });
@@ -294,7 +343,7 @@ export default function TemplateMakerPage() {
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Template Editor</h1>
                 <p className="text-muted-foreground">Design your product spec sheet templates. Name fields to auto-populate them in the generator.</p>
             </div>
-            <div className="flex-1 flex justify-center">
+            <div className="flex-1 flex justify-center items-center gap-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="min-w-64">
@@ -324,6 +373,14 @@ export default function TemplateMakerPage() {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
+
+               <Button variant="outline" size="sm" onClick={addHeader}>
+                <ArrowUpToLine className="mr-2"/> Add Header
+              </Button>
+              <Button variant="outline" size="sm" onClick={addFooter}>
+                <ArrowDownToLine className="mr-2"/> Add Footer
+              </Button>
+
             </div>
             <div className="flex-1 flex justify-end">
               <Button onClick={onSaveTemplate} disabled={isSaving || isLoading || !selectedTemplate}>
@@ -390,5 +447,3 @@ export default function TemplateMakerPage() {
     </div>
   );
 }
-
-    
