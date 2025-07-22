@@ -9,6 +9,7 @@ import { scrapeKrowneWebsite, type ScrapeResult, type ScrapeError } from '@/serv
 import { promises as fs } from 'fs';
 import path from 'path';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
 
 export async function logout() {
   redirect('/');
@@ -93,7 +94,7 @@ async function getProductDataFromSources(sku: string, platformConnections: Recor
         const webScrapperData: ScrapeResult = await scrapeKrowneWebsite(sku);
         if (webScrapperData && 'error' in webScrapperData) {
             console.warn(`Web Scrapper Error for ${sku}: ${webScrapperData.error}`);
-            platformData.webscrapper = {}; // Assign empty object on error
+            platformData.webscrapper = { error: webScrapperData.error }; // Assign error object
         } else {
             platformData.webscrapper = webScrapperData || {};
         }
@@ -101,7 +102,11 @@ async function getProductDataFromSources(sku: string, platformConnections: Recor
         platformData.webscrapper = {};
     }
 
-    if (Object.values(platformData).every((p: any) => !p || Object.keys(p as object).length === 0)) {
+    if (Object.values(platformData).every((p: any) => !p || Object.keys(p as object).length === 0 || (p.error && Object.keys(p).length === 1))) {
+        // Check for specific web scrapper error to return a more informative message
+        if (platformData.webscrapper.error) {
+             return { error: `Error - Web Scrapper: ${platformData.webscrapper.error}` };
+        }
         return null; // Indicates no data found for this SKU
     }
     
@@ -161,8 +166,12 @@ export async function getSyncData(prevState: any, formData: FormData): Promise<A
     const platformData = await getProductDataFromSources(productIdentifier, platformConnections);
     
     if (!platformData) {
-      return { error: `No product found with identifier "${productIdentifier}".` };
+      return { error: `No product data found for identifier "${productIdentifier}".` };
     }
+     if ('error' in platformData) {
+      return { error: platformData.error };
+    }
+
 
     const aiResult = await findDataDiscrepancies(platformData);
     
@@ -196,8 +205,8 @@ export async function getBulkSyncData(prevState: any, formData: FormData): Promi
     for (const sku of skus) {
         try {
             const platformData = await getProductDataFromSources(sku, platformConnections);
-            if (!platformData) {
-                console.warn(`No data found for SKU ${sku} during bulk sync.`);
+            if (!platformData || ('error' in platformData)) {
+                console.warn(`No data found or error for SKU ${sku} during bulk sync.`);
                 continue; // Skip to the next SKU
             }
 
@@ -265,7 +274,15 @@ async function createSpecSheetPdf(productData: ProductData): Promise<Uint8Array>
   const existingPdfBytes = await fs.readFile(templatePath);
 
   const pdfDoc = await PDFDocument.load(existingPdfBytes);
-  const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  
+  // Register fontkit
+  pdfDoc.registerFontkit(fontkit);
+
+  // Embed a font
+  const fontPath = path.join(process.cwd(), 'public', 'fonts', 'HelveticaNeueLTStd-Roman.otf');
+  const fontBytes = await fs.readFile(fontPath);
+  const helveticaFont = await pdfDoc.embedFont(fontBytes);
+
 
   const pages = pdfDoc.getPages();
   const firstPage = pages[0];
