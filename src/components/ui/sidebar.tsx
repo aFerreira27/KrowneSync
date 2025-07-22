@@ -743,8 +743,8 @@ const SidebarMenuSubLink = React.forwardRef<
   }
 >(({ size = "md", isActive, className, children, ...props }, ref) => {
   return (
-    <Link {...props} passHref legacyBehavior>
-      <SidebarMenuSubButton ref={ref} size={size} isActive={isActive}>
+    <Link {...props} passHref legacyBehavior={false} asChild>
+      <SidebarMenuSubButton ref={ref} size={size} isActive={isActive} className={className}>
         {children}
       </SidebarMenuSubButton>
     </Link>
