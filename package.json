@@ -33,10 +33,10 @@
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
     "lucide-react": "^0.407.0",
-    "tailwind-merge": "^2.4.0"
+    "tailwind-merge": "^2.4.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "tailwindcss-animate": "^1.0.7",
     "typescript": "5.8.3"
   }
 }
