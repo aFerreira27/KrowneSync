@@ -6,9 +6,9 @@ import { z } from 'zod';
 import { findDataDiscrepancies, type FindDataDiscrepanciesOutput } from '@/ai/flows/find-data-discrepancies';
 import { getFirebaseAuth, getFirestore } from '@/lib/firebase-admin';
 import { scrapeKrowneWebsite, type ScrapeResult, type ScrapeError } from '@/services/web-scrapper'; // Import types
-import { generate } from '@pdfme/generator';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
 export async function logout() {
   redirect('/');
@@ -214,67 +214,77 @@ interface ProductData {
 
 export async function scrapeAndGeneratePdf(productData: ProductData): Promise<Uint8Array> {
   const templatePath = path.join(process.cwd(), 'public', 'templates', 'template.pdf');
-  const templatePdf = await fs.readFile(templatePath);
+  const existingPdfBytes = await fs.readFile(templatePath);
 
-  const template = {
-    basePdf: templatePdf,
-    schemas: [
-      {
-        productName: {
-          type: 'text',
-          position: { x: 0, y: 0 },
-          width: 100,
-          height: 10,
-        },
-        sku: {
-          type: 'text',
-          position: { x: 0, y: 10 },
-          width: 100,
-          height: 10,
-        },
-        description: {
-            type: 'text',
-            position: { x: 0, y: 20 },
-            width: 100,
-            height: 30,
-        },
-        standardFeatures: {
-            type: 'text',
-            position: { x: 0, y: 50 },
-            width: 100,
-            height: 50,
-        },
-        specifications: {
-            type: 'table',
-            position: { x: 0, y: 100 },
-            width: 100,
-            height: 50,
-            columns: [
-                { dataKey: 'name', title: 'Name', width: 50 },
-                { dataKey: 'value', title: 'Value', width: 50 },
-            ]
-        },
-        productImage: {
-            type: 'image',
-            position: { x: 120, y: 0 },
-            width: 80,
-            height: 80
-        },
-      },
-    ],
+  const pdfDoc = await PDFDocument.load(existingPdfBytes);
+  const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+  const pages = pdfDoc.getPages();
+  const firstPage = pages[0];
+
+  const { width, height } = firstPage.getSize();
+  const fontSize = 12;
+  const textColor = rgb(0, 0, 0);
+  let yPosition = height - 50; // Start from top
+
+  const drawText = (text: string, x: number, y: number, size = fontSize) => {
+    firstPage.drawText(text, {
+      x,
+      y,
+      size,
+      font: helveticaFont,
+      color: textColor,
+    });
+    return size + 4; // Return line height
   };
 
-  const inputs = [
-    {
-      productName: productData.name,
-      sku: productData.sku,
-      description: productData.description,
-      standardFeatures: productData.standardFeatures.join('\n'),
-      specifications: productData.specifications,
-      productImage: productData.images[0] || '',
-    },
-  ];
+  yPosition -= drawText(`Product Name: ${productData.name}`, 50, yPosition, 18);
+  yPosition -= drawText(`SKU: ${productData.sku}`, 50, yPosition);
+  if (productData.series) {
+    yPosition -= drawText(`Series: ${productData.series}`, 50, yPosition);
+  }
 
-  const pdfBytes = await generate({ template, inputs });
-  return pdfBytes;
+  yPosition -= 20; // Add space
+  yPosition -= drawText(`Description: ${productData.description}`, 50, yPosition);
+  
+  if (productData.images && productData.images.length > 0) {
+    try {
+        const imageBytes = await fetch(productData.images[0]).then(res => res.arrayBuffer());
+        const pdfImage = await pdfDoc.embedPng(imageBytes);
+        const imageDims = pdfImage.scale(0.25);
+        firstPage.drawImage(pdfImage, {
+            x: width - imageDims.width - 50,
+            y: height - imageDims.height - 50,
+            width: imageDims.width,
+            height: imageDims.height,
+        });
+    } catch (e) {
+        console.error("Failed to embed image:", e);
+    }
+  }
+
+
+  yPosition -= 20; // Add space
+  if (productData.standardFeatures && productData.standardFeatures.length > 0) {
+    yPosition -= drawText('Standard Features:', 50, yPosition, 14);
+    productData.standardFeatures.forEach(feature => {
+      yPosition -= drawText(`- ${feature}`, 60, yPosition);
+    });
+  }
+
+  yPosition -= 20; // Add space
+  if (productData.specifications && productData.specifications.length > 0) {
+    yPosition -= drawText('Specifications:', 50, yPosition, 14);
+    productData.specifications.forEach(spec => {
+      yPosition -= drawText(`- ${spec.name}: ${spec.value}`, 60, yPosition);
+    });
+  }
+  
+  yPosition -= 20; // Add space
+  if (productData.compliances && productData.compliances.length > 0) {
+    yPosition -= drawText('Certifications:', 50, yPosition, 14);
+    yPosition -= drawText(productData.compliances.join(', '), 60, yPosition);
+  }
+
+  return pdfDoc.save();
 }
