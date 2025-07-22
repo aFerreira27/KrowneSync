@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -45,6 +46,8 @@ Discrepancies: {{{discrepancies}}}
 Correct Product Information: {{{correctProductInformation}}}
 
 Suggest updates to resolve the discrepancies, formatted as a list of key-value pairs, and provide reasoning for each suggested update. Focus on actionable changes, and making updates to Platform A to align it to Platform B. Return the list of suggested updates and the reasoning behind them.
+
+If the provided data is insufficient or invalid, return an error message in the 'reasoning' field and leave 'suggestedUpdates' empty.
 
 Make sure to provide a response in a format that can be easily parsed by a machine.
 

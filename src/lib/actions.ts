@@ -1,3 +1,4 @@
+
 'use server';
 
 import { redirect } from 'next/navigation';
@@ -69,8 +70,11 @@ export async function getSyncData(prevState: any, formData: FormData) {
     if (e.code === 'auth/id-token-expired') {
         return { error: 'Your session has expired. Please sign in again.' };
     }
+    
+    // Return the specific error message if available, otherwise a generic one.
+    const errorMessage = e.message || 'An unexpected server error occurred. Please try again.';
     return {
-      error: 'Authentication failed or an unexpected error occurred. Please try again.',
+      error: errorMessage,
     };
   }
 }
