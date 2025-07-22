@@ -2,12 +2,12 @@
 'use client';
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import type { Designer, Template } from '@pdfme/ui';
-import { BLANK_PDF } from '@pdfme/common';
+import type { Designer } from '@pdfme/ui';
+import type { Template, Schema } from '@pdfme/common';
+import { BLANK_PDF as BLANK_A4_PDF } from '@pdfme/common';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save, Plus, Trash2, ChevronDown, Edit, ArrowUpToLine, ArrowDownToLine } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,26 +36,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import {
+  productNameSchema,
+  skuSchema,
+  descriptionSchema,
+  standardFeaturesSchema,
+  specificationsTableSchema,
+} from '@/lib/pdfSchemas';
 
-const BLANK_TEMPLATE: Template = {
-  basePdf: BLANK_PDF,
-  schemas: [
-    {
-      productName: {
-        type: 'text',
-        position: { x: 25, y: 50 },
-        width: 150,
-        height: 15,
-        fontSize: 18,
-      },
-    },
-  ],
-};
-
-type SavedTemplate = {
-  name: string;
-  template: Template;
-};
 
 // Helper to fetch an asset and convert it to a base64 data URI
 const getAssetAsDataUri = async (path: string): Promise<string> => {
@@ -75,6 +63,39 @@ const getAssetAsDataUri = async (path: string): Promise<string> => {
     }
 };
 
+const BLANK_TEMPLATE: Template = {
+  basePdf: BLANK_A4_PDF,
+  schemas: [
+    {
+      ...productNameSchema,
+      position: { x: 20, y: 50 },
+    },
+    {
+      ...skuSchema,
+       position: { x: 20, y: 60 },
+    },
+    {
+      ...descriptionSchema,
+      position: { x: 20, y: 75 },
+      height: 20,
+    },
+    {
+      ...standardFeaturesSchema,
+      position: { x: 20, y: 100 },
+      height: 40,
+    },
+     {
+      ...specificationsTableSchema,
+      position: { x: 20, y: 150 },
+      height: 80,
+    }
+  ],
+};
+
+type SavedTemplate = {
+  name: string;
+  template: Template;
+};
 
 const loadFonts = async () => {
   const fontFileNames = [
@@ -90,26 +111,26 @@ const loadFonts = async () => {
     'HelveticaNeueLTStd-Th',
     'HelveticaNeueLTStd-UltLt',
   ];
-  
+
   const fontPromises = fontFileNames.map(async (name) => {
     try {
       const response = await fetch(`/fonts/${name}.otf`);
       if (!response.ok) {
         console.warn(`Could not load font: ${name}.otf. File not found.`);
-        return null; 
+        return null;
       }
       const fontData = await response.arrayBuffer();
       const fontObject: { [key: string]: any } = { data: fontData };
-      
+
       if (name === 'HelveticaNeueLTStd-Roman') {
         fontObject.fallback = true;
       }
-      
+
       return { [name]: fontObject };
 
     } catch (error) {
       console.error(`An error occurred while fetching font ${name}:`, error);
-      return null; 
+      return null;
     }
   });
 
@@ -126,71 +147,99 @@ export default function TemplateMakerPage() {
 
   const [templates, setTemplates] = useState<SavedTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<SavedTemplate | null>(null);
-  
+
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [templateToDelete, setTemplateToDelete] = useState<SavedTemplate | null>(null);
   const [isNewTemplateDialogOpen, setIsNewTemplateDialogOpen] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState("");
 
-  useEffect(() => {
-    const savedTemplatesJson = localStorage.getItem('specSheetTemplates');
-    const savedTemplates = savedTemplatesJson ? JSON.parse(savedTemplatesJson) : [];
-    
-    if (savedTemplates.length === 0) {
-      const defaultTemplate = { name: 'Default Spec Sheet', template: BLANK_TEMPLATE };
-      savedTemplates.push(defaultTemplate);
-      localStorage.setItem('specSheetTemplates', JSON.stringify(savedTemplates));
-    }
-    
-    setTemplates(savedTemplates);
-    setSelectedTemplate(savedTemplates[0]);
-
-  }, []);
-
   const addHeader = useCallback(async () => {
     if (!designer.current) return;
-    const headerDataUri = await getAssetAsDataUri('/images/Header.svg');
-    if (!headerDataUri) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not load header image.' });
-        return;
-    }
-    const currentTemplate = designer.current.getTemplate();
-    const newSchemas = [{
-        ...currentTemplate.schemas[0],
-        headerImage: {
-            type: 'image',
-            position: { x: 0, y: 0 },
-            width: 210,
-            height: 40,
-            data: headerDataUri,
+    try {
+        const headerDataUri = await getAssetAsDataUri('/images/Header.svg');
+        if (!headerDataUri) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not load header image.' });
+            return;
         }
-    }];
+        
+        designer.current.updateTemplate({
+            ...designer.current.getTemplate(),
+            staticImages: [...(designer.current.getTemplate().staticImages || []), {
+              image: headerDataUri,
+              position: { x: 0, y: 0 },
+              width: 210,
+              height: 40,
+            }]
+        });
 
-    designer.current.updateTemplate({ ...currentTemplate, schemas: newSchemas });
-    toast({ title: 'Header Added', description: 'The header has been added to the template.' });
+        toast({ title: 'Header Added', description: 'Header image has been added to the template.' });
+    } catch (error) {
+        console.error('Error adding header:', error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not add header.' });
+    }
   }, [toast]);
 
   const addFooter = useCallback(async () => {
     if (!designer.current) return;
-    const footerDataUri = await getAssetAsDataUri('/images/Footer.svg');
-    if (!footerDataUri) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not load footer image.' });
-        return;
-    }
-    const currentTemplate = designer.current.getTemplate();
-    const newSchemas = [{
-        ...currentTemplate.schemas[0],
-        footerImage: {
-            type: 'image',
-            position: { x: 0, y: 257 },
-            width: 210,
-            height: 40,
-            data: footerDataUri,
+    try {
+        const footerDataUri = await getAssetAsDataUri('/images/Footer.svg');
+        if (!footerDataUri) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not load footer image.' });
+            return;
         }
-    }];
-    designer.current.updateTemplate({ ...currentTemplate, schemas: newSchemas });
-    toast({ title: 'Footer Added', description: 'The footer has been added to the template.' });
+        
+        designer.current.updateTemplate({
+            ...designer.current.getTemplate(),
+            staticImages: [...(designer.current.getTemplate().staticImages || []), {
+              image: footerDataUri,
+              position: { x: 0, y: 257 },
+              width: 210,
+              height: 40,
+            }]
+        });
+        
+        toast({ title: 'Footer Added', description: 'Footer image has been added to the template.' });
+    } catch (error) {
+        console.error('Error adding footer:', error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not add footer.' });
+    }
   }, [toast]);
+
+  // Enhanced localStorage operations with better error handling
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const savedTemplatesJson = localStorage.getItem('specSheetTemplates');
+        let savedTemplates: SavedTemplate[] = [];
+
+        if (savedTemplatesJson) {
+          const parsed = JSON.parse(savedTemplatesJson);
+          savedTemplates = parsed.map((t: any) => ({
+            name: t.name,
+            template: t.template
+          }));
+        }
+
+        if (savedTemplates.length === 0) {
+          const defaultTemplate = { name: 'Default Spec Sheet', template: BLANK_TEMPLATE };
+          savedTemplates.push(defaultTemplate);
+          localStorage.setItem('specSheetTemplates', JSON.stringify(savedTemplates));
+          setTemplates(savedTemplates);
+          setSelectedTemplate(savedTemplates[0]);
+        } else {
+             setTemplates(savedTemplates);
+             setSelectedTemplate(savedTemplates[0]);
+        }
+
+      } catch (error) {
+        console.error('Error loading templates from localStorage:', error);
+        const defaultTemplate = { name: 'Default Spec Sheet', template: BLANK_TEMPLATE };
+        setTemplates([defaultTemplate]);
+        setSelectedTemplate(defaultTemplate);
+      }
+    }
+  }, []);
+
 
   useEffect(() => {
     if (!selectedTemplate || !designerRef.current) return;
@@ -198,19 +247,18 @@ export default function TemplateMakerPage() {
     const initializeDesigner = async () => {
       setIsLoading(true);
       try {
-        const { Designer, table, group } = await import('@pdfme/ui');
+        const { Designer } = await import('@pdfme/ui');
+        const { image, table, text, group } = await import('@pdfme/schemas');
+
 
         if (designer.current) {
           designer.current.destroy();
+          designer.current = null;
         }
-        
+
         const fonts = await loadFonts();
         if (Object.keys(fonts).length === 0) {
-          toast({
-            variant: 'destructive',
-            title: 'Error Loading Fonts',
-            description: 'Could not load any custom fonts. Please ensure they are in the public/fonts directory.',
-          });
+          console.warn('No fonts loaded, using default fonts');
         }
 
         if (designerRef.current) {
@@ -223,13 +271,11 @@ export default function TemplateMakerPage() {
                   zoom: 'Fit to page',
                 },
                 plugins: {
+                    image,
                     table,
-                    group,
+                    text,
+                    group
                 },
-                tool: {
-                  schema: ['text', 'image', 'table', 'group'],
-                  layout: ['column']
-                }
               }
             });
         }
@@ -248,22 +294,29 @@ export default function TemplateMakerPage() {
     initializeDesigner();
 
     return () => {
-      designer.current?.destroy();
-      designer.current = null;
+      if (designer.current) {
+        designer.current.destroy();
+        designer.current = null;
+      }
     };
   }, [toast, selectedTemplate]);
 
   const onSaveTemplate = () => {
     if (!designer.current || !selectedTemplate) return;
+
     setIsSaving(true);
     try {
-      const templateJson = designer.current.getTemplate();
-      const updatedTemplates = templates.map(t => 
-        t.name === selectedTemplate.name ? { ...t, template: templateJson } : t
+      const currentTemplate = designer.current.getTemplate();
+
+      const updatedTemplates = templates.map(t =>
+        t.name === selectedTemplate.name ? { ...t, template: currentTemplate } : t
       );
       setTemplates(updatedTemplates);
-      localStorage.setItem('specSheetTemplates', JSON.stringify(updatedTemplates));
-      
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('specSheetTemplates', JSON.stringify(updatedTemplates));
+      }
+
       setTimeout(() => {
         toast({
           title: 'Template Saved',
@@ -293,16 +346,25 @@ export default function TemplateMakerPage() {
       return;
     }
 
-    const newTemplate: SavedTemplate = { name: newTemplateName.trim(), template: BLANK_TEMPLATE };
-    const updatedTemplates = [...templates, newTemplate];
-    
-    setTemplates(updatedTemplates);
-    setSelectedTemplate(newTemplate);
-    localStorage.setItem('specSheetTemplates', JSON.stringify(updatedTemplates));
+    try {
+      const newTemplate: SavedTemplate = { name: newTemplateName.trim(), template: BLANK_TEMPLATE };
+      const updatedTemplates = [...templates, newTemplate];
 
-    toast({ title: 'Template Created', description: `Successfully created "${newTemplate.name}".` });
-    setNewTemplateName("");
-    setIsNewTemplateDialogOpen(false);
+      setTemplates(updatedTemplates);
+      setSelectedTemplate(newTemplate);
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('specSheetTemplates', JSON.stringify(updatedTemplates));
+      }
+
+      toast({ title: 'Template Created', description: `Successfully created "${newTemplate.name}".` });
+      setNewTemplateName("");
+      setIsNewTemplateDialogOpen(false);
+
+    } catch (error) {
+      console.error('Error creating template:', error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to create template.' });
+    }
   };
 
   const handleDeleteTemplate = () => {
@@ -315,22 +377,30 @@ export default function TemplateMakerPage() {
         return;
     }
 
-    const updatedTemplates = templates.filter(t => t.name !== templateToDelete.name);
-    setTemplates(updatedTemplates);
-    localStorage.setItem('specSheetTemplates', JSON.stringify(updatedTemplates));
-    
-    toast({ title: 'Template Deleted', description: `Template "${templateToDelete.name}" has been deleted.` });
-    
-    if (selectedTemplate?.name === templateToDelete.name) {
-      setSelectedTemplate(updatedTemplates[0] || null);
-    }
+    try {
+      const updatedTemplates = templates.filter(t => t.name !== templateToDelete.name);
+      setTemplates(updatedTemplates);
 
-    setIsDeleteAlertOpen(false);
-    setTemplateToDelete(null);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('specSheetTemplates', JSON.stringify(updatedTemplates));
+      }
+
+      toast({ title: 'Template Deleted', description: `Template "${templateToDelete.name}" has been deleted.` });
+
+      if (selectedTemplate?.name === templateToDelete.name) {
+        setSelectedTemplate(updatedTemplates[0] || null);
+      }
+
+      setIsDeleteAlertOpen(false);
+      setTemplateToDelete(null);
+    } catch (error) {
+      console.error('Error deleting template:', error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete template.' });
+    }
   };
 
   const openDeleteDialog = (template: SavedTemplate, e: React.MouseEvent) => {
-      e.stopPropagation(); 
+      e.stopPropagation();
       setTemplateToDelete(template);
       setIsDeleteAlertOpen(true);
   };
@@ -342,7 +412,7 @@ export default function TemplateMakerPage() {
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Template Editor</h1>
                 <p className="text-muted-foreground">Design your product spec sheet templates. Name fields to auto-populate them in the generator.</p>
             </div>
-            <div className="flex-1 flex justify-center items-center gap-2">
+             <div className="flex-1 flex justify-center items-center gap-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="min-w-64">
@@ -360,8 +430,8 @@ export default function TemplateMakerPage() {
                   {templates.map(t => (
                     <DropdownMenuItem key={t.name} onSelect={() => setSelectedTemplate(t)} className={cn("justify-between", selectedTemplate?.name === t.name && "bg-accent")}>
                       <span>{t.name}</span>
-                      <button 
-                        onClick={(e) => openDeleteDialog(t, e)} 
+                      <button
+                        onClick={(e) => openDeleteDialog(t, e)}
                         className="p-1 rounded hover:bg-destructive/80 hover:text-destructive-foreground text-muted-foreground"
                         disabled={templates.length <= 1}
                         title={`Delete "${t.name}"`}
@@ -372,10 +442,16 @@ export default function TemplateMakerPage() {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button variant="outline" size="icon" onClick={addHeader} disabled={isLoading}><ArrowUpToLine className="h-4 w-4" /></Button>
-              <Button variant="outline" size="icon" onClick={addFooter} disabled={isLoading}><ArrowDownToLine className="h-4 w-4" /></Button>
             </div>
             <div className="flex-1 flex justify-end items-center gap-2">
+               <Button onClick={addHeader} variant="outline" size="sm" disabled={isLoading || !selectedTemplate}>
+                  <ArrowUpToLine className="mr-2"/>
+                  Add Header
+              </Button>
+              <Button onClick={addFooter} variant="outline" size="sm" disabled={isLoading || !selectedTemplate}>
+                  <ArrowDownToLine className="mr-2"/>
+                  Add Footer
+              </Button>
               <Button onClick={onSaveTemplate} disabled={isSaving || isLoading || !selectedTemplate}>
                   {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                   {isSaving ? 'Saving...' : 'Save Template'}
@@ -384,12 +460,14 @@ export default function TemplateMakerPage() {
         </div>
         <div className="w-full h-full border rounded-lg overflow-hidden flex justify-start relative">
           {isLoading && (
-            <div className="w-full h-full p-4">
-                <Skeleton className="h-16 w-1/2 mb-4" />
-                <Skeleton className="h-full w-full" />
+            <div className="w-full h-full p-4 absolute inset-0 z-10 bg-background/50 flex items-center justify-center">
+                <div className="flex items-center gap-2">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                    <p className="text-muted-foreground">Loading Designer...</p>
+                </div>
             </div>
           )}
-          <div ref={designerRef} className={`flex-1 h-full ${isLoading ? 'hidden' : ''}`} />
+          <div ref={designerRef} className={`flex-1 h-full ${isLoading ? 'opacity-0' : ''}`} />
         </div>
 
         <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
@@ -397,8 +475,8 @@ export default function TemplateMakerPage() {
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete the 
-                        <span className="font-semibold"> {templateToDelete?.name} </span> 
+                        This action cannot be undone. This will permanently delete the
+                        <span className="font-semibold"> {templateToDelete?.name} </span>
                         template.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
@@ -422,12 +500,17 @@ export default function TemplateMakerPage() {
             <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="template-name" className="text-right">Name</Label>
-                    <Input 
+                    <Input
                         id="template-name"
                         value={newTemplateName}
                         onChange={(e) => setNewTemplateName(e.target.value)}
                         className="col-span-3"
                         placeholder="e.g., A4 Spec Sheet"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleCreateNewTemplate();
+                          }
+                        }}
                     />
                 </div>
             </div>
@@ -440,3 +523,5 @@ export default function TemplateMakerPage() {
     </div>
   );
 }
+
+    
