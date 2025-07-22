@@ -1,3 +1,4 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
@@ -17,7 +18,7 @@ export default function RootLayout({
     <html lang="en" className="h-full">
       <head>
       </head>
-      <body className={cn("h-full font-body antialiased")}>
+      <body className={cn("h-full font-body antialiased")} suppressHydrationWarning={true}>
         {children}
         <Toaster />
       </body>
