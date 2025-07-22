@@ -7,6 +7,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { format, formatDistanceToNow } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DataSyncCard } from '@/components/dashboard/data-sync-card';
+import type { Platform } from '@/components/dashboard/dashboard-client-layout';
 
 type SyncRecord = {
     sku: string;
@@ -14,55 +16,68 @@ type SyncRecord = {
     status: 'Synced' | 'Out of Sync';
 };
 
-export default function SyncStatusPage() {
+type SyncStatusPageProps = {
+    platforms: Platform[];
+}
+
+export default function SyncStatusPage({ platforms }: SyncStatusPageProps) {
     const [syncHistory, setSyncHistory] = useState<SyncRecord[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // In a real app, this data would be fetched from a database.
-        // For this example, we'll read it from localStorage.
         const storedHistoryJson = localStorage.getItem('syncHistory');
+        let currentHistory: SyncRecord[] = [];
         if (storedHistoryJson) {
-            const storedHistory = JSON.parse(storedHistoryJson);
-             // Add a mock "Out of Sync" product for demonstration
-            if (!storedHistory.some((r: SyncRecord) => r.sku === 'SKU-ABCDE')) {
-                const oneWeekAgo = new Date();
-                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-                storedHistory.push({
-                    sku: 'SKU-ABCDE',
-                    syncedAt: oneWeekAgo.toISOString(),
-                    status: 'Out of Sync'
-                });
-            }
-            setSyncHistory(storedHistory);
-        } else {
-             // Create mock data if nothing is in local storage
-            const oneWeekAgo = new Date();
-            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-            const mockHistory = [{
-                sku: 'SKU-ABCDE',
+            currentHistory = JSON.parse(storedHistoryJson);
+        }
+        
+        // Add or update a mock "Out of Sync" product for demonstration
+        const mockProductSku = 'SKU-ABCDE';
+        const existingMockProductIndex = currentHistory.findIndex(r => r.sku === mockProductSku);
+        if (existingMockProductIndex === -1) {
+             const oneWeekAgo = new Date();
+             oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+             currentHistory.unshift({
+                sku: mockProductSku,
                 syncedAt: oneWeekAgo.toISOString(),
                 status: 'Out of Sync'
-            }];
-            setSyncHistory(mockHistory);
-            localStorage.setItem('syncHistory', JSON.stringify(mockHistory));
+            });
         }
-
+       
+        setSyncHistory(currentHistory);
         setIsLoading(false);
     }, []);
+
+    // This function will be called from DataSyncCard to update the history
+    const updateSyncHistory = (newRecord: SyncRecord) => {
+        setSyncHistory(prevHistory => {
+            const existingRecordIndex = prevHistory.findIndex(r => r.sku === newRecord.sku);
+            let newHistory = [...prevHistory];
+            if (existingRecordIndex > -1) {
+                newHistory[existingRecordIndex] = newRecord;
+            } else {
+                newHistory.unshift(newRecord);
+            }
+            // Also update localStorage
+            localStorage.setItem('syncHistory', JSON.stringify(newHistory));
+            return newHistory;
+        });
+    };
 
     return (
         <div className="flex flex-col gap-8">
              <div>
-                <h1 className="font-headline text-3xl font-bold tracking-tight">Sync Status</h1>
+                <h1 className="font-headline text-3xl font-bold tracking-tight">Data Synchronization</h1>
                 <p className="text-muted-foreground">
-                  View the last synchronization time for all your products.
+                  Fetch product data and view the synchronization status for all your products.
                 </p>
               </div>
 
+            <DataSyncCard platforms={platforms} onSyncComplete={updateSyncHistory} />
+
             <Card>
                 <CardHeader>
-                    <CardTitle>Product Sync Overview</CardTitle>
+                    <CardTitle>Product Sync History</CardTitle>
                     <CardDescription>
                         This table shows the synchronization status of all products that have been checked.
                     </CardDescription>
@@ -111,7 +126,7 @@ export default function SyncStatusPage() {
                                 ) : (
                                     <TableRow>
                                         <TableCell colSpan={4} className="h-24 text-center">
-                                            No sync history found. Fetch product data on the dashboard to begin.
+                                            No sync history found. Fetch product data to begin.
                                         </TableCell>
                                     </TableRow>
                                 )}

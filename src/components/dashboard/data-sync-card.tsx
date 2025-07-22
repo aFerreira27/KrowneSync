@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { auth } from '@/lib/firebase';
 import type { Discrepancy } from '@/lib/actions';
 import { Combobox, ComboboxOption } from '@/components/ui/combobox';
-import type { Platform } from '@/app/dashboard/layout';
+import type { Platform } from '@/components/dashboard/dashboard-client-layout';
 import Image from 'next/image';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Separator } from '@/components/ui/separator';
@@ -52,7 +52,7 @@ const initialState: ActionState = {
 };
 
 
-export function DataSyncCard({ platforms }: { platforms: Platform[] }) {
+export function DataSyncCard({ platforms, onSyncComplete }: { platforms: Platform[], onSyncComplete: (record: SyncHistoryRecord) => void }) {
   const [state, formAction] = useActionState(getSyncData, initialState);
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
@@ -98,22 +98,13 @@ export function DataSyncCard({ platforms }: { platforms: Platform[] }) {
       // Save to sync history for the new page
       const syncStatus: 'Synced' | 'Out of Sync' = state.discrepancies && state.discrepancies.length > 0 ? 'Out of Sync' : 'Synced';
       const syncRecord: SyncHistoryRecord = { sku: productIdentifier, syncedAt: state.syncedAt, status: syncStatus };
-      const storedSyncHistoryJson = localStorage.getItem('syncHistory');
-      let syncHistory: SyncHistoryRecord[] = storedSyncHistoryJson ? JSON.parse(storedSyncHistoryJson) : [];
-      const existingRecordIndex = syncHistory.findIndex(r => r.sku === productIdentifier);
-      if (existingRecordIndex > -1) {
-          syncHistory[existingRecordIndex] = syncRecord;
-      } else {
-          syncHistory.unshift(syncRecord);
-      }
-      localStorage.setItem('syncHistory', JSON.stringify(syncHistory));
+      onSyncComplete(syncRecord);
     }
-  }, [state, toast, productIdentifier]);
+  }, [state, toast, productIdentifier, onSyncComplete]);
 
   return (
     <Card className="shadow-lg">
       <CardHeader>
-        <CardTitle className="font-headline text-xl">Data Synchronization</CardTitle>
         <CardDescription>
           Enter a product SKU to fetch its data from all connected platforms and identify discrepancies.
         </CardDescription>

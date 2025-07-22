@@ -27,7 +27,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import LogoutButton from '@/components/logout-button';
 import { SupportDialog } from '@/components/dashboard/support-dialog';
 import { ProfileDialog } from '@/components/dashboard/profile-dialog';
-import { DataSyncCard } from '@/components/dashboard/data-sync-card';
 import { Separator } from '@/components/ui/separator';
 import { ConnectedPlatforms } from '@/components/dashboard/connected-platforms';
 import Link from 'next/link';
@@ -41,14 +40,6 @@ export type Platform = {
   connected: boolean;
 };
 
-const initialPlatforms: Platform[] = [
-  { name: 'Salesforce', icon: <Database className="h-6 w-6 text-blue-500" />, token: '', connected: false },
-  { name: 'Salespad', icon: <ShoppingCart className="h-6 w-6 text-red-500" />, token: '', connected: false },
-  { name: 'Autoquotes', icon: <Presentation className="h-6 w-6 text-yellow-500" />, token: '', connected: false },
-  { name: 'Website CMS', icon: <Globe className="h-6 w-6 text-green-500" />, token: '', connected: false },
-  { name: 'Web Scrapper', icon: <SearchCode className="h-6 w-6 text-purple-500" />, token: '', connected: true }, // Web scrapper is always "connected"
-];
-
 type UserData = {
   name: string;
   email: string;
@@ -59,8 +50,12 @@ type UserData = {
 
 export function DashboardClientLayout({
   children,
+  platforms,
+  onPlatformUpdate
 }: {
   children: React.ReactNode;
+  platforms: Platform[];
+  onPlatformUpdate: (platforms: Platform[]) => void;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -70,13 +65,7 @@ export function DashboardClientLayout({
   const [isConnectionsOpen, setIsConnectionsOpen] = useState(false);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [platforms, setPlatforms] = useState<Platform[]>(initialPlatforms);
   const [focusedPlatform, setFocusedPlatform] = useState<string | null>(null);
-
-
-  const handlePlatformUpdate = useCallback((updatedPlatforms: Platform[]) => {
-    setPlatforms(updatedPlatforms);
-  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -250,7 +239,18 @@ export function DashboardClientLayout({
               <Separator />
               <div className="grid gap-6 lg:grid-cols-3">
                 <div className="lg:col-span-2">
-                  <DataSyncCard platforms={platforms} />
+                   <Card>
+                        <CardHeader>
+                            <CardTitle className="font-headline text-xl">Quick Access</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                             <p className="text-muted-foreground">
+                                Use the sidebar to navigate to the different tools available.
+                                You can check data synchronization status, edit PDF templates, or
+                                generate new spec sheets.
+                            </p>
+                        </CardContent>
+                    </Card>
                 </div>
                 <div className="flex flex-col gap-6">
                   <ConnectedPlatforms platforms={platforms} onConnectClick={onConnectClick}/>
@@ -258,14 +258,14 @@ export function DashboardClientLayout({
               </div>
             </div>
           )}
-          {!isDashboardPage && children}
+          {children}
         </main>
       </SidebarInset>
       <ConnectionsSheet 
         open={isConnectionsOpen} 
         onOpenChange={setIsConnectionsOpen} 
         platforms={platforms}
-        onPlatformUpdate={handlePlatformUpdate}
+        onPlatformUpdate={onPlatformUpdate}
         focusedPlatform={focusedPlatform}
         onClearFocus={clearFocus}
       />
