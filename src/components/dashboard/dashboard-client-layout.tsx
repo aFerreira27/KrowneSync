@@ -219,7 +219,7 @@ export function DashboardClientLayout({
               <Separator />
               <div className="grid gap-6 lg:grid-cols-3">
                 <div className="lg:col-span-2">
-                  <DataSyncCard />
+                  <DataSyncCard platforms={platforms} />
                 </div>
                 <div className="flex flex-col gap-6">
                   <ConnectedPlatforms platforms={platforms} onConnectClick={onConnectClick}/>

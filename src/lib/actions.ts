@@ -3,7 +3,7 @@
 
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { findDataDiscrepancies } from '@/ai/flows/find-data-discrepancies';
+import { findDataDiscrepancies, type FindDataDiscrepanciesOutput } from '@/ai/flows/find-data-discrepancies';
 import { getFirebaseAuth, getFirestore } from '@/lib/firebase-admin';
 
 export async function logout() {
@@ -24,7 +24,11 @@ const getSalesforceData = (sku: string) => {
         price: 299.99,
         description: 'A durable and reliable faucet for commercial kitchens.',
         material: 'Stainless Steel',
-        warranty_years: 5
+        warranty_years: 5,
+        series: 'Krowne Royal Series',
+        standard_features: ['Ceramic valve', 'Lever handles', 'Swing spout'],
+        compliances: 'NSF, AB1953',
+        image_url_1: 'https://placehold.co/600x400.png'
     };
 };
 
@@ -35,7 +39,11 @@ const getSalespadData = (sku: string) => {
         description: 'Heavy Duty Commercial Faucet',
         list_price: 299.99,
         material: '304 Stainless Steel',
-        flow_rate_gpm: 2.2
+        flow_rate_gpm: 2.2,
+        specifications_table: JSON.stringify([
+            { name: 'Flow Rate', value: '2.2 GPM' },
+            { name: 'Inlet Size', value: '1/2" NPT' }
+        ])
     };
 };
 
@@ -46,7 +54,8 @@ const getAutoquotesData = (sku: string) => {
         product_name: 'Heavy Duty Faucet',
         price: 305.00, // Price discrepancy
         spec_sheet_id: 'SPEC-HD-FAUCET-01',
-        warranty_desc: '5 Year Limited Warranty'
+        warranty_desc: '5 Year Limited Warranty',
+        image_url: 'https://placehold.co/600x400.png'
     };
 };
 
@@ -59,7 +68,10 @@ const getWebsiteData = (sku: string) => {
         short_description: 'A durable and reliable faucet for commercial kitchens.',
         material: 'Stainless Steel',
         flow_rate: '2.2 GPM',
-        warranty: '5 Years'
+        warranty: '5 Years',
+        features: ['Heavy-duty brass construction', 'Ceramic disc cartridges', 'Chrome plated finish'],
+        specifications: [{ spec: 'Weight', value: '8 lbs'}, {spec: 'Height', value: '12 inches'}],
+        images: ['https://placehold.co/600x400.png', 'https://placehold.co/600x400.png']
     };
 };
 
@@ -68,7 +80,15 @@ export type Discrepancy = {
     values: Record<string, string>;
 };
 
-export async function getSyncData(prevState: any, formData: FormData) {
+export type ActionState = {
+  productData?: FindDataDiscrepanciesOutput['consolidatedData'];
+  discrepancies?: Discrepancy[];
+  summary?: string;
+  error?: string | any;
+  syncedAt?: string;
+}
+
+export async function getSyncData(prevState: any, formData: FormData): Promise<ActionState> {
   try {
     const validatedFields = syncSchema.safeParse({
       productIdentifier: formData.get('productIdentifier'),
@@ -88,7 +108,7 @@ export async function getSyncData(prevState: any, formData: FormData) {
     console.log("Authenticated user UID:", decodedToken.uid);
 
     // Simulate fetching data from all platforms
-    const productData = {
+    const platformData = {
         salesforce: getSalesforceData(productIdentifier) || {},
         salespad: getSalespadData(productIdentifier) || {},
         autoquotes: getAutoquotesData(productIdentifier) || {},
@@ -96,14 +116,14 @@ export async function getSyncData(prevState: any, formData: FormData) {
     };
 
     // If no data is found on any platform, return an error.
-    if (Object.values(productData).every(p => Object.keys(p).length === 0)) {
+    if (Object.values(platformData).every(p => Object.keys(p).length === 0)) {
         return { error: `No product found with identifier "${productIdentifier}".` };
     }
 
-    const aiResult = await findDataDiscrepancies(productData);
+    const aiResult = await findDataDiscrepancies(platformData);
     
     return {
-      productData,
+      productData: aiResult.consolidatedData,
       discrepancies: aiResult.discrepancies,
       summary: aiResult.summary,
       syncedAt: new Date().toISOString(), // Add timestamp for sync status

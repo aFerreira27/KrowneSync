@@ -3,23 +3,26 @@
 
 import { useActionState, useRef, useState, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
-import { getSyncData } from '@/lib/actions';
+import { getSyncData, type ActionState } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AlertTriangle, BadgeCheck, FileWarning, Loader2, Search } from 'lucide-react';
+import { AlertTriangle, BadgeCheck, FileWarning, Loader2, Search, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { auth } from '@/lib/firebase';
 import type { Discrepancy } from '@/lib/actions';
 import { Combobox, ComboboxOption } from '@/components/ui/combobox';
+import type { Platform } from '@/app/dashboard/layout';
+import Image from 'next/image';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { Separator } from '@/components/ui/separator';
 
-function SubmitButton() {
+function SubmitButton({ allPlatformsConnected }: { allPlatformsConnected: boolean }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending} className="w-full sm:w-auto" variant="default">
+    <Button type="submit" disabled={pending || !allPlatformsConnected} className="w-full sm:w-auto" variant="default">
       {pending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -41,55 +44,23 @@ type SyncHistoryRecord = {
     status: 'Synced' | 'Out of Sync';
 }
 
-const initialState: {
-  productData?: any;
-  discrepancies?: Discrepancy[];
-  summary?: string;
-  error?: string | any;
-  syncedAt?: string;
-} = {
-  productData: null,
+const initialState: ActionState = {
+  productData: undefined,
   discrepancies: [],
   summary: '',
   error: null,
 };
 
-function ProductDataTable({ data }: { data: Record<string, any> | null }) {
-    if (!data) {
-        return <p className="text-muted-foreground text-sm">No data available for this platform.</p>;
-    }
 
-    return (
-        <div className="rounded-md border text-sm">
-             <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead className="w-[150px]">Field</TableHead>
-                        <TableHead>Value</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {Object.entries(data).map(([key, value]) => (
-                        <TableRow key={key}>
-                            <TableCell className="font-medium capitalize">{key.replace(/_/g, ' ')}</TableCell>
-                            <TableCell>{String(value)}</TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </div>
-    );
-}
-
-
-export function DataSyncCard() {
+export function DataSyncCard({ platforms }: { platforms: Platform[] }) {
   const [state, formAction] = useActionState(getSyncData, initialState);
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
   const [productIdentifier, setProductIdentifier] = useState('');
   
-  const [activeTab, setActiveTab] = useState('salesforce');
   const [searchHistory, setSearchHistory] = useState<ComboboxOption[]>([]);
+
+  const allPlatformsConnected = platforms.every(p => p.connected);
 
   useEffect(() => {
     // Load search history from local storage
@@ -100,9 +71,6 @@ export function DataSyncCard() {
   }, []);
 
   const handleFormAction = async (formData: FormData) => {
-    // Manually append the product identifier and idToken before calling the action
-    formData.set('productIdentifier', productIdentifier);
-
     const user = auth.currentUser;
     if (!user) {
         toast({
@@ -161,13 +129,6 @@ export function DataSyncCard() {
           syncHistory.unshift(syncRecord);
       }
       localStorage.setItem('syncHistory', JSON.stringify(syncHistory));
-
-
-      if (state.discrepancies && state.discrepancies.length > 0) {
-        setActiveTab('discrepancies');
-      } else {
-        setActiveTab('salesforce');
-      }
     }
   }, [state, toast, productIdentifier]);
 
@@ -176,7 +137,7 @@ export function DataSyncCard() {
       <CardHeader>
         <CardTitle className="font-headline text-xl">Data Synchronization</CardTitle>
         <CardDescription>
-          Enter a product name or SKU to fetch its data from all connected platforms and identify discrepancies.
+          Enter a product SKU to fetch its data from all connected platforms and identify discrepancies.
         </CardDescription>
       </CardHeader>
       <form ref={formRef} action={handleFormAction}>
@@ -194,80 +155,146 @@ export function DataSyncCard() {
               />
               <input type="hidden" name="productIdentifier" value={productIdentifier} />
             </div>
-            <SubmitButton />
+            <SubmitButton allPlatformsConnected={allPlatformsConnected} />
           </div>
 
+          {!allPlatformsConnected && (
+            <Alert variant="destructive">
+                <Info className="h-4 w-4" />
+                <AlertTitle>Connections Incomplete</AlertTitle>
+                <AlertDescription>
+                    Please connect all platforms in the Connections panel before fetching data.
+                </AlertDescription>
+            </Alert>
+          )}
+
           {state?.productData && (
-             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
-                <TabsTrigger value="salesforce">Salesforce</TabsTrigger>
-                <TabsTrigger value="salespad">Salespad</TabsTrigger>
-                <TabsTrigger value="autoquotes">Autoquotes</TabsTrigger>
-                <TabsTrigger value="website">Website</TabsTrigger>
-                <TabsTrigger value="discrepancies" className="flex items-center gap-2">
-                    <FileWarning className="h-4 w-4" />
-                    Discrepancies
-                    {state.discrepancies && state.discrepancies.length > 0 && (
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground text-xs">
-                            {state.discrepancies.length}
-                        </span>
-                    )}
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="salesforce" className="mt-4">
-                <ProductDataTable data={state.productData.salesforce} />
-              </TabsContent>
-              <TabsContent value="salespad" className="mt-4">
-                 <ProductDataTable data={state.productData.salespad} />
-              </TabsContent>
-              <TabsContent value="autoquotes" className="mt-4">
-                 <ProductDataTable data={state.productData.autoquotes} />
-              </TabsContent>
-              <TabsContent value="website" className="mt-4">
-                 <ProductDataTable data={state.productData.website} />
-              </TabsContent>
-              <TabsContent value="discrepancies" className="mt-4 space-y-4">
-                {state.discrepancies && state.discrepancies.length > 0 ? (
-                    <>
-                        <Alert>
-                            <AlertTriangle className="h-4 w-4" />
-                            <AlertTitle className="font-headline">AI Analysis Complete</AlertTitle>
-                            <AlertDescription>{state.summary}</AlertDescription>
-                        </Alert>
+            <Card>
+                <CardContent className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                           <Carousel className="w-full">
+                                <CarouselContent>
+                                    {state.productData.images && state.productData.images.length > 0 ? (
+                                        state.productData.images.map((img, index) => (
+                                            <CarouselItem key={index}>
+                                                <Image 
+                                                    src={img} 
+                                                    alt={`${state.productData?.name} image ${index + 1}`}
+                                                    width={600}
+                                                    height={400}
+                                                    className="rounded-lg object-cover aspect-video"
+                                                />
+                                            </CarouselItem>
+                                        ))
+                                    ) : (
+                                         <CarouselItem>
+                                            <div className="bg-muted rounded-lg aspect-video flex items-center justify-center">
+                                                 <p className="text-muted-foreground">No Image</p>
+                                            </div>
+                                         </CarouselItem>
+                                    )}
+                                </CarouselContent>
+                                <CarouselPrevious />
+                                <CarouselNext />
+                            </Carousel>
+                        </div>
+                        <div>
+                             <h2 className="text-2xl font-bold font-headline">{state.productData.name}</h2>
+                             <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+                                <span>SKU: {state.productData.sku}</span>
+                                {state.productData.series && (
+                                    <>
+                                        <Separator orientation="vertical" className="h-4" />
+                                        <span>Series: {state.productData.series}</span>
+                                    </>
+                                )}
+                             </div>
+                             <p className="mt-4 text-sm">{state.productData.description}</p>
+                        </div>
+                    </div>
+                    <Separator className="my-6" />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 className="font-headline font-semibold mb-3">Standard Features</h3>
+                            <ul className="list-disc list-inside space-y-1 text-sm">
+                                {state.productData.standardFeatures?.map(feature => <li key={feature}>{feature}</li>)}
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 className="font-headline font-semibold mb-3">Compliances</h3>
+                            <ul className="list-disc list-inside space-y-1 text-sm">
+                                {state.productData.compliances?.map(item => <li key={item}>{item}</li>)}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <Separator className="my-6" />
+
+                    <div>
+                        <h3 className="font-headline font-semibold mb-3">Specifications</h3>
                         <div className="rounded-md border">
                             <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Field</TableHead>
-                                        <TableHead>Salesforce</TableHead>
-                                        <TableHead>Salespad</TableHead>
-                                        <TableHead>Autoquotes</TableHead>
-                                        <TableHead>Website</TableHead>
-                                    </TableRow>
-                                </TableHeader>
                                 <TableBody>
-                                    {state.discrepancies.map((d, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell className="font-medium capitalize">{d.field.replace(/_/g, ' ')}</TableCell>
-                                            <TableCell>{d.values.salesforce || 'N/A'}</TableCell>
-                                            <TableCell>{d.values.salespad || 'N/A'}</TableCell>
-                                            <TableCell>{d.values.autoquotes || 'N/A'}</TableCell>
-                                            <TableCell>{d.values.website || 'N/A'}</TableCell>
+                                    {state.productData.specifications?.map(spec => (
+                                        <TableRow key={spec.name}>
+                                            <TableCell className="font-medium">{spec.name}</TableCell>
+                                            <TableCell>{spec.value}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
                         </div>
-                    </>
-                ) : (
-                    <Alert>
-                        <BadgeCheck className="h-4 w-4" />
-                        <AlertTitle className="font-headline">No Discrepancies Found</AlertTitle>
-                        <AlertDescription>The AI analysis found no conflicting data for this product across all platforms.</AlertDescription>
-                    </Alert>
-                )}
-              </TabsContent>
-            </Tabs>
+                    </div>
+
+                    <Separator className="my-6" />
+
+                     <div>
+                        <h3 className="font-headline font-semibold mb-3">Discrepancies</h3>
+                        {state.discrepancies && state.discrepancies.length > 0 ? (
+                            <>
+                                <Alert>
+                                    <AlertTriangle className="h-4 w-4" />
+                                    <AlertTitle className="font-headline">AI Analysis Complete</AlertTitle>
+                                    <AlertDescription>{state.summary}</AlertDescription>
+                                </Alert>
+                                <div className="rounded-md border mt-4">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Field</TableHead>
+                                                <TableHead>Salesforce</TableHead>
+                                                <TableHead>Salespad</TableHead>
+                                                <TableHead>Autoquotes</TableHead>
+                                                <TableHead>Website</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {state.discrepancies.map((d, index) => (
+                                                <TableRow key={index}>
+                                                    <TableCell className="font-medium capitalize">{d.field.replace(/_/g, ' ')}</TableCell>
+                                                    <TableCell>{d.values.salesforce || 'N/A'}</TableCell>
+                                                    <TableCell>{d.values.salespad || 'N/A'}</TableCell>
+                                                    <TableCell>{d.values.autoquotes || 'N/A'}</TableCell>
+                                                    <TableCell>{d.values.website || 'N/A'}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </>
+                        ) : (
+                            <Alert>
+                                <BadgeCheck className="h-4 w-4" />
+                                <AlertTitle className="font-headline">No Discrepancies Found</AlertTitle>
+                                <AlertDescription>The AI analysis found no conflicting data for this product across all platforms.</AlertDescription>
+                            </Alert>
+                        )}
+                    </div>
+
+                </CardContent>
+            </Card>
           )}
 
         </CardContent>
