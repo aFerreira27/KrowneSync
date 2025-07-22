@@ -6,7 +6,7 @@ import type { Designer, Template } from '@pdfme/ui';
 import { BLANK_PDF } from '@pdfme/common';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, Plus, Trash2, ChevronDown, Edit, ArrowUpToLine, ArrowDownToLine } from 'lucide-react';
+import { Loader2, Save, Plus, Trash2, ChevronDown, Edit } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   DropdownMenu,
@@ -36,7 +36,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const BLANK_TEMPLATE: Template = {
   basePdf: BLANK_PDF,
@@ -148,6 +147,51 @@ export default function TemplateMakerPage() {
 
   }, []);
 
+  const addHeader = async () => {
+    if (!designer.current) return;
+    const headerDataUri = await getAssetAsDataUri('/images/Header.svg');
+    if (!headerDataUri) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not load header image.' });
+        return;
+    }
+    const currentTemplate = designer.current.getTemplate();
+    const newSchemas = [{
+        ...currentTemplate.schemas[0],
+        headerImage: {
+            type: 'image',
+            position: { x: 0, y: 0 },
+            width: 210,
+            height: 40,
+            data: headerDataUri,
+        }
+    }];
+
+    designer.current.updateTemplate({ ...currentTemplate, schemas: newSchemas });
+    toast({ title: 'Header Added', description: 'The header has been added to the template.' });
+  };
+
+  const addFooter = async () => {
+    if (!designer.current) return;
+    const footerDataUri = await getAssetAsDataUri('/images/Footer.svg');
+    if (!footerDataUri) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not load footer image.' });
+        return;
+    }
+    const currentTemplate = designer.current.getTemplate();
+    const newSchemas = [{
+        ...currentTemplate.schemas[0],
+        footerImage: {
+            type: 'image',
+            position: { x: 0, y: 257 },
+            width: 210,
+            height: 40,
+            data: footerDataUri,
+        }
+    }];
+    designer.current.updateTemplate({ ...currentTemplate, schemas: newSchemas });
+    toast({ title: 'Footer Added', description: 'The footer has been added to the template.' });
+  };
+
   useEffect(() => {
     if (!selectedTemplate || !designerRef.current) return;
 
@@ -183,6 +227,16 @@ export default function TemplateMakerPage() {
                     group,
                 },
                 tool: {
+                  'header': {
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-to-line"><path d="M5 3h14"/><path d="m18 13-6-6-6 6"/><path d="M12 7v14"/></svg>',
+                    label: 'Add Header',
+                    action: addHeader,
+                  },
+                  'footer': {
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-to-line"><path d="M5 21h14"/><path d="m18 11-6 6-6-6"/><path d="M12 17V3"/></svg>',
+                    label: 'Add Footer',
+                    action: addFooter,
+                  },
                   schema: ['text', 'image', 'table', 'group'],
                   layout: ['column']
                 }
@@ -238,52 +292,6 @@ export default function TemplateMakerPage() {
       setIsSaving(false);
     }
   };
-
-  const addHeader = async () => {
-    if (!designer.current) return;
-    const headerDataUri = await getAssetAsDataUri('/images/Header.svg');
-    if (!headerDataUri) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not load header image.' });
-        return;
-    }
-    const currentTemplate = designer.current.getTemplate();
-    const newSchemas = [{
-        ...currentTemplate.schemas[0],
-        headerImage: {
-            type: 'image',
-            position: { x: 0, y: 0 },
-            width: 210,
-            height: 40,
-            data: headerDataUri,
-        }
-    }];
-
-    designer.current.updateTemplate({ ...currentTemplate, schemas: newSchemas });
-    toast({ title: 'Header Added', description: 'The header has been added to the template.' });
-  };
-
-  const addFooter = async () => {
-    if (!designer.current) return;
-    const footerDataUri = await getAssetAsDataUri('/images/Footer.svg');
-    if (!footerDataUri) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not load footer image.' });
-        return;
-    }
-    const currentTemplate = designer.current.getTemplate();
-    const newSchemas = [{
-        ...currentTemplate.schemas[0],
-        footerImage: {
-            type: 'image',
-            position: { x: 0, y: 257 },
-            width: 210,
-            height: 40,
-            data: footerDataUri,
-        }
-    }];
-    designer.current.updateTemplate({ ...currentTemplate, schemas: newSchemas });
-    toast({ title: 'Footer Added', description: 'The footer has been added to the template.' });
-  };
-
 
   const handleCreateNewTemplate = () => {
     if (!newTemplateName.trim()) {
@@ -389,32 +397,6 @@ export default function TemplateMakerPage() {
                 <Skeleton className="h-full w-full" />
             </div>
           )}
-          
-          <TooltipProvider>
-            <div className="flex flex-col gap-2 p-2 bg-muted/50 border-r">
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" onClick={addHeader}>
-                            <ArrowUpToLine />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">
-                        <p>Add Header</p>
-                    </TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" onClick={addFooter}>
-                            <ArrowDownToLine />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">
-                        <p>Add Footer</p>
-                    </TooltipContent>
-                </Tooltip>
-            </div>
-          </TooltipProvider>
-
           <div ref={designerRef} className={`flex-1 h-full ${isLoading ? 'hidden' : ''}`} />
         </div>
 
