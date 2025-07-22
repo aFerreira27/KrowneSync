@@ -159,11 +159,6 @@ export function DashboardClientLayout({
               </SidebarMenuItem>
               <CollapsibleContent asChild>
                 <SidebarMenuSub>
-                  <SidebarMenuSubItem>
-                      <SidebarMenuSubLink href="/dashboard/template-maker" isActive={pathname === '/dashboard/template-maker'}>
-                      Template Editor
-                    </SidebarMenuSubLink>
-                  </SidebarMenuSubItem>
                     <SidebarMenuSubItem>
                     <SidebarMenuSubLink href="/dashboard/pdf-generator" isActive={pathname === '/dashboard/pdf-generator'}>
                       Spec Sheet Generator
