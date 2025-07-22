@@ -99,43 +99,34 @@ export function DataSyncCard() {
     }
   }, []);
 
-  const handleFormSubmit = (formData: FormData) => {
-    formData.set('productIdentifier', productIdentifier);
-    handleFormAction(formData);
-  };
-
   const handleFormAction = async (formData: FormData) => {
+    // Manually append the product identifier and idToken before calling the action
+    formData.set('productIdentifier', productIdentifier);
+
     const user = auth.currentUser;
-    if (!productIdentifier) {
+    if (!user) {
         toast({
             variant: "destructive",
-            title: "Input Required",
-            description: "Please enter a product identifier.",
+            title: "Authentication Error",
+            description: "You must be signed in to perform this action.",
         });
         return;
     }
-    
-    if (user) {
-      try {
+
+    try {
         const idToken = await user.getIdToken(true);
         formData.append('idToken', idToken);
         formAction(formData);
-      } catch (error) {
+    } catch (error) {
         console.error("Error getting ID token:", error);
         toast({
-          variant: "destructive",
-          title: "Authentication Error",
-          description: "Could not verify your session. Please sign in again.",
+            variant: "destructive",
+            title: "Authentication Error",
+            description: "Could not verify your session. Please sign in again.",
         });
-      }
-    } else {
-       toast({
-        variant: "destructive",
-        title: "Authentication Error",
-        description: "You must be signed in to perform this action.",
-      });
     }
   };
+
 
   useEffect(() => {
     if (state?.error) {
@@ -188,7 +179,7 @@ export function DataSyncCard() {
           Enter a product name or SKU to fetch its data from all connected platforms and identify discrepancies.
         </CardDescription>
       </CardHeader>
-      <form ref={formRef} action={handleFormSubmit}>
+      <form ref={formRef} action={handleFormAction}>
         <CardContent className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="flex-grow space-y-2">
