@@ -128,38 +128,36 @@ export function DashboardClientLayout({
               </Link>
             </SidebarMenuItem>
             
-            <Collapsible asChild>
-              <>
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
-                      <SidebarMenuButton>
-                          <ShieldCheck />
-                          Data Tools
-                          <ChevronRight className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-90" />
-                      </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                </SidebarMenuItem>
+            <Collapsible>
+              <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                    <SidebarMenuButton>
+                        <ShieldCheck />
+                        Data Tools
+                        <ChevronRight className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-90" />
+                    </SidebarMenuButton>
+                </CollapsibleTrigger>
+              </SidebarMenuItem>
 
-                <CollapsibleContent asChild>
-                  <SidebarMenuSub>
+              <CollapsibleContent asChild>
+                <SidebarMenuSub>
+                  <SidebarMenuSubItem>
+                    <SidebarMenuSubLink href="/dashboard/sync-status" isActive={pathname === '/dashboard/sync-status'}>
+                      Sync Status
+                    </SidebarMenuSubLink>
+                  </SidebarMenuSubItem>
+                  <SidebarMenuSubItem>
+                      <SidebarMenuSubLink href="/dashboard/template-maker" isActive={pathname === '/dashboard/template-maker'}>
+                      Template Maker
+                    </SidebarMenuSubLink>
+                  </SidebarMenuSubItem>
                     <SidebarMenuSubItem>
-                      <SidebarMenuSubLink href="/dashboard/sync-status" isActive={pathname === '/dashboard/sync-status'}>
-                        Sync Status
-                      </SidebarMenuSubLink>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                       <SidebarMenuSubLink href="/dashboard/template-maker" isActive={pathname === '/dashboard/template-maker'}>
-                        Template Maker
-                      </SidebarMenuSubLink>
-                    </SidebarMenuSubItem>
-                     <SidebarMenuSubItem>
-                      <SidebarMenuSubLink href="/dashboard/pdf-generator" isActive={pathname === '/dashboard/pdf-generator'}>
-                        PDF Generator
-                      </SidebarMenuSubLink>
-                    </SidebarMenuSubItem>
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              </>
+                    <SidebarMenuSubLink href="/dashboard/pdf-generator" isActive={pathname === '/dashboard/pdf-generator'}>
+                      PDF Generator
+                    </SidebarMenuSubLink>
+                  </SidebarMenuSubItem>
+                </SidebarMenuSub>
+              </CollapsibleContent>
             </Collapsible>
           </SidebarMenu>
         </SidebarContent>
