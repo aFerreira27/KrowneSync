@@ -34,20 +34,6 @@ export default function DashboardPage({ platforms, onPlatformUpdate, onConnectCl
         if (storedHistoryJson) {
             currentHistory = JSON.parse(storedHistoryJson);
         }
-        
-        // Add or update a mock "Out of Sync" product for demonstration
-        const mockProductSku = 'SKU-ABCDE';
-        const existingMockProductIndex = currentHistory.findIndex(r => r.sku === mockProductSku);
-        if (existingMockProductIndex === -1) {
-             const oneWeekAgo = new Date();
-             oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-             currentHistory.unshift({
-                sku: mockProductSku,
-                syncedAt: oneWeekAgo.toISOString(),
-                status: 'Out of Sync'
-            });
-        }
-       
         setSyncHistory(currentHistory);
         setIsLoading(false);
     }, []);
