@@ -1,4 +1,4 @@
-const loadFonts = async () => {
+const loadFonts = async (): Promise<{ [key: string]: ArrayBuffer }> => {
   const fontFileNames = [
     'HelveticaNeueLTStd-Bd',
     'HelveticaNeueLTStd-BdCn',
@@ -21,13 +21,7 @@ const loadFonts = async () => {
         return null;
       }
       const fontData = await response.arrayBuffer();
-      const fontObject: { [key: string]: any } = { data: fontData };
-
-      if (name === 'HelveticaNeueLTStd-Roman') {
-        fontObject.fallback = true;
-      }
-
-      return { [name]: fontObject };
+      return { name, data: fontData };
 
     } catch (error) {
       console.error(`An error occurred while fetching font ${name}:`, error);
@@ -36,5 +30,15 @@ const loadFonts = async () => {
   });
 
   const fontDataArray = await Promise.all(fontPromises);
-  return Object.assign({}, ...fontDataArray.filter(Boolean));
+  
+  const fonts: { [key: string]: ArrayBuffer } = {};
+  fontDataArray.forEach(font => {
+    if (font) {
+      fonts[font.name] = font.data;
+    }
+  });
+
+  return fonts;
 };
+
+export default loadFonts;
