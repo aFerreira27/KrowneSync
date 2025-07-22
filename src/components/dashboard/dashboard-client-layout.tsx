@@ -32,6 +32,7 @@ import { ConnectedPlatforms } from '@/components/dashboard/connected-platforms';
 import Link from 'next/link';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronRight } from 'lucide-react';
+import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 
 export type Platform = {
   name: string;
