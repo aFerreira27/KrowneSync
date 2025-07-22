@@ -748,7 +748,7 @@ const SidebarMenuSubLink = React.forwardRef<
   return (
     <Link {...props} passHref asChild>
       <SidebarMenuSubButton ref={ref} size={size} isActive={isActive}>
-        <span>{children}</span>
+        {children}
       </SidebarMenuSubButton>
     </Link>
   )
