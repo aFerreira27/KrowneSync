@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -15,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { useState, ChangeEvent, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import type { Platform } from '@/app/dashboard/layout';
+import { Switch } from '../ui/switch';
 
 type ConnectionsSheetProps = {
   open: boolean;
@@ -55,6 +57,18 @@ export function ConnectionsSheet({ open, onOpenChange, platforms: initialPlatfor
     }
   };
 
+  const handleToggleScraper = (checked: boolean) => {
+    const updatedPlatforms = platforms.map(p => 
+      p.name === 'Web Scrapper' ? { ...p, connected: checked } : p
+    );
+    setPlatforms(updatedPlatforms);
+    onPlatformUpdate(updatedPlatforms);
+    toast({
+        title: 'Web Scrapper',
+        description: `Scraping from krowne.com has been ${checked ? 'enabled' : 'disabled'}.`,
+    });
+  };
+
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -82,29 +96,53 @@ export function ConnectionsSheet({ open, onOpenChange, platforms: initialPlatfor
                     <Label htmlFor={`${platform.name}-token`} className="text-base font-medium">
                       {platform.name}
                     </Label>
-                     <Badge 
-                      variant={platform.connected ? 'secondary' : 'outline'} 
-                      className={platform.connected 
-                        ? 'mt-1 w-fit bg-green-100/50 text-green-800 dark:text-green-200 border-green-200/50' 
-                        : 'mt-1 w-fit'}
-                    >
-                      {platform.connected ? 'Connected' : 'Disconnected'}
-                    </Badge>
+                    {platform.name === 'Web Scrapper' ? (
+                        <Badge 
+                            variant={platform.connected ? 'secondary' : 'outline'} 
+                            className={platform.connected 
+                                ? 'mt-1 w-fit bg-green-100/50 text-green-800 dark:text-green-200 border-green-200/50' 
+                                : 'mt-1 w-fit'}
+                        >
+                            {platform.connected ? 'Enabled' : 'Disabled'}
+                        </Badge>
+                    ) : (
+                         <Badge 
+                          variant={platform.connected ? 'secondary' : 'outline'} 
+                          className={platform.connected 
+                            ? 'mt-1 w-fit bg-green-100/50 text-green-800 dark:text-green-200 border-green-200/50' 
+                            : 'mt-1 w-fit'}
+                        >
+                          {platform.connected ? 'Connected' : 'Disconnected'}
+                        </Badge>
+                    )}
                   </div>
                 </div>
-                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-                    <Input 
-                        id={`${platform.name}-token`}
-                        type="password"
-                        placeholder="Enter API Key / Token"
-                        value={platform.token}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => handleTokenChange(platform.name, e.target.value)}
-                        className="sm:min-w-64"
+                {platform.name === 'Web Scrapper' ? (
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="scraper-switch" className="text-sm text-muted-foreground">
+                      Include in fetch
+                    </Label>
+                    <Switch 
+                      id="scraper-switch"
+                      checked={platform.connected}
+                      onCheckedChange={handleToggleScraper}
                     />
-                    <Button onClick={() => handleSaveToken(platform.name)}>
-                        {platform.connected ? 'Update' : 'Save'}
-                    </Button>
-                </div>
+                  </div>
+                ) : (
+                  <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+                      <Input 
+                          id={`${platform.name}-token`}
+                          type="password"
+                          placeholder="Enter API Key / Token"
+                          value={platform.token}
+                          onChange={(e: ChangeEvent<HTMLInputElement>) => handleTokenChange(platform.name, e.target.value)}
+                          className="sm:min-w-64"
+                      />
+                      <Button onClick={() => handleSaveToken(platform.name)}>
+                          {platform.connected ? 'Update' : 'Save'}
+                      </Button>
+                  </div>
+                )}
               </li>
             ))}
           </ul>

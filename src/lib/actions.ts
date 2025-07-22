@@ -13,6 +13,7 @@ export async function logout() {
 
 const syncSchema = z.object({
   productIdentifier: z.string().min(1, "Product identifier must not be empty."),
+  includeWebScrapper: z.boolean(),
 });
 
 // Mock data fetching functions to simulate API calls
@@ -91,6 +92,7 @@ export type ActionState = {
 export async function getSyncData(prevState: any, formData: FormData): Promise<ActionState> {
   const validatedFields = syncSchema.safeParse({
     productIdentifier: formData.get('productIdentifier'),
+    includeWebScrapper: formData.get('includeWebScrapper') === 'true',
   });
 
   if (!validatedFields.success) {
@@ -99,7 +101,7 @@ export async function getSyncData(prevState: any, formData: FormData): Promise<A
     };
   }
   
-  const { productIdentifier } = validatedFields.data;
+  const { productIdentifier, includeWebScrapper } = validatedFields.data;
   const platformData: any = {};
 
   try {
@@ -122,15 +124,21 @@ export async function getSyncData(prevState: any, formData: FormData): Promise<A
   } catch(e) {
     return { error: "Failed to fetch data from Website CMS." }
   }
-  try {
-    const webScrapperData = await scrapeKrowneWebsite(productIdentifier);
-    if(webScrapperData?.error){
-        return { error: `Web Scrapper Error: ${webScrapperData.error}` };
-    }
-    platformData.webscrapper = webScrapperData || {};
-  } catch(e) {
-    return { error: "Failed to fetch data from Web Scrapper." }
+
+  if (includeWebScrapper) {
+      try {
+        const webScrapperData = await scrapeKrowneWebsite(productIdentifier);
+        if(webScrapperData?.error){
+            return { error: `Web Scrapper Error: ${webScrapperData.error}` };
+        }
+        platformData.webscrapper = webScrapperData || {};
+      } catch(e) {
+        return { error: "Failed to fetch data from Web Scrapper." }
+      }
+  } else {
+    platformData.webscrapper = {};
   }
+
 
   // If no data is found on any platform, return an error.
   if (Object.values(platformData).every(p => Object.keys(p).length === 0)) {

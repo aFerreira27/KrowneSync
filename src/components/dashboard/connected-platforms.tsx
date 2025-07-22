@@ -1,3 +1,4 @@
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,8 +6,6 @@ import type { Platform } from "@/app/dashboard/layout";
 import { Link } from "lucide-react";
 
 export function ConnectedPlatforms({ platforms: platformData, onConnectClick }: { platforms: Platform[], onConnectClick?: () => void; }) {
-  // This is a placeholder now. The actual platforms state is managed in the layout.
-  // This component could be adapted to receive platforms as props if needed.
   const platforms = platformData || [];
 
   return (
@@ -22,7 +21,17 @@ export function ConnectedPlatforms({ platforms: platformData, onConnectClick }: 
                 {platform.icon}
                 <span className="font-medium">{platform.name}</span>
               </div>
-              {platform.connected ? (
+              {platform.name === 'Web Scrapper' ? (
+                 <Badge 
+                  variant={platform.connected ? 'secondary' : 'outline'}
+                  className={platform.connected 
+                    ? 'bg-green-100/50 text-green-800 dark:text-green-200 border-green-200/50'
+                    : 'bg-muted/50'
+                  }
+                >
+                  {platform.connected ? 'Enabled' : 'Disabled'}
+                </Badge>
+              ) : platform.connected ? (
                 <Badge 
                   variant='secondary'
                   className='bg-green-100/50 text-green-800 dark:text-green-200 border-green-200/50'

@@ -61,6 +61,8 @@ export function DataSyncCard({ platforms }: { platforms: Platform[] }) {
   const [searchHistory, setSearchHistory] = useState<ComboboxOption[]>([]);
 
   const atLeastOnePlatformConnected = platforms.some(p => p.connected);
+  const isWebScrapperEnabled = platforms.find(p => p.name === 'Web Scrapper')?.connected ?? false;
+
 
   useEffect(() => {
     // Load search history from local storage
@@ -130,6 +132,7 @@ export function DataSyncCard({ platforms }: { platforms: Platform[] }) {
                 emptyPlaceholder="No recent products."
               />
               <input type="hidden" name="productIdentifier" value={productIdentifier} />
+              <input type="hidden" name="includeWebScrapper" value={String(isWebScrapperEnabled)} />
             </div>
             <SubmitButton atLeastOnePlatformConnected={atLeastOnePlatformConnected} />
           </div>
