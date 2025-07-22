@@ -106,6 +106,7 @@ export async function getSyncData(prevState: any, formData: FormData) {
       productData,
       discrepancies: aiResult.discrepancies,
       summary: aiResult.summary,
+      syncedAt: new Date().toISOString(), // Add timestamp for sync status
     };
 
   } catch (e: any) {

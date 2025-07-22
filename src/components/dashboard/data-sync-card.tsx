@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useActionState, useRef, useState, useEffect } from 'react';
@@ -6,7 +7,6 @@ import { getSyncData } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,6 +14,7 @@ import { AlertTriangle, BadgeCheck, FileWarning, Loader2, Search } from 'lucide-
 import { useToast } from '@/hooks/use-toast';
 import { auth } from '@/lib/firebase';
 import type { Discrepancy } from '@/lib/actions';
+import { Combobox, ComboboxOption } from '@/components/ui/combobox';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -34,11 +35,18 @@ function SubmitButton() {
   );
 }
 
+type SyncHistoryRecord = {
+    sku: string;
+    syncedAt: string;
+    status: 'Synced' | 'Out of Sync';
+}
+
 const initialState: {
   productData?: any;
   discrepancies?: Discrepancy[];
   summary?: string;
   error?: string | any;
+  syncedAt?: string;
 } = {
   productData: null,
   discrepancies: [],
@@ -78,11 +86,35 @@ export function DataSyncCard() {
   const [state, formAction] = useActionState(getSyncData, initialState);
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
+  const [productIdentifier, setProductIdentifier] = useState('');
   
   const [activeTab, setActiveTab] = useState('salesforce');
+  const [searchHistory, setSearchHistory] = useState<ComboboxOption[]>([]);
+
+  useEffect(() => {
+    // Load search history from local storage
+    const storedHistory = localStorage.getItem('productSearchHistory');
+    if (storedHistory) {
+      setSearchHistory(JSON.parse(storedHistory));
+    }
+  }, []);
+
+  const handleFormSubmit = (formData: FormData) => {
+    formData.set('productIdentifier', productIdentifier);
+    handleFormAction(formData);
+  };
 
   const handleFormAction = async (formData: FormData) => {
     const user = auth.currentUser;
+    if (!productIdentifier) {
+        toast({
+            variant: "destructive",
+            title: "Input Required",
+            description: "Please enter a product identifier.",
+        });
+        return;
+    }
+    
     if (user) {
       try {
         const idToken = await user.getIdToken(true);
@@ -116,17 +148,37 @@ export function DataSyncCard() {
           title: "Error",
           description: errorMessage || "An unexpected error occurred.",
       });
-    }
-  }, [state, toast]);
-
-  useEffect(() => {
-      if (state?.discrepancies && state.discrepancies.length > 0) {
-          setActiveTab('discrepancies');
-      } else if (state?.productData) {
-          setActiveTab('salesforce');
+    } else if (state?.productData && state?.syncedAt) {
+      // Save successful search to history
+      const newHistory = [...searchHistory];
+      if (!newHistory.find(item => item.value === productIdentifier.toLowerCase())) {
+        newHistory.unshift({ value: productIdentifier.toLowerCase(), label: productIdentifier });
       }
-  }, [state.discrepancies, state.productData]);
+      const updatedHistory = newHistory.slice(0, 10); // Limit history size
+      setSearchHistory(updatedHistory);
+      localStorage.setItem('productSearchHistory', JSON.stringify(updatedHistory));
 
+      // Save to sync history for the new page
+      const syncStatus: 'Synced' | 'Out of Sync' = state.discrepancies && state.discrepancies.length > 0 ? 'Out of Sync' : 'Synced';
+      const syncRecord: SyncHistoryRecord = { sku: productIdentifier, syncedAt: state.syncedAt, status: syncStatus };
+      const storedSyncHistoryJson = localStorage.getItem('syncHistory');
+      let syncHistory: SyncHistoryRecord[] = storedSyncHistoryJson ? JSON.parse(storedSyncHistoryJson) : [];
+      const existingRecordIndex = syncHistory.findIndex(r => r.sku === productIdentifier);
+      if (existingRecordIndex > -1) {
+          syncHistory[existingRecordIndex] = syncRecord;
+      } else {
+          syncHistory.unshift(syncRecord);
+      }
+      localStorage.setItem('syncHistory', JSON.stringify(syncHistory));
+
+
+      if (state.discrepancies && state.discrepancies.length > 0) {
+        setActiveTab('discrepancies');
+      } else {
+        setActiveTab('salesforce');
+      }
+    }
+  }, [state, toast, productIdentifier]);
 
   return (
     <Card className="shadow-lg">
@@ -136,18 +188,20 @@ export function DataSyncCard() {
           Enter a product name or SKU to fetch its data from all connected platforms and identify discrepancies.
         </CardDescription>
       </CardHeader>
-      <form ref={formRef} action={handleFormAction}>
+      <form ref={formRef} action={handleFormSubmit}>
         <CardContent className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="flex-grow space-y-2">
               <Label htmlFor="productIdentifier" className="sr-only">Product Name or SKU</Label>
-              <Input
-                id="productIdentifier"
-                name="productIdentifier"
-                placeholder='Enter a Product Name or SKU (e.g., "SKU-12345")'
-                className="font-code"
-                required
+               <Combobox
+                options={searchHistory}
+                value={productIdentifier}
+                onChange={setProductIdentifier}
+                placeholder="Select a previous product..."
+                searchPlaceholder="Search products..."
+                emptyPlaceholder="No recent products."
               />
+              <input type="hidden" name="productIdentifier" value={productIdentifier} />
             </div>
             <SubmitButton />
           </div>
