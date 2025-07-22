@@ -76,6 +76,39 @@ const flattenObject = (obj: any, parentKey = '', result: {[key: string]: string}
     return result;
 };
 
+// Helper to fetch an image and convert it to a base64 data URI
+const fetchAndEncodeImage = async (url: string): Promise<string> => {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Failed to fetch image: ${url}`);
+        const blob = await response.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        console.error(`Error loading image ${url}:`, error);
+        return url; // Return original URL on error
+    }
+};
+
+// Recursively processes the JSON data to find and replace image URLs with data URIs
+const processImagesInData = async (data: any): Promise<any> => {
+    if (Array.isArray(data)) {
+        return Promise.all(data.map(item => processImagesInData(item)));
+    } else if (typeof data === 'object' && data !== null) {
+        const newData: { [key: string]: any } = {};
+        for (const key in data) {
+            newData[key] = await processImagesInData(data[key]);
+        }
+        return newData;
+    } else if (typeof data === 'string' && (data.startsWith('http') || data.startsWith('/')) && /\.(jpg|jpeg|png|svg)$/i.test(data)) {
+        return fetchAndEncodeImage(data);
+    }
+    return data;
+};
 
 export default function PdfGeneratorPage() {
   const viewerRef = useRef<HTMLDivElement | null>(null);
@@ -102,7 +135,8 @@ export default function PdfGeneratorPage() {
       "name": "Heavy Duty Faucet",
       "sku": "SKU-12345",
       "description": "A durable and reliable faucet for commercial kitchens.",
-      "price": "299.99"
+      "price": "299.99",
+      "image": "https://placehold.co/600x400.png"
     },
     "specs": [
       { "key": "Material", "value": "Stainless Steel" },
@@ -122,21 +156,22 @@ export default function PdfGeneratorPage() {
         return;
     }
     
+    setIsGenerating(true);
     let parsedJson;
     try {
         parsedJson = JSON.parse(jsonData);
     } catch(e) {
         toast({ variant: 'destructive', title: 'Invalid JSON', description: 'Please check your product data format.' });
+        setIsGenerating(false);
         return;
     }
     
-    // Flatten the JSON data to match pdfme's expected input format
-    const inputs = [flattenObject(parsedJson)];
-
-    setIsGenerating(true);
     try {
+      const processedJson = await processImagesInData(parsedJson);
+      const inputs = [flattenObject(processedJson)];
+
       const fonts = await loadFonts();
-      const { Viewer, table, group } = await import('@pdfme/ui');
+      const { Viewer, table, group, image } = await import('@pdfme/ui');
       
       const pdf = await generate({
         template: selectedTemplate.template,
@@ -146,6 +181,7 @@ export default function PdfGeneratorPage() {
             plugins: {
               table,
               group,
+              image,
             }
         }
       });
@@ -159,13 +195,16 @@ export default function PdfGeneratorPage() {
               template: selectedTemplate.template,
               inputs: inputs,
               options: {
+                font: fonts,
                 plugins: {
                   table,
                   group,
+                  image,
                 }
               }
           });
-          viewer.update(pdf);
+          // This seems redundant, but it's the most reliable way to display the generated pdf
+          viewer.update(pdf); 
       }
        
       toast({ title: 'PDF Generated', description: 'The PDF has been generated successfully.' });
