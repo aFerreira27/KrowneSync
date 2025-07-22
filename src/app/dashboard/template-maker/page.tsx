@@ -3,8 +3,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import type { Designer } from '@pdfme/ui';
-import type { Template } from '@pdfme/common';
-import { BLANK_A4_PDF } from '@pdfme/common';
+import { Template, BLANK_A4_PDF } from '@pdfme/common';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
@@ -19,9 +18,8 @@ import {
 } from '@/lib/pdfSchemas';
 import { image, table, text } from '@pdfme/schemas';
 
-const BLANK_TEMPLATE: Template = {
-  basePdf: BLANK_A4_PDF,
-  schemas: [
+// This will serve as a fallback or initial structure, but the basePdf will be replaced.
+const BASE_SCHEMAS = [
     headerImageSchema,
     productNameSchema,
     skuSchema,
@@ -29,8 +27,8 @@ const BLANK_TEMPLATE: Template = {
     standardFeaturesSchema,
     specificationsTableSchema,
     footerImageSchema
-  ],
-};
+];
+
 
 const loadFonts = async () => {
   const fontFileNames = [
@@ -96,11 +94,23 @@ export default function TemplateMakerPage() {
         if (Object.keys(fonts).length === 0) {
           console.warn('No fonts loaded, using default fonts');
         }
+        
+        // Fetch the custom base PDF
+        const response = await fetch('/templates/template.pdf');
+        if (!response.ok) {
+            throw new Error('Failed to load base PDF template.');
+        }
+        const basePdf = await response.arrayBuffer();
+        
+        const template: Template = {
+            basePdf: basePdf,
+            schemas: BASE_SCHEMAS
+        };
 
         if (designerRef.current) {
             designer.current = new Designer({
               domContainer: designerRef.current,
-              template: BLANK_TEMPLATE,
+              template: template,
               options: {
                 font: fonts,
                 labels: {
