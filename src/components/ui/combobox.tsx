@@ -47,15 +47,14 @@ export function Combobox({
   const [open, setOpen] = React.useState(false)
 
   const handleSelect = (currentValue: string) => {
-    const newValue = currentValue === value ? "" : currentValue
-    onChange(newValue)
+    onChange(currentValue)
     setOpen(false)
   }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const val = event.target.value;
     onChange(val);
-    if(val) {
+    if(val && options.length > 0) {
         setOpen(true);
     } else {
         setOpen(false);
@@ -70,6 +69,10 @@ export function Combobox({
             <Input 
                 value={value || ""}
                 onChange={handleInputChange}
+                onFocus={() => {
+                  if (value && options.length > 0) setOpen(true);
+                }}
+                onBlur={() => setOpen(false)}
                 placeholder={placeholder}
                 role="combobox"
                 aria-expanded={open}
@@ -81,15 +84,21 @@ export function Combobox({
                 size="sm"
                 className="absolute right-0 top-0 h-full px-3"
                 onClick={() => setOpen(!open)}
+                onMouseDown={(e) => {
+                  e.preventDefault(); 
+                  e.stopPropagation();
+                }}
             >
                 <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
             </Button>
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+      <PopoverContent 
+        className="w-[--radix-popover-trigger-width] p-0"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <Command
             filter={(value, search) => {
-                // value is the option.value, search is the input
                 const option = options.find(opt => opt.value === value);
                 if (option?.label.toLowerCase().includes(search.toLowerCase())) return 1;
                 return 0;
@@ -103,6 +112,10 @@ export function Combobox({
                   key={option.value}
                   value={option.value}
                   onSelect={handleSelect}
+                  onMouseDown={(e) => {
+                    e.preventDefault(); 
+                    e.stopPropagation();
+                  }}
                 >
                   <Check
                     className={cn(
