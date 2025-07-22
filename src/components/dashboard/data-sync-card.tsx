@@ -3,13 +3,13 @@
 
 import { useActionState, useRef, useState, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
-import { getSyncData, generateSpecSheetPdfAction, type ActionState, type ProductData } from '@/lib/actions';
+import { getSyncData, generateSpecSheetPdfAction, getBulkSyncData, type ActionState, type ProductData, type BulkActionState, type SyncRecord } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, BadgeCheck, FileWarning, Loader2, Search, Info, FileDown } from 'lucide-react';
+import { AlertTriangle, BadgeCheck, FileWarning, Loader2, Search, Info, FileDown, Rocket } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Discrepancy } from '@/lib/actions';
 import { Combobox, ComboboxOption } from '@/components/ui/combobox';
@@ -36,6 +36,32 @@ function SubmitButton({ atLeastOnePlatformConnected }: { atLeastOnePlatformConne
     </Button>
   );
 }
+
+function SyncAllButton({ skus, onSyncAll, disabled }: { skus: string[], onSyncAll: (e: React.MouseEvent<HTMLButtonElement>) => void, disabled: boolean }) {
+    const { pending } = useFormStatus();
+
+    return (
+         <Button 
+            onClick={onSyncAll} 
+            disabled={pending || skus.length === 0 || disabled} 
+            className="w-full sm:w-auto" 
+            variant="outline"
+        >
+             {pending ? (
+                <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Syncing All...
+                </>
+            ) : (
+                <>
+                    <Rocket className="mr-2 h-4 w-4" />
+                    Sync All SKUs ({skus.length})
+                </>
+            )}
+        </Button>
+    )
+}
+
 
 function GeneratePdfButton({ productData }: { productData: ProductData }) {
     const [isGenerating, setIsGenerating] = useState(false);
@@ -94,42 +120,70 @@ function GeneratePdfButton({ productData }: { productData: ProductData }) {
     )
 }
 
+const SKU_HISTORY_KEY = 'skuHistory';
+const SEARCH_HISTORY_KEY = 'productSearchHistory';
 
-type SyncHistoryRecord = {
-    sku: string;
-    syncedAt: string;
-    status: 'Synced' | 'Out of Sync';
-}
-
-const initialState: ActionState = {
+const initialActionState: ActionState = {
   productData: undefined,
   discrepancies: [],
   summary: '',
   error: null,
 };
 
+const initialBulkActionState: BulkActionState = {
+    results: [],
+    error: null,
+};
 
-export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Platform[], onSyncComplete: (record: SyncHistoryRecord) => void }) {
-  const [state, formAction] = useActionState(getSyncData, initialState);
+
+export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Platform[], onSyncComplete: (records: SyncRecord[]) => void }) {
+  const [singleSyncState, singleSyncFormAction] = useActionState(getSyncData, initialActionState);
+  const [bulkSyncState, bulkSyncFormAction] = useActionState(getBulkSyncData, initialBulkActionState);
+  
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
   const [productIdentifier, setProductIdentifier] = useState('');
   
   const [searchHistory, setSearchHistory] = useState<ComboboxOption[]>([]);
+  const [skuHistory, setSkuHistory] = useState<string[]>([]);
+  const [isSyncingAll, setIsSyncingAll] = useState(false);
 
   const atLeastOnePlatformConnected = platforms.some(p => p.connected);
   const isWebScrapperEnabled = platforms.find(p => p.name === 'Web Scrapper')?.connected ?? false;
 
 
   useEffect(() => {
-    // Load search history from local storage
-    const storedHistory = localStorage.getItem('productSearchHistory');
-    if (storedHistory) {
-      setSearchHistory(JSON.parse(storedHistory));
+    try {
+        const storedSearchHistory = localStorage.getItem(SEARCH_HISTORY_KEY);
+        if (storedSearchHistory) setSearchHistory(JSON.parse(storedSearchHistory));
+
+        const storedSkuHistory = localStorage.getItem(SKU_HISTORY_KEY);
+        if (storedSkuHistory) setSkuHistory(JSON.parse(storedSkuHistory));
+    } catch (e) {
+        console.error("Failed to parse history from localStorage", e);
     }
   }, []);
 
+  const updateHistories = (sku: string) => {
+    // Update search history (for combobox)
+    const newSearchHistory = [...searchHistory];
+    if (!newSearchHistory.find(item => item.value === sku.toLowerCase())) {
+        newSearchHistory.unshift({ value: sku.toLowerCase(), label: sku });
+    }
+    const updatedSearchHistory = newSearchHistory.slice(0, 10);
+    setSearchHistory(updatedSearchHistory);
+    localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(updatedSearchHistory));
+
+    // Update SKU history (for "Sync All")
+    if (!skuHistory.includes(sku)) {
+        const updatedSkuHistory = [...skuHistory, sku];
+        setSkuHistory(updatedSkuHistory);
+        localStorage.setItem(SKU_HISTORY_KEY, JSON.stringify(updatedSkuHistory));
+    }
+  };
+
   useEffect(() => {
+    const state = singleSyncState; // Process single sync results
     if (state?.error) {
       const errorMessage =
         typeof state.error === 'string'
@@ -144,32 +198,56 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
           description: errorMessage,
       });
     } else if (state?.productData && state?.syncedAt) {
-      // Save successful search to history
       if(productIdentifier) {
-        const newHistory = [...searchHistory];
-        if (!newHistory.find(item => item.value === productIdentifier.toLowerCase())) {
-          newHistory.unshift({ value: productIdentifier.toLowerCase(), label: productIdentifier });
-        }
-        const updatedHistory = newHistory.slice(0, 10); // Limit history size
-        setSearchHistory(updatedHistory);
-        localStorage.setItem('productSearchHistory', JSON.stringify(updatedHistory));
+        updateHistories(productIdentifier);
       }
 
-      // Save to sync history for the new page
       const syncStatus: 'Synced' | 'Out of Sync' = state.discrepancies && state.discrepancies.length > 0 ? 'Out of Sync' : 'Synced';
-      const syncRecord: SyncHistoryRecord = { sku: productIdentifier, syncedAt: state.syncedAt, status: syncStatus };
-      onSyncComplete(syncRecord);
+      const syncRecord: SyncRecord = { sku: productIdentifier, syncedAt: state.syncedAt, status: syncStatus };
+      onSyncComplete([syncRecord]);
     }
-  }, [state, toast, productIdentifier, onSyncComplete, searchHistory]);
+  }, [singleSyncState]);
+
+   useEffect(() => {
+    const state = bulkSyncState; // Process bulk sync results
+    setIsSyncingAll(false);
+
+    if (state?.error) {
+      toast({
+          variant: "destructive",
+          title: "Bulk Sync Error",
+          description: state.error,
+      });
+    }
+    
+    if (state?.results && state.results.length > 0) {
+        onSyncComplete(state.results);
+        toast({
+            title: "Bulk Sync Complete",
+            description: `Successfully processed ${state.results.length} SKUs.`
+        });
+    }
+  }, [bulkSyncState]);
+
+  const handleSyncAll = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (skuHistory.length === 0) return;
+    setIsSyncingAll(true);
+
+    const formData = new FormData();
+    formData.append('skus', JSON.stringify(skuHistory));
+    formData.append('includeWebScrapper', String(isWebScrapperEnabled));
+    bulkSyncFormAction(formData);
+  };
 
   return (
     <Card className="shadow-lg">
       <CardHeader>
         <CardDescription>
-          Enter a product SKU to fetch its data from all connected platforms and identify discrepancies.
+          Enter a product SKU to fetch its data from all connected platforms and identify discrepancies. Or, sync all previously entered SKUs.
         </CardDescription>
       </CardHeader>
-      <form ref={formRef} action={formAction}>
+      <form ref={formRef} action={singleSyncFormAction}>
         <CardContent className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="flex-grow space-y-2">
@@ -186,6 +264,7 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
               <input type="hidden" name="includeWebScrapper" value={String(isWebScrapperEnabled)} />
             </div>
             <SubmitButton atLeastOnePlatformConnected={atLeastOnePlatformConnected} />
+            <SyncAllButton skus={skuHistory} onSyncAll={handleSyncAll} disabled={!atLeastOnePlatformConnected || isSyncingAll}/>
           </div>
 
           {!atLeastOnePlatformConnected && (
@@ -198,23 +277,23 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
             </Alert>
           )}
 
-          {state?.productData && (
+          {singleSyncState?.productData && (
             <Card>
                 <CardHeader>
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div className="flex-grow">
-                             <h2 className="text-2xl font-bold font-headline">{state.productData.name}</h2>
+                             <h2 className="text-2xl font-bold font-headline">{singleSyncState.productData.name}</h2>
                              <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-                                <span>SKU: {state.productData.sku}</span>
-                                {state.productData.series && (
+                                <span>SKU: {singleSyncState.productData.sku}</span>
+                                {singleSyncState.productData.series && (
                                     <>
                                         <Separator orientation="vertical" className="h-4" />
-                                        <span>Series: {state.productData.series}</span>
+                                        <span>Series: {singleSyncState.productData.series}</span>
                                     </>
                                 )}
                              </div>
                         </div>
-                        <GeneratePdfButton productData={state.productData} />
+                        <GeneratePdfButton productData={singleSyncState.productData} />
                     </div>
                 </CardHeader>
                 <CardContent className="p-6 pt-0">
@@ -222,12 +301,12 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
                         <div>
                            <Carousel className="w-full">
                                 <CarouselContent>
-                                    {state.productData.images && state.productData.images.length > 0 ? (
-                                        state.productData.images.map((img, index) => (
+                                    {singleSyncState.productData.images && singleSyncState.productData.images.length > 0 ? (
+                                        singleSyncState.productData.images.map((img, index) => (
                                             <CarouselItem key={index}>
                                                 <Image 
                                                     src={img} 
-                                                    alt={`${state.productData?.name} image ${index + 1}`}
+                                                    alt={`${singleSyncState.productData?.name} image ${index + 1}`}
                                                     width={600}
                                                     height={400}
                                                     className="rounded-lg object-cover aspect-video"
@@ -247,7 +326,7 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
                             </Carousel>
                         </div>
                         <div>
-                             <p className="mt-4 text-sm">{state.productData.description}</p>
+                             <p className="mt-4 text-sm">{singleSyncState.productData.description}</p>
                         </div>
                     </div>
                     <Separator className="my-6" />
@@ -256,13 +335,13 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
                         <div>
                             <h3 className="font-headline font-semibold mb-3">Standard Features</h3>
                             <ul className="list-disc list-inside space-y-1 text-sm">
-                                {state.productData.standardFeatures?.map(feature => <li key={feature}>{feature}</li>)}
+                                {singleSyncState.productData.standardFeatures?.map(feature => <li key={feature}>{feature}</li>)}
                             </ul>
                         </div>
                         <div>
                             <h3 className="font-headline font-semibold mb-3">Compliances</h3>
                             <ul className="list-disc list-inside space-y-1 text-sm">
-                                {state.productData.compliances?.map(item => <li key={item}>{item}</li>)}
+                                {singleSyncState.productData.compliances?.map(item => <li key={item}>{item}</li>)}
                             </ul>
                         </div>
                     </div>
@@ -274,7 +353,7 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
                         <div className="rounded-md border">
                             <Table>
                                 <TableBody>
-                                    {state.productData.specifications?.map(spec => (
+                                    {singleSyncState.productData.specifications?.map(spec => (
                                         <TableRow key={spec.name}>
                                             <TableCell className="font-medium">{spec.name}</TableCell>
                                             <TableCell>{spec.value}</TableCell>
@@ -289,12 +368,12 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
 
                      <div>
                         <h3 className="font-headline font-semibold mb-3">Discrepancies</h3>
-                        {state.discrepancies && state.discrepancies.length > 0 ? (
+                        {singleSyncState.discrepancies && singleSyncState.discrepancies.length > 0 ? (
                             <>
                                 <Alert>
                                     <AlertTriangle className="h-4 w-4" />
                                     <AlertTitle className="font-headline">AI Analysis Complete</AlertTitle>
-                                    <AlertDescription>{state.summary}</AlertDescription>
+                                    <AlertDescription>{singleSyncState.summary}</AlertDescription>
                                 </Alert>
                                 <div className="rounded-md border mt-4">
                                     <Table>
@@ -309,7 +388,7 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {state.discrepancies.map((d, index) => (
+                                            {singleSyncState.discrepancies.map((d, index) => (
                                                 <TableRow key={index}>
                                                     <TableCell className="font-medium capitalize">{d.field.replace(/_/g, ' ')}</TableCell>
                                                     <TableCell>{d.values.salesforce || 'N/A'}</TableCell>

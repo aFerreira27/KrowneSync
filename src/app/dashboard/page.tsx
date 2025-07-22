@@ -12,7 +12,7 @@ import type { Platform } from '@/components/dashboard/dashboard-client-layout';
 import { ConnectedPlatforms } from '@/components/dashboard/connected-platforms';
 import { Separator } from '@/components/ui/separator';
 
-type SyncRecord = {
+export type SyncRecord = {
     sku: string;
     syncedAt: string;
     status: 'Synced' | 'Out of Sync';
@@ -29,27 +29,36 @@ export default function DashboardPage({ platforms, onPlatformUpdate, onConnectCl
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const storedHistoryJson = localStorage.getItem('syncHistory');
-        let currentHistory: SyncRecord[] = [];
-        if (storedHistoryJson) {
-            currentHistory = JSON.parse(storedHistoryJson);
+        try {
+            const storedHistoryJson = localStorage.getItem('syncHistory');
+            if (storedHistoryJson) {
+                const storedHistory = JSON.parse(storedHistoryJson);
+                if (Array.isArray(storedHistory)) {
+                    setSyncHistory(storedHistory);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to parse sync history from localStorage", error);
+            localStorage.removeItem('syncHistory'); // Clear corrupted data
         }
-        setSyncHistory(currentHistory);
         setIsLoading(false);
     }, []);
 
-    // This function will be called from DataSyncCard to update the history
-    const updateSyncHistory = (newRecord: SyncRecord) => {
+    const updateSyncHistory = (newRecords: SyncRecord[]) => {
         setSyncHistory(prevHistory => {
-            const existingRecordIndex = prevHistory.findIndex(r => r.sku === newRecord.sku);
-            let newHistory = [...prevHistory];
-            if (existingRecordIndex > -1) {
-                newHistory[existingRecordIndex] = newRecord;
-            } else {
-                newHistory.unshift(newRecord);
+            const historyMap = new Map(prevHistory.map(r => [r.sku, r]));
+            newRecords.forEach(record => {
+                historyMap.set(record.sku, record);
+            });
+            const newHistory = Array.from(historyMap.values())
+                .sort((a, b) => new Date(b.syncedAt).getTime() - new Date(a.syncedAt).getTime());
+            
+            try {
+                localStorage.setItem('syncHistory', JSON.stringify(newHistory));
+            } catch (error) {
+                console.error("Failed to save sync history to localStorage", error);
             }
-            // Also update localStorage
-            localStorage.setItem('syncHistory', JSON.stringify(newHistory));
+            
             return newHistory;
         });
     };

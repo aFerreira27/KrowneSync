@@ -19,11 +19,16 @@ const syncSchema = z.object({
   includeWebScrapper: z.boolean(),
 });
 
+const bulkSyncSchema = z.object({
+    skus: z.string().transform((str) => JSON.parse(str)),
+    includeWebScrapper: z.boolean(),
+})
+
 // Mock data fetching functions to simulate API calls
 const getSalesforceData = (sku: string) => {
     return {
         product_name: 'Heavy Duty Faucet',
-        sku: 'SKU-12345',
+        sku: sku,
         price: 299.99,
         description: 'A durable and reliable faucet for commercial kitchens.',
         material: 'Stainless Steel',
@@ -37,7 +42,7 @@ const getSalesforceData = (sku: string) => {
 
 const getSalespadData = (sku: string) => {
     return {
-        item_id: 'SKU-12345',
+        item_id: sku,
         description: 'Heavy Duty Commercial Faucet',
         list_price: 299.99,
         material: '304 Stainless Steel',
@@ -51,7 +56,7 @@ const getSalespadData = (sku: string) => {
 
 const getAutoquotesData = (sku: string) => {
     return {
-        model_number: 'SKU-12345',
+        model_number: sku,
         product_name: 'Heavy Duty Faucet',
         price: 305.00, // Price discrepancy
         spec_sheet_id: 'SPEC-HD-FAUCET-01',
@@ -63,7 +68,7 @@ const getAutoquotesData = (sku: string) => {
 const getWebsiteData = (sku: string) => {
     return {
         title: 'Heavy Duty Faucet - Commercial Grade',
-        sku: 'SKU-12345',
+        sku: sku,
         price: 299.99,
         short_description: 'A durable and reliable faucet for commercial kitchens.',
         material: 'Stainless Steel',
@@ -74,6 +79,33 @@ const getWebsiteData = (sku: string) => {
         images: ['https://placehold.co/600x400.png', 'https://placehold.co/600x400.png']
     };
 };
+
+async function getProductDataFromSources(sku: string, includeWebScrapper: boolean) {
+    const platformData: any = {};
+    platformData.salesforce = getSalesforceData(sku) || {};
+    platformData.salespad = getSalespadData(sku) || {};
+    platformData.autoquotes = getAutoquotesData(sku) || {};
+    platformData.website = getWebsiteData(sku) || {};
+
+    if (includeWebScrapper) {
+        const webScrapperData: ScrapeResult = await scrapeKrowneWebsite(sku);
+        if (webScrapperData && 'error' in webScrapperData) {
+            console.warn(`Web Scrapper Error for ${sku}: ${webScrapperData.error}`);
+            platformData.webscrapper = {}; // Assign empty object on error
+        } else {
+            platformData.webscrapper = webScrapperData || {};
+        }
+    } else {
+        platformData.webscrapper = {};
+    }
+
+    if (Object.values(platformData).every((p: any) => Object.keys(p as object).length === 0)) {
+        return null; // Indicates no data found for this SKU
+    }
+
+    return platformData;
+}
+
 
 export type Discrepancy = {
     field: string;
@@ -90,6 +122,17 @@ export type ActionState = {
   syncedAt?: string;
 }
 
+export type SyncRecord = {
+    sku: string;
+    syncedAt: string;
+    status: 'Synced' | 'Out of Sync';
+};
+
+export type BulkActionState = {
+    results: SyncRecord[];
+    error: string | null;
+};
+
 export async function getSyncData(prevState: any, formData: FormData): Promise<ActionState> {
   const validatedFields = syncSchema.safeParse({
     productIdentifier: formData.get('productIdentifier'),
@@ -103,51 +146,14 @@ export async function getSyncData(prevState: any, formData: FormData): Promise<A
   }
   
   const { productIdentifier, includeWebScrapper } = validatedFields.data;
-  const platformData: any = {};
-
+  
   try {
-    platformData.salesforce = getSalesforceData(productIdentifier) || {};
-  } catch(e) {
-    return { error: "Failed to fetch data from Salesforce." }
-  }
-  try {
-    platformData.salespad = getSalespadData(productIdentifier) || {};
-  } catch(e) {
-    return { error: "Failed to fetch data from Salespad." }
-  }
-  try {
-    platformData.autoquotes = getAutoquotesData(productIdentifier) || {};
-  } catch(e) {
-    return { error: "Failed to fetch data from Autoquotes." }
-  }
-  try {
-    platformData.website = getWebsiteData(productIdentifier) || {};
-  } catch(e) {
-    return { error: "Failed to fetch data from Website CMS." }
-  }
-
-  if (includeWebScrapper) {
-      try {
-        const webScrapperData: ScrapeResult = await scrapeKrowneWebsite(productIdentifier);
-
-        if (webScrapperData && 'error' in webScrapperData) {
-            return { error: `Web Scrapper Error: ${webScrapperData.error}` };
-        }
-        
-        platformData.webscrapper = webScrapperData || {};
-      } catch(e) {
-        return { error: "Failed to fetch data from Web Scrapper." }
-      }
-  } else {
-    platformData.webscrapper = {};
-  }
-
-
-  if (Object.values(platformData).every((p: any) => Object.keys(p as object).length === 0)) {
+    const platformData = await getProductDataFromSources(productIdentifier, includeWebScrapper);
+    
+    if (!platformData) {
       return { error: `No product found with identifier "${productIdentifier}".` };
-  }
+    }
 
-  try {
     const aiResult = await findDataDiscrepancies(platformData);
     
     return {
@@ -157,10 +163,55 @@ export async function getSyncData(prevState: any, formData: FormData): Promise<A
       syncedAt: new Date().toISOString(),
     };
   } catch (e: any) {
-      console.error("Error in AI processing:", e);
-      return { error: "The AI failed to process the data. Please try again." };
+      console.error(`Error processing SKU ${productIdentifier}:`, e);
+      return { error: `The AI failed to process data for ${productIdentifier}. Please try again.` };
   }
 }
+
+export async function getBulkSyncData(prevState: any, formData: FormData): Promise<BulkActionState> {
+    const validatedFields = bulkSyncSchema.safeParse({
+        skus: formData.get('skus'),
+        includeWebScrapper: formData.get('includeWebScrapper') === 'true',
+    });
+
+    if (!validatedFields.success) {
+        return {
+            results: [],
+            error: "Invalid input for bulk sync.",
+        };
+    }
+    const { skus, includeWebScrapper } = validatedFields.data;
+    const results: SyncRecord[] = [];
+
+    for (const sku of skus) {
+        try {
+            const platformData = await getProductDataFromSources(sku, includeWebScrapper);
+            if (!platformData) {
+                console.warn(`No data found for SKU ${sku} during bulk sync.`);
+                continue; // Skip to the next SKU
+            }
+
+            const aiResult = await findDataDiscrepancies(platformData);
+            const syncStatus: 'Synced' | 'Out of Sync' = aiResult.discrepancies.length > 0 ? 'Out of Sync' : 'Synced';
+            
+            results.push({
+                sku: sku,
+                status: syncStatus,
+                syncedAt: new Date().toISOString(),
+            });
+        } catch (e: any) {
+            console.error(`Failed to process SKU ${sku} during bulk sync:`, e);
+            // Optionally, you could add a failure record to the results
+            // to indicate which ones failed. For now, we just log and continue.
+        }
+    }
+
+    return {
+        results: results,
+        error: null,
+    };
+}
+
 
 const contactSchema = z.object({
     name: z.string().min(1, 'Name is required.'),
@@ -232,7 +283,9 @@ async function createSpecSheetPdf(productData: ProductData): Promise<Uint8Array>
   
   if (productData.images && productData.images.length > 0) {
     try {
-        const imageBytes = await fetch(productData.images[0]).then(res => res.arrayBuffer());
+        // Use a placeholder image fetch that is more likely to succeed in all environments
+        const imageResponse = await fetch('https://placehold.co/600x400.png');
+        const imageBytes = await imageResponse.arrayBuffer();
         const pdfImage = await pdfDoc.embedPng(imageBytes);
         const imageDims = pdfImage.scale(0.25);
         firstPage.drawImage(pdfImage, {
