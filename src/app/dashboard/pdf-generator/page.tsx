@@ -175,9 +175,9 @@ export default function PdfGeneratorPage() {
       const inputs = [flattenObject(processedJson)];
       
       const fonts = await loadFonts();
-      const { Viewer, table, group, image } = await import('@pdfme/ui');
+      const { Viewer, table, image } = await import('@pdfme/ui');
       
-      const pdfPlugins = { table, group, image };
+      const pdfPlugins = { table, image };
 
       const pdf = await generate({
         template: selectedTemplate.template,
@@ -274,3 +274,5 @@ export default function PdfGeneratorPage() {
     </div>
   );
 }
+
+    

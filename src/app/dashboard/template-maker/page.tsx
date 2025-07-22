@@ -43,7 +43,7 @@ import {
   standardFeaturesSchema,
   specificationsTableSchema,
 } from '@/lib/pdfSchemas';
-import { image, table, text, group } from '@pdfme/schemas';
+import { image, table, text } from '@pdfme/schemas';
 
 
 // Helper to fetch an asset and convert it to a base64 data URI
@@ -273,7 +273,6 @@ export default function TemplateMakerPage() {
                     image,
                     table,
                     text,
-                    group
                 },
               }
             });
@@ -522,3 +521,5 @@ export default function TemplateMakerPage() {
     </div>
   );
 }
+
+    
