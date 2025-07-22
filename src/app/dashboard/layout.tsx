@@ -2,7 +2,7 @@
 'use client';
 
 import { DashboardClientLayout } from '@/components/dashboard/dashboard-client-layout';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import type { Platform } from '@/components/dashboard/dashboard-client-layout';
 import { Database, ShoppingCart, Presentation, Globe, SearchCode } from "lucide-react";
 
@@ -21,17 +21,39 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [platforms, setPlatforms] = useState<Platform[]>(initialPlatforms);
+  const [isConnectionsOpen, setIsConnectionsOpen] = useState(false);
+  const [focusedPlatform, setFocusedPlatform] = useState<string | null>(null);
+
+  const onConnectClick = useCallback((platformName: string) => {
+    setFocusedPlatform(platformName);
+    setIsConnectionsOpen(true);
+  }, []);
+
+  const clearFocus = useCallback(() => {
+    setFocusedPlatform(null);
+  }, []);
 
   const childrenWithProps = React.Children.map(children, child => {
     if (React.isValidElement(child)) {
       // @ts-ignore
-      return React.cloneElement(child, { platforms, onPlatformUpdate: setPlatforms });
+      return React.cloneElement(child, { 
+        platforms, 
+        onPlatformUpdate: setPlatforms,
+        onConnectClick
+      });
     }
     return child;
   });
 
   return (
-      <DashboardClientLayout platforms={platforms} onPlatformUpdate={setPlatforms}>
+      <DashboardClientLayout 
+        platforms={platforms} 
+        onPlatformUpdate={setPlatforms}
+        isConnectionsOpen={isConnectionsOpen}
+        setIsConnectionsOpen={setIsConnectionsOpen}
+        focusedPlatform={focusedPlatform}
+        onClearFocus={clearFocus}
+      >
         {childrenWithProps}
       </DashboardClientLayout>
   );

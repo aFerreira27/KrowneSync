@@ -11,28 +11,19 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarInset,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubLink
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Logo from "@/components/logo";
-import { Home, Link as LinkIcon, LifeBuoy, ShieldCheck, Loader2, User as UserIcon, Database, ShoppingCart, Presentation, Globe, LayoutTemplate, FileText, SearchCode } from "lucide-react";
+import { Home, Link as LinkIcon, LifeBuoy, ShieldCheck, Loader2, User as UserIcon } from "lucide-react";
 import { auth } from '@/lib/firebase';
-import { onAuthStateChanged, User, updateProfile } from 'firebase/auth';
+import { onAuthStateChanged, User } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
 import { ConnectionsSheet } from '@/components/dashboard/connections-sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import LogoutButton from '@/components/logout-button';
 import { SupportDialog } from '@/components/dashboard/support-dialog';
 import { ProfileDialog } from '@/components/dashboard/profile-dialog';
-import { Separator } from '@/components/ui/separator';
-import { ConnectedPlatforms } from '@/components/dashboard/connected-platforms';
 import Link from 'next/link';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown } from 'lucide-react';
-import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 
 export type Platform = {
   name: string;
@@ -52,21 +43,27 @@ type UserData = {
 export function DashboardClientLayout({
   children,
   platforms,
-  onPlatformUpdate
+  onPlatformUpdate,
+  isConnectionsOpen,
+  setIsConnectionsOpen,
+  focusedPlatform,
+  onClearFocus
 }: {
   children: React.ReactNode;
   platforms: Platform[];
   onPlatformUpdate: (platforms: Platform[]) => void;
+  isConnectionsOpen: boolean;
+  setIsConnectionsOpen: (open: boolean) => void;
+  focusedPlatform: string | null;
+  onClearFocus: () => void;
 }) {
   const router = useRouter();
   const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isConnectionsOpen, setIsConnectionsOpen] = useState(false);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [focusedPlatform, setFocusedPlatform] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -87,15 +84,6 @@ export function DashboardClientLayout({
     return () => unsubscribe();
   }, [router]);
 
-  const onConnectClick = useCallback((platformName: string) => {
-    setFocusedPlatform(platformName);
-    setIsConnectionsOpen(true);
-  }, []);
-  
-  const clearFocus = useCallback(() => {
-    setFocusedPlatform(null);
-  }, []);
-
 
   if (loading || !user || !userData) {
     return (
@@ -105,8 +93,6 @@ export function DashboardClientLayout({
     );
   }
   
-  const isDashboardPage = pathname === '/dashboard';
-
   return (
     <SidebarProvider>
       <Sidebar>
@@ -125,27 +111,6 @@ export function DashboardClientLayout({
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
-            
-            <Collapsible>
-              <SidebarMenuItem>
-                <CollapsibleTrigger asChild>
-                    <SidebarMenuButton>
-                        <ShieldCheck />
-                        Data Tools
-                        <ChevronDown className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=closed]:-rotate-90" />
-                    </SidebarMenuButton>
-                </CollapsibleTrigger>
-              </SidebarMenuItem>
-              <CollapsibleContent asChild>
-                <SidebarMenuSub>
-                  <SidebarMenuSubItem>
-                    <SidebarMenuSubLink href="/dashboard/sync-status" isActive={pathname === '/dashboard/sync-status'}>
-                      Sync Status
-                    </SidebarMenuSubLink>
-                  </SidebarMenuSubItem>
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </Collapsible>
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
@@ -201,38 +166,6 @@ export function DashboardClientLayout({
       </Sidebar>
       <SidebarInset>
         <main className="flex-1 overflow-auto p-4 md:p-8">
-          {isDashboardPage && (
-            <div className="flex flex-col gap-8">
-              <div>
-                <h1 className="font-headline text-3xl font-bold tracking-tight">
-                  Welcome back!
-                </h1>
-                <p className="text-muted-foreground">
-                  Here's your data synchronization overview.
-                </p>
-              </div>
-              <Separator />
-              <div className="grid gap-6 lg:grid-cols-3">
-                <div className="lg:col-span-2">
-                   <Card>
-                        <CardHeader>
-                            <CardTitle className="font-headline text-xl">Quick Access</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                             <p className="text-muted-foreground">
-                                Use the sidebar to navigate to the different tools available.
-                                You can check data synchronization status, edit PDF templates, or
-                                generate new spec sheets.
-                            </p>
-                        </CardContent>
-                    </Card>
-                </div>
-                <div className="flex flex-col gap-6">
-                  <ConnectedPlatforms platforms={platforms} onConnectClick={onConnectClick}/>
-                </div>
-              </div>
-            </div>
-          )}
           {children}
         </main>
       </SidebarInset>
@@ -242,7 +175,7 @@ export function DashboardClientLayout({
         platforms={platforms}
         onPlatformUpdate={onPlatformUpdate}
         focusedPlatform={focusedPlatform}
-        onClearFocus={clearFocus}
+        onClearFocus={onClearFocus}
       />
       <SupportDialog open={isSupportOpen} onOpenChange={setIsSupportOpen} />
       <ProfileDialog user={user} open={isProfileOpen} onOpenChange={setIsProfileOpen} />
