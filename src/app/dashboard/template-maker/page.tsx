@@ -373,16 +373,14 @@ export default function TemplateMakerPage() {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-
+            </div>
+            <div className="flex-1 flex justify-end items-center gap-2">
                <Button variant="outline" size="sm" onClick={addHeader}>
                 <ArrowUpToLine className="mr-2"/> Add Header
               </Button>
               <Button variant="outline" size="sm" onClick={addFooter}>
                 <ArrowDownToLine className="mr-2"/> Add Footer
               </Button>
-
-            </div>
-            <div className="flex-1 flex justify-end">
               <Button onClick={onSaveTemplate} disabled={isSaving || isLoading || !selectedTemplate}>
                   {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                   {isSaving ? 'Saving...' : 'Save Template'}
