@@ -5,7 +5,8 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { findDataDiscrepancies, type FindDataDiscrepanciesOutput } from '@/ai/flows/find-data-discrepancies';
 import { getFirebaseAuth, getFirestore } from '@/lib/firebase-admin';
-import { scrapeKrowneWebsite } from '@/services/web-scrapper';
+import { scrapeKrowneWebsite, type ScrapeResult, type ScrapeError } from '@/services/web-scrapper'; // Import types
+import { generatePdf } from '@/lib/pdf-generator';
 
 export async function logout() {
   redirect('/');
@@ -127,10 +128,14 @@ export async function getSyncData(prevState: any, formData: FormData): Promise<A
 
   if (includeWebScrapper) {
       try {
-        const webScrapperData = await scrapeKrowneWebsite(productIdentifier);
-        if(webScrapperData?.error){
+        const webScrapperData: ScrapeResult = await scrapeKrowneWebsite(productIdentifier); // Add type annotation
+
+        // Check if webScrapperData is not null and is a ScrapeError
+        if (webScrapperData && 'error' in webScrapperData) { // Use type guard
             return { error: `Web Scrapper Error: ${webScrapperData.error}` };
         }
+        
+        // If not an error, it's either ScrapeSuccess or null
         platformData.webscrapper = webScrapperData || {};
       } catch(e) {
         return { error: "Failed to fetch data from Web Scrapper." }
@@ -195,4 +200,36 @@ export async function saveContactMessage(prevState: any, formData: FormData) {
         console.error("Error saving contact message:", e);
         return { error: 'Failed to send message. Please try again later.' };
     }
+}
+
+// Define a placeholder interface for your product data
+interface ProductData {
+  sku: string;
+  name: string;
+  description: string;
+  price: number;
+  // Add other product properties here that you want in the PDF
+}
+
+export async function scrapeAndGeneratePdf(productData: ProductData): Promise<Uint8Array> {
+  // In a real-world scenario, you might scrape data here,
+  // but for this function, we assume productData is already available.
+
+  // Format the product data for the PDF
+  // You'll likely want to customize this to fit your PDF template or desired layout
+  let pdfContent = `Product SKU: ${productData.sku}
+`;
+  pdfContent += `Product Name: ${productData.name}
+`;
+  pdfContent += `Description: ${productData.description}
+`;
+  pdfContent += `Price: $${productData.price.toFixed(2)}
+`;
+
+  // Add other product data fields as needed
+
+  // Generate the PDF using the generatePdf function
+  const pdfBytes = await generatePdf(pdfContent);
+
+  return pdfBytes;
 }

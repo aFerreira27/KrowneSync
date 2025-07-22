@@ -6,7 +6,27 @@ import puppeteer from 'puppeteer';
 // To get a free token for more reliable access, visit https://www.browserless.io/
 const BROWSERLESS_TOKEN = 'YOUR_BROWSERLESS_TOKEN_HERE';
 
-export async function scrapeKrowneWebsite(sku: string) {
+// Define the type for a successful scrape result
+export type ScrapeSuccess = {
+  name: string | null;
+  sku: string | null;
+  description: string | null;
+  images: string[];
+  specifications: { name: string; value: string; }[];
+  features: string[]; // Assuming features will be strings
+  compliances: string[]; // Assuming compliances will be strings
+  url: string;
+};
+
+// Define the type for a scrape error
+export type ScrapeError = {
+  error: string;
+};
+
+// Define the discriminated union type for the function's return value
+export type ScrapeResult = ScrapeSuccess | ScrapeError | null;
+
+export async function scrapeKrowneWebsite(sku: string): Promise<ScrapeResult> {
     if (!sku) {
         console.error('SKU is required for web scraping.');
         return null;
@@ -38,7 +58,7 @@ export async function scrapeKrowneWebsite(sku: string) {
         const productData = await page.evaluate(() => {
             const getText = (selector: string) => document.querySelector(selector)?.textContent?.trim() || null;
             const getSrc = (selector: string) => (document.querySelector(selector) as HTMLImageElement)?.src || null;
-            const getMultiText = (selector: string) => Array.from(document.querySelectorAll(selector)).map(el => el.textContent?.trim());
+            const getMultiText = (selector: string) => Array.from(document.querySelectorAll(selector)).map(el => el.textContent?.trim()).filter((text): text is string => text !== null);
 
             const name = getText('.product_title.entry-title');
             const sku = getText('.sku');
@@ -56,8 +76,17 @@ export async function scrapeKrowneWebsite(sku: string) {
                         name: keyEl.textContent?.trim() || '',
                         value: valueEl.textContent?.trim() || '',
                     });
+                } else if (keyEl) { // Handle cases where value might be missing but key is present
+                     specifications.push({
+                        name: keyEl.textContent?.trim() || '',
+                        value: '',
+                    });
                 }
             });
+
+            // Example of how to get features and compliances - adjust selectors as needed
+            const features = getMultiText('.some-features-selector li'); // Replace with actual selector
+            const compliances = getMultiText('.some-compliances-selector span'); // Replace with actual selector
 
             return {
                 name,
@@ -65,14 +94,14 @@ export async function scrapeKrowneWebsite(sku: string) {
                 description,
                 images: mainImage ? [mainImage] : [],
                 specifications,
-                features: [], // Placeholder, needs specific selector
-                compliances: [], // Placeholder, needs specific selector
+                features: features || [], // Ensure it's an array
+                compliances: compliances || [], // Ensure it's an array
                 url: window.location.href,
             };
         });
 
         console.log(`Scraping successful for SKU: ${sku}`);
-        return productData;
+        return productData as ScrapeSuccess; // Assert the type on success
 
     } catch (error) {
         console.error(`Error scraping ${url}:`, error);
