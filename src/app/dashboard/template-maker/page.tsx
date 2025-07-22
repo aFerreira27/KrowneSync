@@ -36,6 +36,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const BLANK_TEMPLATE: Template = {
   basePdf: BLANK_PDF,
@@ -375,26 +376,46 @@ export default function TemplateMakerPage() {
               </DropdownMenu>
             </div>
             <div className="flex-1 flex justify-end items-center gap-2">
-               <Button variant="outline" size="sm" onClick={addHeader}>
-                <ArrowUpToLine className="mr-2"/> Add Header
-              </Button>
-              <Button variant="outline" size="sm" onClick={addFooter}>
-                <ArrowDownToLine className="mr-2"/> Add Footer
-              </Button>
               <Button onClick={onSaveTemplate} disabled={isSaving || isLoading || !selectedTemplate}>
                   {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                   {isSaving ? 'Saving...' : 'Save Template'}
               </Button>
             </div>
         </div>
-        <div className="w-full h-full border rounded-lg overflow-hidden flex justify-start">
+        <div className="w-full h-full border rounded-lg overflow-hidden flex justify-start relative">
           {isLoading && (
             <div className="w-full h-full p-4">
                 <Skeleton className="h-16 w-1/2 mb-4" />
                 <Skeleton className="h-full w-full" />
             </div>
           )}
-          <div ref={designerRef} className={`w-full h-full ${isLoading ? 'hidden' : ''}`} />
+          
+          <TooltipProvider>
+            <div className="flex flex-col gap-2 p-2 bg-muted/50 border-r">
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" onClick={addHeader}>
+                            <ArrowUpToLine />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                        <p>Add Header</p>
+                    </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" onClick={addFooter}>
+                            <ArrowDownToLine />
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                        <p>Add Footer</p>
+                    </TooltipContent>
+                </Tooltip>
+            </div>
+          </TooltipProvider>
+
+          <div ref={designerRef} className={`flex-1 h-full ${isLoading ? 'hidden' : ''}`} />
         </div>
 
         <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
