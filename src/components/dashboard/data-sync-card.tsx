@@ -19,10 +19,10 @@ import Image from 'next/image';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Separator } from '@/components/ui/separator';
 
-function SubmitButton({ allPlatformsConnected }: { allPlatformsConnected: boolean }) {
+function SubmitButton({ atLeastOnePlatformConnected }: { atLeastOnePlatformConnected: boolean }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending || !allPlatformsConnected} className="w-full sm:w-auto" variant="default">
+    <Button type="submit" disabled={pending || !atLeastOnePlatformConnected} className="w-full sm:w-auto" variant="default">
       {pending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -60,7 +60,7 @@ export function DataSyncCard({ platforms }: { platforms: Platform[] }) {
   
   const [searchHistory, setSearchHistory] = useState<ComboboxOption[]>([]);
 
-  const allPlatformsConnected = platforms.every(p => p.connected);
+  const atLeastOnePlatformConnected = platforms.some(p => p.connected);
 
   useEffect(() => {
     // Load search history from local storage
@@ -69,32 +69,6 @@ export function DataSyncCard({ platforms }: { platforms: Platform[] }) {
       setSearchHistory(JSON.parse(storedHistory));
     }
   }, []);
-
-  const handleFormAction = async (formData: FormData) => {
-    const user = auth.currentUser;
-    if (!user) {
-        toast({
-            variant: "destructive",
-            title: "Authentication Error",
-            description: "You must be signed in to perform this action.",
-        });
-        return;
-    }
-
-    try {
-        const idToken = await user.getIdToken(true);
-        formData.append('idToken', idToken);
-        formAction(formData);
-    } catch (error) {
-        console.error("Error getting ID token:", error);
-        toast({
-            variant: "destructive",
-            title: "Authentication Error",
-            description: "Could not verify your session. Please sign in again.",
-        });
-    }
-  };
-
 
   useEffect(() => {
     if (state?.error) {
@@ -109,13 +83,15 @@ export function DataSyncCard({ platforms }: { platforms: Platform[] }) {
       });
     } else if (state?.productData && state?.syncedAt) {
       // Save successful search to history
-      const newHistory = [...searchHistory];
-      if (!newHistory.find(item => item.value === productIdentifier.toLowerCase())) {
-        newHistory.unshift({ value: productIdentifier.toLowerCase(), label: productIdentifier });
+      if(productIdentifier) {
+        const newHistory = [...searchHistory];
+        if (!newHistory.find(item => item.value === productIdentifier.toLowerCase())) {
+          newHistory.unshift({ value: productIdentifier.toLowerCase(), label: productIdentifier });
+        }
+        const updatedHistory = newHistory.slice(0, 10); // Limit history size
+        setSearchHistory(updatedHistory);
+        localStorage.setItem('productSearchHistory', JSON.stringify(updatedHistory));
       }
-      const updatedHistory = newHistory.slice(0, 10); // Limit history size
-      setSearchHistory(updatedHistory);
-      localStorage.setItem('productSearchHistory', JSON.stringify(updatedHistory));
 
       // Save to sync history for the new page
       const syncStatus: 'Synced' | 'Out of Sync' = state.discrepancies && state.discrepancies.length > 0 ? 'Out of Sync' : 'Synced';
@@ -140,7 +116,7 @@ export function DataSyncCard({ platforms }: { platforms: Platform[] }) {
           Enter a product SKU to fetch its data from all connected platforms and identify discrepancies.
         </CardDescription>
       </CardHeader>
-      <form ref={formRef} action={handleFormAction}>
+      <form ref={formRef} action={formAction}>
         <CardContent className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="flex-grow space-y-2">
@@ -155,15 +131,15 @@ export function DataSyncCard({ platforms }: { platforms: Platform[] }) {
               />
               <input type="hidden" name="productIdentifier" value={productIdentifier} />
             </div>
-            <SubmitButton allPlatformsConnected={allPlatformsConnected} />
+            <SubmitButton atLeastOnePlatformConnected={atLeastOnePlatformConnected} />
           </div>
 
-          {!allPlatformsConnected && (
+          {!atLeastOnePlatformConnected && (
             <Alert variant="destructive">
                 <Info className="h-4 w-4" />
-                <AlertTitle>Connections Incomplete</AlertTitle>
+                <AlertTitle>No Connections Active</AlertTitle>
                 <AlertDescription>
-                    Please connect all platforms in the Connections panel before fetching data.
+                    Please connect at least one platform in the Connections panel before fetching data.
                 </AlertDescription>
             </Alert>
           )}
@@ -305,3 +281,5 @@ export function DataSyncCard({ platforms }: { platforms: Platform[] }) {
     </Card>
   );
 }
+
+    
