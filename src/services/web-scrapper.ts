@@ -3,8 +3,7 @@
 
 import puppeteer from 'puppeteer';
 
-// To get a free token for more reliable access, visit https://www.browserless.io/
-const BROWSERLESS_TOKEN = 'YOUR_BROWSERLESS_TOKEN_HERE';
+const BROWSERLESS_TOKEN = '2SjG1fVxZ3kKpcZd814a9f8f821bd158daba8a43dd59eb511';
 
 // Define the type for a successful scrape result
 export type ScrapeSuccess = {
