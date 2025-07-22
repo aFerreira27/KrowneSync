@@ -3,27 +3,75 @@
 
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { summarizeDataDifferences } from '@/ai/flows/summarize-data-differences';
-import { suggestDataUpdates } from '@/ai/flows/suggest-data-updates';
+import { findDataDiscrepancies } from '@/ai/flows/find-data-discrepancies';
 import { getFirebaseAuth, getFirestore } from '@/lib/firebase-admin';
 
 export async function logout() {
-  // Client-side will handle the redirect upon auth state change.
-  // This function can remain for server-side logout logic if needed in the future.
   redirect('/');
 }
 
 const syncSchema = z.object({
-  platformAData: z.string().min(10, "Platform A data must not be empty."),
-  platformBData: z.string().min(10, "Platform B data must not be empty."),
+  productIdentifier: z.string().min(1, "Product identifier must not be empty."),
   idToken: z.string().min(1, "Authentication token is missing."),
 });
+
+// Mock data fetching functions to simulate API calls
+const getSalesforceData = (sku: string) => {
+    if (sku.toUpperCase() !== 'SKU-12345') return null;
+    return {
+        product_name: 'Heavy Duty Faucet',
+        sku: 'SKU-12345',
+        price: 299.99,
+        description: 'A durable and reliable faucet for commercial kitchens.',
+        material: 'Stainless Steel',
+        warranty_years: 5
+    };
+};
+
+const getSalespadData = (sku: string) => {
+    if (sku.toUpperCase() !== 'SKU-12345') return null;
+    return {
+        item_id: 'SKU-12345',
+        description: 'Heavy Duty Commercial Faucet',
+        list_price: 299.99,
+        material: '304 Stainless Steel',
+        flow_rate_gpm: 2.2
+    };
+};
+
+const getAutoquotesData = (sku: string) => {
+    if (sku.toUpperCase() !== 'SKU-12345') return null;
+    return {
+        model_number: 'SKU-12345',
+        product_name: 'Heavy Duty Faucet',
+        price: 305.00, // Price discrepancy
+        spec_sheet_id: 'SPEC-HD-FAUCET-01',
+        warranty_desc: '5 Year Limited Warranty'
+    };
+};
+
+const getWebsiteData = (sku: string) => {
+    if (sku.toUpperCase() !== 'SKU-12345') return null;
+    return {
+        title: 'Heavy Duty Faucet - Commercial Grade',
+        sku: 'SKU-12345',
+        price: 299.99,
+        short_description: 'A durable and reliable faucet for commercial kitchens.',
+        material: 'Stainless Steel',
+        flow_rate: '2.2 GPM',
+        warranty: '5 Years'
+    };
+};
+
+export type Discrepancy = {
+    field: string;
+    values: Record<string, string>;
+};
 
 export async function getSyncData(prevState: any, formData: FormData) {
   try {
     const validatedFields = syncSchema.safeParse({
-      platformAData: formData.get('platformAData'),
-      platformBData: formData.get('platformBData'),
+      productIdentifier: formData.get('productIdentifier'),
       idToken: formData.get('idToken'),
     });
 
@@ -33,45 +81,38 @@ export async function getSyncData(prevState: any, formData: FormData) {
       };
     }
     
-    const { platformAData, platformBData, idToken } = validatedFields.data;
+    const { productIdentifier, idToken } = validatedFields.data;
 
     const auth = getFirebaseAuth();
-    // Verify the ID token using Firebase Admin SDK to ensure the request is from an authenticated user.
     const decodedToken = await auth.verifyIdToken(idToken);
-    const uid = decodedToken.uid;
-    console.log("Authenticated user UID:", uid);
+    console.log("Authenticated user UID:", decodedToken.uid);
 
-    // In a real app, you would use the `uid` to perform user-specific operations.
-
-    const differences = `Platform A: ${platformAData} | Platform B: ${platformBData}`;
-    
-    const summaryResult = await summarizeDataDifferences({
-        database1Name: 'Platform A',
-        database2Name: 'Platform B',
-        differences: differences,
-    });
-
-    const suggestionsResult = await suggestDataUpdates({
-        platformA: 'Platform A',
-        platformB: 'Platform B',
-        discrepancies: summaryResult.summary,
-        correctProductInformation: platformBData,
-    });
-
-    return {
-      summary: summaryResult.summary,
-      impact: summaryResult.impactAssessment,
-      suggestions: suggestionsResult.suggestedUpdates,
-      reasoning: suggestionsResult.reasoning,
+    // Simulate fetching data from all platforms
+    const productData = {
+        salesforce: getSalesforceData(productIdentifier) || {},
+        salespad: getSalespadData(productIdentifier) || {},
+        autoquotes: getAutoquotesData(productIdentifier) || {},
+        website: getWebsiteData(productIdentifier) || {},
     };
+
+    // If no data is found on any platform, return an error.
+    if (Object.values(productData).every(p => Object.keys(p).length === 0)) {
+        return { error: `No product found with identifier "${productIdentifier}".` };
+    }
+
+    const aiResult = await findDataDiscrepancies(productData);
+    
+    return {
+      productData,
+      discrepancies: aiResult.discrepancies,
+      summary: aiResult.summary,
+    };
+
   } catch (e: any) {
     console.error("Error verifying ID token or processing data:", e);
-    // Handle specific Firebase Admin errors if needed
     if (e.code === 'auth/id-token-expired') {
         return { error: 'Your session has expired. Please sign in again.' };
     }
-    
-    // Return the specific error message if available, otherwise a generic one.
     const errorMessage = e.message || 'An unexpected server error occurred. Please try again.';
     return {
       error: errorMessage,

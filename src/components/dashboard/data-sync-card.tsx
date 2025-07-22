@@ -1,18 +1,19 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useRef, useState, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
 import { getSyncData } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Info, Lightbulb, Loader2, RefreshCw, Send } from 'lucide-react';
-import { useEffect, useState, useRef } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AlertTriangle, BadgeCheck, FileWarning, Loader2, Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { auth } from '@/lib/firebase';
+import type { Discrepancy } from '@/lib/actions';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -21,37 +22,70 @@ function SubmitButton() {
       {pending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Analyzing...
+          Fetching...
         </>
       ) : (
         <>
-          <RefreshCw className="mr-2 h-4 w-4" />
-          Compare & Suggest
+          <Search className="mr-2 h-4 w-4" />
+          Fetch Product Data
         </>
       )}
     </Button>
   );
 }
 
-const initialState = {
-  summary: null,
-  impact: null,
-  suggestions: null,
-  reasoning: null,
+const initialState: {
+  productData?: any;
+  discrepancies?: Discrepancy[];
+  summary?: string;
+  error?: string | any;
+} = {
+  productData: null,
+  discrepancies: [],
+  summary: '',
   error: null,
 };
 
+function ProductDataTable({ data }: { data: Record<string, any> | null }) {
+    if (!data) {
+        return <p className="text-muted-foreground text-sm">No data available for this platform.</p>;
+    }
+
+    return (
+        <div className="rounded-md border text-sm">
+             <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className="w-[150px]">Field</TableHead>
+                        <TableHead>Value</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {Object.entries(data).map(([key, value]) => (
+                        <TableRow key={key}>
+                            <TableCell className="font-medium capitalize">{key.replace(/_/g, ' ')}</TableCell>
+                            <TableCell>{String(value)}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
+    );
+}
+
+
 export function DataSyncCard() {
   const [state, formAction] = useActionState(getSyncData, initialState);
-  const [isSyncing, setIsSyncing] = useState(false);
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
+  
+  const [activeTab, setActiveTab] = useState('salesforce');
 
   const handleFormAction = async (formData: FormData) => {
     const user = auth.currentUser;
     if (user) {
       try {
-        const idToken = await user.getIdToken(true); // Force refresh token if needed
+        const idToken = await user.getIdToken(true);
         formData.append('idToken', idToken);
         formAction(formData);
       } catch (error) {
@@ -63,7 +97,7 @@ export function DataSyncCard() {
         });
       }
     } else {
-      toast({
+       toast({
         variant: "destructive",
         title: "Authentication Error",
         description: "You must be signed in to perform this action.",
@@ -71,17 +105,6 @@ export function DataSyncCard() {
     }
   };
 
-  const handleSync = () => {
-    setIsSyncing(true);
-    setTimeout(() => {
-      setIsSyncing(false);
-      toast({
-        title: "Synchronization Complete",
-        description: "Databases have been successfully updated.",
-      });
-    }, 2000);
-  };
-  
   useEffect(() => {
     if (state?.error) {
       const errorMessage = typeof state.error === 'string' 
@@ -96,99 +119,115 @@ export function DataSyncCard() {
     }
   }, [state, toast]);
 
+  useEffect(() => {
+      if (state?.discrepancies && state.discrepancies.length > 0) {
+          setActiveTab('discrepancies');
+      } else if (state?.productData) {
+          setActiveTab('salesforce');
+      }
+  }, [state.discrepancies, state.productData]);
+
+
   return (
     <Card className="shadow-lg">
       <CardHeader>
         <CardTitle className="font-headline text-xl">Data Synchronization</CardTitle>
         <CardDescription>
-          Paste product data from two platforms to identify and resolve discrepancies.
+          Enter a product name or SKU to fetch its data from all connected platforms and identify discrepancies.
         </CardDescription>
       </CardHeader>
       <form ref={formRef} action={handleFormAction}>
         <CardContent className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="platformAData">Platform A Data</Label>
-              <Textarea
-                id="platformAData"
-                name="platformAData"
-                placeholder='e.g., {"name": "Product X", "price": 99.99, "color": "Blue"}'
-                className="min-h-[120px] font-code"
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex-grow space-y-2">
+              <Label htmlFor="productIdentifier" className="sr-only">Product Name or SKU</Label>
+              <Input
+                id="productIdentifier"
+                name="productIdentifier"
+                placeholder='Enter a Product Name or SKU (e.g., "SKU-12345")'
+                className="font-code"
                 required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="platformBData">Platform B Data (Source of Truth)</Label>
-              <Textarea
-                id="platformBData"
-                name="platformBData"
-                placeholder='e.g., {"name": "Product X", "price": 100.00, "color": "Navy Blue"}'
-                className="min-h-[120px] font-code"
-                required
-              />
-            </div>
+            <SubmitButton />
           </div>
 
-          {state?.summary && (
-            <div className="space-y-4">
-              <Alert>
-                <Info className="h-4 w-4" />
-                <AlertTitle className="font-headline">AI Summary</AlertTitle>
-                <AlertDescription>{state.summary}</AlertDescription>
-              </Alert>
-              <Alert>
-                <Lightbulb className="h-4 w-4" />
-                <AlertTitle className="font-headline">Impact Assessment</AlertTitle>
-                <AlertDescription>{state.impact}</AlertDescription>
-              </Alert>
-            </div>
+          {state?.productData && (
+             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-5">
+                <TabsTrigger value="salesforce">Salesforce</TabsTrigger>
+                <TabsTrigger value="salespad">Salespad</TabsTrigger>
+                <TabsTrigger value="autoquotes">Autoquotes</TabsTrigger>
+                <TabsTrigger value="website">Website</TabsTrigger>
+                <TabsTrigger value="discrepancies" className="flex items-center gap-2">
+                    <FileWarning className="h-4 w-4" />
+                    Discrepancies
+                    {state.discrepancies && state.discrepancies.length > 0 && (
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground text-xs">
+                            {state.discrepancies.length}
+                        </span>
+                    )}
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="salesforce" className="mt-4">
+                <ProductDataTable data={state.productData.salesforce} />
+              </TabsContent>
+              <TabsContent value="salespad" className="mt-4">
+                 <ProductDataTable data={state.productData.salespad} />
+              </TabsContent>
+              <TabsContent value="autoquotes" className="mt-4">
+                 <ProductDataTable data={state.productData.autoquotes} />
+              </TabsContent>
+              <TabsContent value="website" className="mt-4">
+                 <ProductDataTable data={state.productData.website} />
+              </TabsContent>
+              <TabsContent value="discrepancies" className="mt-4 space-y-4">
+                {state.discrepancies && state.discrepancies.length > 0 ? (
+                    <>
+                        <Alert>
+                            <AlertTriangle className="h-4 w-4" />
+                            <AlertTitle className="font-headline">AI Analysis Complete</AlertTitle>
+                            <AlertDescription>{state.summary}</AlertDescription>
+                        </Alert>
+                        <div className="rounded-md border">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Field</TableHead>
+                                        <TableHead>Salesforce</TableHead>
+                                        <TableHead>Salespad</TableHead>
+                                        <TableHead>Autoquotes</TableHead>
+                                        <TableHead>Website</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {state.discrepancies.map((d, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell className="font-medium capitalize">{d.field.replace(/_/g, ' ')}</TableCell>
+                                            <TableCell>{d.values.salesforce || 'N/A'}</TableCell>
+                                            <TableCell>{d.values.salespad || 'N/A'}</TableCell>
+                                            <TableCell>{d.values.autoquotes || 'N/A'}</TableCell>
+                                            <TableCell>{d.values.website || 'N/A'}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </>
+                ) : (
+                    <Alert>
+                        <BadgeCheck className="h-4 w-4" />
+                        <AlertTitle className="font-headline">No Discrepancies Found</AlertTitle>
+                        <AlertDescription>The AI analysis found no conflicting data for this product across all platforms.</AlertDescription>
+                    </Alert>
+                )}
+              </TabsContent>
+            </Tabs>
           )}
 
-          {state?.suggestions && (
-             <div>
-                <h3 className="font-headline text-lg mb-2">Suggested Updates for Platform A</h3>
-                <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                    <TableRow>
-                        <TableHead>Field</TableHead>
-                        <TableHead>Suggested Update</TableHead>
-                    </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {state.suggestions.split('\n').map((line, index) => {
-                            const [key, ...valueParts] = line.split(':');
-                            const value = valueParts.join(':').trim();
-                            if(!key || !value) return null;
-                            return (
-                                <TableRow key={index}>
-                                <TableCell className="font-medium">{key.replace('- ', '').trim()}</TableCell>
-                                <TableCell>{value}</TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-                </div>
-                <p className="text-sm text-muted-foreground mt-2"><strong className="text-foreground">Reasoning:</strong> {state.reasoning}</p>
-            </div>
-          )}
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row items-center gap-4 justify-between border-t px-6 py-4">
-          <p className="text-sm text-muted-foreground">AI will suggest changes to align Platform A with B.</p>
-          <div className="flex gap-2 w-full sm:w-auto">
-            <SubmitButton />
-            {state?.suggestions && (
-              <Button onClick={handleSync} disabled={isSyncing} variant="outline" className="w-full sm:w-auto">
-                {isSyncing ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Send className="mr-2 h-4 w-4" />
-                )}
-                {isSyncing ? 'Syncing...' : 'Apply Updates'}
-              </Button>
-            )}
-          </div>
+          <p className="text-sm text-muted-foreground">AI will analyze and flag inconsistencies across all connected platforms.</p>
         </CardFooter>
       </form>
     </Card>
