@@ -156,12 +156,12 @@ export function DashboardClientLayout({
                   </SidebarMenuSubItem>
                   <SidebarMenuSubItem>
                       <SidebarMenuSubLink href="/dashboard/template-maker" isActive={pathname === '/dashboard/template-maker'}>
-                      Template Maker
+                      Template Editor
                     </SidebarMenuSubLink>
                   </SidebarMenuSubItem>
                     <SidebarMenuSubItem>
                     <SidebarMenuSubLink href="/dashboard/pdf-generator" isActive={pathname === '/dashboard/pdf-generator'}>
-                      PDF Generator
+                      Spec Sheet Generator
                     </SidebarMenuSubLink>
                   </SidebarMenuSubItem>
                 </SidebarMenuSub>

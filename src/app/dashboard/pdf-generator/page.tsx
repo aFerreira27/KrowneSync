@@ -178,7 +178,7 @@ export default function PdfGeneratorPage() {
     <div className="flex flex-col h-[calc(100vh-8rem)] gap-4">
         <div className="flex justify-between items-center">
             <div className="flex-1">
-                <h1 className="font-headline text-3xl font-bold tracking-tight">PDF Generator</h1>
+                <h1 className="font-headline text-3xl font-bold tracking-tight">Spec Sheet Generator</h1>
                 <p className="text-muted-foreground">Generate a PDF from a template and your product data.</p>
             </div>
         </div>

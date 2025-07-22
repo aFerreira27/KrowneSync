@@ -291,7 +291,7 @@ export default function TemplateMakerPage() {
     <div className="flex flex-col h-[calc(100vh-8rem)] gap-4">
         <div className="flex justify-between items-center">
             <div className="flex-1">
-                <h1 className="font-headline text-3xl font-bold tracking-tight">Template Maker</h1>
+                <h1 className="font-headline text-3xl font-bold tracking-tight">Template Editor</h1>
                 <p className="text-muted-foreground">Design your product spec sheet templates. Name fields to auto-populate them in the generator.</p>
             </div>
             <div className="flex-1 flex justify-center">
