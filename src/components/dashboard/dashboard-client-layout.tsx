@@ -31,7 +31,7 @@ import { Separator } from '@/components/ui/separator';
 import { ConnectedPlatforms } from '@/components/dashboard/connected-platforms';
 import Link from 'next/link';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronRight } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 
 export type Platform = {
@@ -132,7 +132,7 @@ export function DashboardClientLayout({
                     <SidebarMenuButton>
                         <ShieldCheck />
                         Data Tools
-                        <ChevronRight className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-90" />
+                        <ChevronDown className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180 group-data-[state=closed]:-rotate-90" />
                     </SidebarMenuButton>
                 </CollapsibleTrigger>
               </SidebarMenuItem>
@@ -153,7 +153,7 @@ export function DashboardClientLayout({
                     <SidebarMenuButton>
                         <FileText />
                         Spec Sheet Tools
-                        <ChevronRight className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-90" />
+                        <ChevronDown className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180 group-data-[state=closed]:-rotate-90" />
                     </SidebarMenuButton>
                 </CollapsibleTrigger>
               </SidebarMenuItem>
