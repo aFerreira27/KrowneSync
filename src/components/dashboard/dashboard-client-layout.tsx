@@ -132,7 +132,7 @@ export function DashboardClientLayout({
                     <SidebarMenuButton>
                         <ShieldCheck />
                         Data Tools
-                        <ChevronDown className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180 group-data-[state=closed]:-rotate-90" />
+                        <ChevronDown className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=closed]:-rotate-90" />
                     </SidebarMenuButton>
                 </CollapsibleTrigger>
               </SidebarMenuItem>
@@ -153,7 +153,7 @@ export function DashboardClientLayout({
                     <SidebarMenuButton>
                         <FileText />
                         Spec Sheet Tools
-                        <ChevronDown className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180 group-data-[state=closed]:-rotate-90" />
+                        <ChevronDown className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=closed]:-rotate-90" />
                     </SidebarMenuButton>
                 </CollapsibleTrigger>
               </SidebarMenuItem>
