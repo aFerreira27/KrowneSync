@@ -71,6 +71,8 @@ export function DashboardClientLayout({
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [platforms, setPlatforms] = useState<Platform[]>(initialPlatforms);
+  const [focusedPlatform, setFocusedPlatform] = useState<string | null>(null);
+
 
   const handlePlatformUpdate = useCallback((updatedPlatforms: Platform[]) => {
     setPlatforms(updatedPlatforms);
@@ -95,9 +97,15 @@ export function DashboardClientLayout({
     return () => unsubscribe();
   }, [router]);
 
-  const onConnectClick = useCallback(() => {
+  const onConnectClick = useCallback((platformName: string) => {
+    setFocusedPlatform(platformName);
     setIsConnectionsOpen(true);
   }, []);
+  
+  const clearFocus = useCallback(() => {
+    setFocusedPlatform(null);
+  }, []);
+
 
   if (loading || !user || !userData) {
     return (
@@ -243,6 +251,8 @@ export function DashboardClientLayout({
         onOpenChange={setIsConnectionsOpen} 
         platforms={platforms}
         onPlatformUpdate={handlePlatformUpdate}
+        focusedPlatform={focusedPlatform}
+        onClearFocus={clearFocus}
       />
       <SupportDialog open={isSupportOpen} onOpenChange={setIsSupportOpen} />
       <ProfileDialog user={user} open={isProfileOpen} onOpenChange={setIsProfileOpen} />

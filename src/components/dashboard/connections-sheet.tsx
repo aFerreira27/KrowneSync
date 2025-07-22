@@ -13,9 +13,9 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useState, ChangeEvent, useEffect } from 'react';
+import { useState, ChangeEvent, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import type { Platform } from '@/app/dashboard/layout';
+import type { Platform } from '@/components/dashboard/dashboard-client-layout';
 import { Switch } from '../ui/switch';
 
 type ConnectionsSheetProps = {
@@ -23,15 +23,26 @@ type ConnectionsSheetProps = {
   onOpenChange: (open: boolean) => void;
   platforms: Platform[];
   onPlatformUpdate: (platforms: Platform[]) => void;
+  focusedPlatform?: string | null;
+  onClearFocus: () => void;
 };
 
-export function ConnectionsSheet({ open, onOpenChange, platforms: initialPlatforms, onPlatformUpdate }: ConnectionsSheetProps) {
+export function ConnectionsSheet({ open, onOpenChange, platforms: initialPlatforms, onPlatformUpdate, focusedPlatform, onClearFocus }: ConnectionsSheetProps) {
   const [platforms, setPlatforms] = useState<Platform[]>(initialPlatforms);
   const { toast } = useToast();
+  const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   useEffect(() => {
     setPlatforms(initialPlatforms);
   }, [initialPlatforms]);
+
+  useEffect(() => {
+    if (open && focusedPlatform && inputRefs.current[focusedPlatform]) {
+      inputRefs.current[focusedPlatform]?.focus();
+      onClearFocus(); // Clear the focus target after focusing
+    }
+  }, [open, focusedPlatform, onClearFocus]);
+
 
   const handleTokenChange = (platformName: string, value: string) => {
     setPlatforms(prevPlatforms =>
@@ -132,6 +143,7 @@ export function ConnectionsSheet({ open, onOpenChange, platforms: initialPlatfor
                   <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
                       <Input 
                           id={`${platform.name}-token`}
+                          ref={(el) => (inputRefs.current[platform.name] = el)}
                           type="password"
                           placeholder="Enter API Key / Token"
                           value={platform.token}

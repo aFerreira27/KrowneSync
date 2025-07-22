@@ -2,10 +2,10 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Platform } from "@/app/dashboard/layout";
+import type { Platform } from "@/components/dashboard/dashboard-client-layout";
 import { Link } from "lucide-react";
 
-export function ConnectedPlatforms({ platforms: platformData, onConnectClick }: { platforms: Platform[], onConnectClick?: () => void; }) {
+export function ConnectedPlatforms({ platforms: platformData, onConnectClick }: { platforms: Platform[], onConnectClick?: (platformName: string) => void; }) {
   const platforms = platformData || [];
 
   return (
@@ -42,7 +42,7 @@ export function ConnectedPlatforms({ platforms: platformData, onConnectClick }: 
                 <Button 
                   variant="secondary" 
                   size="sm" 
-                  onClick={onConnectClick}
+                  onClick={() => onConnectClick?.(platform.name)}
                   className="h-auto px-2.5 py-0.5 bg-red-100/50 text-red-800 dark:bg-red-900/50 dark:text-red-200 border-red-200/50 hover:bg-red-100"
                 >
                   <Link className="mr-1 h-3 w-3" />
