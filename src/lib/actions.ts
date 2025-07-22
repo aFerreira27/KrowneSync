@@ -89,36 +89,55 @@ export type ActionState = {
 }
 
 export async function getSyncData(prevState: any, formData: FormData): Promise<ActionState> {
-  try {
-    const validatedFields = syncSchema.safeParse({
-      productIdentifier: formData.get('productIdentifier'),
-    });
+  const validatedFields = syncSchema.safeParse({
+    productIdentifier: formData.get('productIdentifier'),
+  });
 
-    if (!validatedFields.success) {
-      return {
-        error: validatedFields.error.flatten().fieldErrors,
-      };
-    }
-    
-    const { productIdentifier } = validatedFields.data;
-
-    // We don't need to verify the token here since this is a trusted server action
-    // and page access is already controlled by client-side auth checks.
-    
-    // Simulate fetching data from all platforms
-    const platformData = {
-        salesforce: getSalesforceData(productIdentifier) || {},
-        salespad: getSalespadData(productIdentifier) || {},
-        autoquotes: getAutoquotesData(productIdentifier) || {},
-        website: getWebsiteData(productIdentifier) || {},
-        webscrapper: await scrapeKrowneWebsite(productIdentifier) || {},
+  if (!validatedFields.success) {
+    return {
+      error: validatedFields.error.flatten().fieldErrors,
     };
+  }
+  
+  const { productIdentifier } = validatedFields.data;
+  const platformData: any = {};
 
-    // If no data is found on any platform, return an error.
-    if (Object.values(platformData).every(p => Object.keys(p).length === 0)) {
-        return { error: `No product found with identifier "${productIdentifier}".` };
+  try {
+    platformData.salesforce = getSalesforceData(productIdentifier) || {};
+  } catch(e) {
+    return { error: "Failed to fetch data from Salesforce." }
+  }
+  try {
+    platformData.salespad = getSalespadData(productIdentifier) || {};
+  } catch(e) {
+    return { error: "Failed to fetch data from Salespad." }
+  }
+  try {
+    platformData.autoquotes = getAutoquotesData(productIdentifier) || {};
+  } catch(e) {
+    return { error: "Failed to fetch data from Autoquotes." }
+  }
+  try {
+    platformData.website = getWebsiteData(productIdentifier) || {};
+  } catch(e) {
+    return { error: "Failed to fetch data from Website CMS." }
+  }
+  try {
+    const webScrapperData = await scrapeKrowneWebsite(productIdentifier);
+    if(webScrapperData?.error){
+        return { error: `Web Scrapper Error: ${webScrapperData.error}` };
     }
+    platformData.webscrapper = webScrapperData || {};
+  } catch(e) {
+    return { error: "Failed to fetch data from Web Scrapper." }
+  }
 
+  // If no data is found on any platform, return an error.
+  if (Object.values(platformData).every(p => Object.keys(p).length === 0)) {
+      return { error: `No product found with identifier "${productIdentifier}".` };
+  }
+
+  try {
     const aiResult = await findDataDiscrepancies(platformData);
     
     return {
@@ -127,13 +146,9 @@ export async function getSyncData(prevState: any, formData: FormData): Promise<A
       summary: aiResult.summary,
       syncedAt: new Date().toISOString(), // Add timestamp for sync status
     };
-
   } catch (e: any) {
-    console.error("Error processing data:", e);
-    const errorMessage = e.message || 'An unexpected server error occurred. Please try again.';
-    return {
-      error: errorMessage,
-    };
+      console.error("Error in AI processing:", e);
+      return { error: "The AI failed to process the data. Please try again." };
   }
 }
 
