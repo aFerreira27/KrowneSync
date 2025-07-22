@@ -21,10 +21,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [platforms, setPlatforms] = useState<Platform[]>(initialPlatforms);
-  
-  // To avoid the `params` enumeration error, we pass props directly to the
-  // client layout and let Next.js handle rendering the children.
-  // The pages will receive their props from the client layout.
+
   const childrenWithProps = React.Children.map(children, child => {
     if (React.isValidElement(child)) {
       // @ts-ignore

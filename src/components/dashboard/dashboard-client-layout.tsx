@@ -146,27 +146,6 @@ export function DashboardClientLayout({
                 </SidebarMenuSub>
               </CollapsibleContent>
             </Collapsible>
-            
-            <Collapsible>
-              <SidebarMenuItem>
-                <CollapsibleTrigger asChild>
-                    <SidebarMenuButton>
-                        <FileText />
-                        Spec Sheet Tools
-                        <ChevronDown className="ml-auto h-4 w-4 transition-transform duration-200 group-data-[state=closed]:-rotate-90" />
-                    </SidebarMenuButton>
-                </CollapsibleTrigger>
-              </SidebarMenuItem>
-              <CollapsibleContent asChild>
-                <SidebarMenuSub>
-                    <SidebarMenuSubItem>
-                    <SidebarMenuSubLink href="/dashboard/pdf-generator" isActive={pathname === '/dashboard/pdf-generator'}>
-                      Spec Sheet Generator
-                    </SidebarMenuSubLink>
-                  </SidebarMenuSubItem>
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </Collapsible>
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>

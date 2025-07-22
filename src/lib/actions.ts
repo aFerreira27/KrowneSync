@@ -80,8 +80,10 @@ export type Discrepancy = {
     values: Record<string, string>;
 };
 
+export type ProductData = FindDataDiscrepanciesOutput['consolidatedData'];
+
 export type ActionState = {
-  productData?: FindDataDiscrepanciesOutput['consolidatedData'];
+  productData?: ProductData;
   discrepancies?: Discrepancy[];
   summary?: string;
   error?: string | Record<string, string[] | undefined> | null;
@@ -126,14 +128,12 @@ export async function getSyncData(prevState: any, formData: FormData): Promise<A
 
   if (includeWebScrapper) {
       try {
-        const webScrapperData: ScrapeResult = await scrapeKrowneWebsite(productIdentifier); // Add type annotation
+        const webScrapperData: ScrapeResult = await scrapeKrowneWebsite(productIdentifier);
 
-        // Check if webScrapperData is not null and is a ScrapeError
-        if (webScrapperData && 'error' in webScrapperData) { // Use type guard
+        if (webScrapperData && 'error' in webScrapperData) {
             return { error: `Web Scrapper Error: ${webScrapperData.error}` };
         }
         
-        // If not an error, it's either ScrapeSuccess or null
         platformData.webscrapper = webScrapperData || {};
       } catch(e) {
         return { error: "Failed to fetch data from Web Scrapper." }
@@ -143,7 +143,6 @@ export async function getSyncData(prevState: any, formData: FormData): Promise<A
   }
 
 
-  // If no data is found on any platform, return an error.
   if (Object.values(platformData).every((p: any) => Object.keys(p as object).length === 0)) {
       return { error: `No product found with identifier "${productIdentifier}".` };
   }
@@ -155,7 +154,7 @@ export async function getSyncData(prevState: any, formData: FormData): Promise<A
       productData: aiResult.consolidatedData,
       discrepancies: aiResult.discrepancies,
       summary: aiResult.summary,
-      syncedAt: new Date().toISOString(), // Add timestamp for sync status
+      syncedAt: new Date().toISOString(),
     };
   } catch (e: any) {
       console.error("Error in AI processing:", e);
@@ -200,19 +199,7 @@ export async function saveContactMessage(prevState: any, formData: FormData) {
     }
 }
 
-// Define the updated interface for your product data
-interface ProductData {
-  sku: string;
-  name: string;
-  series?: string;
-  images: string[];
-  description: string;
-  standardFeatures: string[];
-  specifications: { name: string; value: string; }[];
-  compliances: string[];
-}
-
-export async function scrapeAndGeneratePdf(productData: ProductData): Promise<Uint8Array> {
+async function createSpecSheetPdf(productData: ProductData): Promise<Uint8Array> {
   const templatePath = path.join(process.cwd(), 'public', 'templates', 'template.pdf');
   const existingPdfBytes = await fs.readFile(templatePath);
 
@@ -223,19 +210,13 @@ export async function scrapeAndGeneratePdf(productData: ProductData): Promise<Ui
   const firstPage = pages[0];
 
   const { width, height } = firstPage.getSize();
-  const fontSize = 12;
+  const fontSize = 10;
   const textColor = rgb(0, 0, 0);
-  let yPosition = height - 50; // Start from top
+  let yPosition = height - 50; 
 
-  const drawText = (text: string, x: number, y: number, size = fontSize) => {
-    firstPage.drawText(text, {
-      x,
-      y,
-      size,
-      font: helveticaFont,
-      color: textColor,
-    });
-    return size + 4; // Return line height
+  const drawText = (text: string, x: number, y: number, size = fontSize, font = helveticaFont) => {
+    firstPage.drawText(text, { x, y, size, font, color: textColor, lineHeight: size + 4 });
+    return size + 4; 
   };
 
   yPosition -= drawText(`Product Name: ${productData.name}`, 50, yPosition, 18);
@@ -244,8 +225,10 @@ export async function scrapeAndGeneratePdf(productData: ProductData): Promise<Ui
     yPosition -= drawText(`Series: ${productData.series}`, 50, yPosition);
   }
 
-  yPosition -= 20; // Add space
-  yPosition -= drawText(`Description: ${productData.description}`, 50, yPosition);
+  yPosition -= 20; 
+  if (productData.description) {
+     yPosition -= drawText(`Description: ${productData.description}`, 50, yPosition);
+  }
   
   if (productData.images && productData.images.length > 0) {
     try {
@@ -263,8 +246,7 @@ export async function scrapeAndGeneratePdf(productData: ProductData): Promise<Ui
     }
   }
 
-
-  yPosition -= 20; // Add space
+  yPosition -= 20;
   if (productData.standardFeatures && productData.standardFeatures.length > 0) {
     yPosition -= drawText('Standard Features:', 50, yPosition, 14);
     productData.standardFeatures.forEach(feature => {
@@ -272,7 +254,7 @@ export async function scrapeAndGeneratePdf(productData: ProductData): Promise<Ui
     });
   }
 
-  yPosition -= 20; // Add space
+  yPosition -= 20;
   if (productData.specifications && productData.specifications.length > 0) {
     yPosition -= drawText('Specifications:', 50, yPosition, 14);
     productData.specifications.forEach(spec => {
@@ -280,11 +262,47 @@ export async function scrapeAndGeneratePdf(productData: ProductData): Promise<Ui
     });
   }
   
-  yPosition -= 20; // Add space
+  yPosition -= 20;
   if (productData.compliances && productData.compliances.length > 0) {
     yPosition -= drawText('Certifications:', 50, yPosition, 14);
     yPosition -= drawText(productData.compliances.join(', '), 60, yPosition);
   }
 
   return pdfDoc.save();
+}
+
+const generatePdfSchema = z.object({
+  productData: z.string(),
+});
+
+type PdfActionState = {
+  pdfBase64?: string;
+  fileName?: string;
+  error?: string;
+}
+
+export async function generateSpecSheetPdfAction(prevState: any, formData: FormData): Promise<PdfActionState> {
+  const validatedFields = generatePdfSchema.safeParse({
+    productData: formData.get('productData'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      error: "Invalid product data provided.",
+    };
+  }
+
+  try {
+    const productData: ProductData = JSON.parse(validatedFields.data.productData);
+    const pdfBytes = await createSpecSheetPdf(productData);
+    const pdfBase64 = Buffer.from(pdfBytes).toString('base64');
+
+    return {
+      pdfBase64,
+      fileName: `${productData.sku || 'spec-sheet'}.pdf`,
+    };
+  } catch (e: any) {
+    console.error("Error generating PDF:", e);
+    return { error: 'Failed to generate PDF. Please try again later.' };
+  }
 }

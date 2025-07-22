@@ -3,15 +3,14 @@
 
 import { useActionState, useRef, useState, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
-import { getSyncData, type ActionState } from '@/lib/actions';
+import { getSyncData, generateSpecSheetPdfAction, type ActionState, type ProductData } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, BadgeCheck, FileWarning, Loader2, Search, Info } from 'lucide-react';
+import { AlertTriangle, BadgeCheck, FileWarning, Loader2, Search, Info, FileDown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { auth } from '@/lib/firebase';
 import type { Discrepancy } from '@/lib/actions';
 import { Combobox, ComboboxOption } from '@/components/ui/combobox';
 import type { Platform } from '@/components/dashboard/dashboard-client-layout';
@@ -37,6 +36,64 @@ function SubmitButton({ atLeastOnePlatformConnected }: { atLeastOnePlatformConne
     </Button>
   );
 }
+
+function GeneratePdfButton({ productData }: { productData: ProductData }) {
+    const [isGenerating, setIsGenerating] = useState(false);
+    const { toast } = useToast();
+
+    const handleGeneratePdf = async () => {
+        setIsGenerating(true);
+        try {
+            const formData = new FormData();
+            formData.append('productData', JSON.stringify(productData));
+            const result = await generateSpecSheetPdfAction(null, formData);
+
+            if (result.error) {
+                throw new Error(result.error);
+            }
+            
+            if (result.pdfBase64 && result.fileName) {
+                 // Create a link and click it to trigger the download
+                const link = document.createElement('a');
+                link.href = `data:application/pdf;base64,${result.pdfBase64}`;
+                link.download = result.fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                 toast({
+                    title: "PDF Generated",
+                    description: `${result.fileName} has started downloading.`,
+                });
+            }
+
+        } catch (e: any) {
+             toast({
+                variant: "destructive",
+                title: "PDF Generation Failed",
+                description: e.message || "An unexpected error occurred.",
+            });
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
+    return (
+        <Button onClick={handleGeneratePdf} disabled={isGenerating} variant="secondary">
+            {isGenerating ? (
+                <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating...
+                </>
+            ) : (
+                <>
+                    <FileDown className="mr-2 h-4 w-4" />
+                    Generate Spec Sheet PDF
+                </>
+            )}
+        </Button>
+    )
+}
+
 
 type SyncHistoryRecord = {
     sku: string;
@@ -77,7 +134,7 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
       const errorMessage =
         typeof state.error === 'string'
           ? state.error
-          : typeof state.error === 'object' && state.error !== null
+          : (state.error && typeof state.error === 'object' && Object.values(state.error).length > 0)
           ? Object.values(state.error).flat().join(' ')
           : 'An unexpected error occurred.';
 
@@ -103,7 +160,7 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
       const syncRecord: SyncHistoryRecord = { sku: productIdentifier, syncedAt: state.syncedAt, status: syncStatus };
       onSyncComplete(syncRecord);
     }
-  }, [state, toast, productIdentifier, onSyncComplete]);
+  }, [state, toast, productIdentifier, onSyncComplete, searchHistory]);
 
   return (
     <Card className="shadow-lg">
@@ -143,7 +200,24 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
 
           {state?.productData && (
             <Card>
-                <CardContent className="p-6">
+                <CardHeader>
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div className="flex-grow">
+                             <h2 className="text-2xl font-bold font-headline">{state.productData.name}</h2>
+                             <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+                                <span>SKU: {state.productData.sku}</span>
+                                {state.productData.series && (
+                                    <>
+                                        <Separator orientation="vertical" className="h-4" />
+                                        <span>Series: {state.productData.series}</span>
+                                    </>
+                                )}
+                             </div>
+                        </div>
+                        <GeneratePdfButton productData={state.productData} />
+                    </div>
+                </CardHeader>
+                <CardContent className="p-6 pt-0">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
                            <Carousel className="w-full">
@@ -173,16 +247,6 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
                             </Carousel>
                         </div>
                         <div>
-                             <h2 className="text-2xl font-bold font-headline">{state.productData.name}</h2>
-                             <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-                                <span>SKU: {state.productData.sku}</span>
-                                {state.productData.series && (
-                                    <>
-                                        <Separator orientation="vertical" className="h-4" />
-                                        <span>Series: {state.productData.series}</span>
-                                    </>
-                                )}
-                             </div>
                              <p className="mt-4 text-sm">{state.productData.description}</p>
                         </div>
                     </div>
