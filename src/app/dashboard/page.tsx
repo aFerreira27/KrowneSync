@@ -74,75 +74,72 @@ export default function DashboardPage({ platforms, onPlatformUpdate, onConnectCl
 
             <DataSyncCard platforms={platforms} onSyncComplete={updateSyncHistory} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2">
-                     <Card>
-                        <CardHeader>
-                            <CardTitle>Product Sync History</CardTitle>
-                            <CardDescription>
-                                This table shows the synchronization status of all products that have been checked.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="rounded-md border">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead className="w-[200px]">Product SKU</TableHead>
-                                            <TableHead>Status</TableHead>
-                                            <TableHead>Last Synced</TableHead>
-                                            <TableHead className="text-right">Last Synced Date</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {isLoading ? (
-                                            Array.from({ length: 5 }).map((_, i) => (
-                                                <TableRow key={i}>
-                                                    <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                                                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                                                    <TableCell><Skeleton className="h-4 w-48" /></TableCell>
-                                                    <TableCell className="text-right"><Skeleton className="h-4 w-40" /></TableCell>
-                                                </TableRow>
-                                            ))
-                                        ) : syncHistory.length > 0 ? (
-                                            syncHistory.map((record) => (
-                                                <TableRow key={record.sku}>
-                                                    <TableCell className="font-medium">{record.sku}</TableCell>
-                                                    <TableCell>
-                                                        <Badge
-                                                            variant={record.status === 'Synced' ? 'default' : 'destructive'}
-                                                            className={record.status === 'Synced' ? 'bg-green-600 hover:bg-green-700' : ''}
-                                                        >
-                                                            {record.status}
-                                                        </Badge>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {formatDistanceToNow(new Date(record.syncedAt), { addSuffix: true })}
-                                                    </TableCell>
-                                                    <TableCell className="text-right">
-                                                        {format(new Date(record.syncedAt), 'PPP p')}
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
-                                        ) : (
-                                            <TableRow>
-                                                <TableCell colSpan={4} className="h-24 text-center">
-                                                    No sync history found. Fetch product data to begin.
+            <Card>
+                <CardHeader>
+                    <CardTitle>Sync Overview</CardTitle>
+                    <CardDescription>
+                        View product sync history and manage your platform connections.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                     <div className="lg:col-span-2">
+                        <h3 className="font-headline text-lg font-semibold mb-4">Product Sync History</h3>
+                        <div className="rounded-md border">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-[200px]">Product SKU</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead>Last Synced</TableHead>
+                                        <TableHead className="text-right">Last Synced Date</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {isLoading ? (
+                                        Array.from({ length: 5 }).map((_, i) => (
+                                            <TableRow key={i}>
+                                                <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                                                <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                                                <TableCell><Skeleton className="h-4 w-48" /></TableCell>
+                                                <TableCell className="text-right"><Skeleton className="h-4 w-40" /></TableCell>
+                                            </TableRow>
+                                        ))
+                                    ) : syncHistory.length > 0 ? (
+                                        syncHistory.map((record) => (
+                                            <TableRow key={record.sku}>
+                                                <TableCell className="font-medium">{record.sku}</TableCell>
+                                                <TableCell>
+                                                    <Badge
+                                                        variant={record.status === 'Synced' ? 'default' : 'destructive'}
+                                                        className={record.status === 'Synced' ? 'bg-green-600 hover:bg-green-700' : ''}
+                                                    >
+                                                        {record.status}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell>
+                                                    {formatDistanceToNow(new Date(record.syncedAt), { addSuffix: true })}
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    {format(new Date(record.syncedAt), 'PPP p')}
                                                 </TableCell>
                                             </TableRow>
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-                <div className="flex flex-col gap-6">
-                    <ConnectedPlatforms platforms={platforms} onConnectClick={onConnectClick} />
-                </div>
-            </div>
-
-           
+                                        ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={4} className="h-24 text-center">
+                                                No sync history found. Fetch product data to begin.
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </div>
+                    <div className="flex flex-col gap-6">
+                        <ConnectedPlatforms platforms={platforms} onConnectClick={onConnectClick} />
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
 }
