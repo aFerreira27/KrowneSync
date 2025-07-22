@@ -10,7 +10,6 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
@@ -46,22 +45,15 @@ export function Combobox({
   className,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
-  const [inputValue, setInputValue] = React.useState(value || "")
 
-  React.useEffect(() => {
-    setInputValue(value || "")
-  }, [value])
-  
   const handleSelect = (currentValue: string) => {
     const newValue = currentValue === value ? "" : currentValue
     onChange(newValue)
-    setInputValue(newValue) // Also update the visual input
     setOpen(false)
   }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const val = event.target.value;
-    setInputValue(val)
     onChange(val);
     if(val) {
         setOpen(true);
@@ -76,12 +68,13 @@ export function Combobox({
       <PopoverTrigger asChild>
         <div className={cn("relative w-full", className)}>
             <Input 
-                value={inputValue}
+                value={value || ""}
                 onChange={handleInputChange}
                 placeholder={placeholder}
                 role="combobox"
                 aria-expanded={open}
                 className="w-full pr-10"
+                autoComplete="off"
             />
             <Button
                 variant="ghost"
