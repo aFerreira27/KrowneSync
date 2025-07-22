@@ -52,7 +52,7 @@ const initialState: ActionState = {
 };
 
 
-export function DataSyncCard({ platforms, onSyncComplete }: { platforms: Platform[], onSyncComplete: (record: SyncHistoryRecord) => void }) {
+export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Platform[], onSyncComplete: (record: SyncHistoryRecord) => void }) {
   const [state, formAction] = useActionState(getSyncData, initialState);
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
