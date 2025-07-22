@@ -17,6 +17,7 @@ const FindDataDiscrepanciesInputSchema = z.object({
   salespad: ProductDataSchema,
   autoquotes: ProductDataSchema,
   website: ProductDataSchema,
+  webscrapper: ProductDataSchema,
 });
 export type FindDataDiscrepanciesInput = z.infer<typeof FindDataDiscrepanciesInputSchema>;
 
@@ -57,7 +58,7 @@ const prompt = ai.definePrompt({
   name: 'findDataDiscrepanciesPrompt',
   input: {schema: FindDataDiscrepanciesInputSchema},
   output: {schema: FindDataDiscrepanciesOutputSchema},
-  prompt: `You are an expert data analyst. You will be given product data from four different platforms: Salesforce, Salespad, Autoquotes, and Website CMS.
+  prompt: `You are an expert data analyst. You will be given product data from five different platforms: Salesforce, Salespad, Autoquotes, Website CMS, and a Web Scrapper.
 
 Your first task is to meticulously compare the data from all platforms and identify every field where the values are not consistent across all sources.
 For each field with a discrepancy, list the differing values from each platform. Ignore fields that are identical across all platforms or fields that only exist on some platforms. Focus only on fields that exist on multiple platforms but have different values.
@@ -89,6 +90,11 @@ Autoquotes Data:
 Website CMS Data:
 \`\`\`json
 {{{json stringify=website}}}
+\`\`\`
+
+Web Scrapper Data:
+\`\`\`json
+{{{json stringify=webscrapper}}}
 \`\`\`
 
 Provide a summary of your findings, a structured list of the discrepancies, and the final consolidated product data.

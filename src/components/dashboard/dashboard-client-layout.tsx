@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Logo from "@/components/logo";
-import { Home, Link as LinkIcon, LifeBuoy, ShieldCheck, Loader2, User as UserIcon, Database, ShoppingCart, Presentation, Globe, LayoutTemplate, FileText } from "lucide-react";
+import { Home, Link as LinkIcon, LifeBuoy, ShieldCheck, Loader2, User as UserIcon, Database, ShoppingCart, Presentation, Globe, LayoutTemplate, FileText, SearchCode } from "lucide-react";
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged, User, updateProfile } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
@@ -41,6 +41,7 @@ const initialPlatforms: Platform[] = [
   { name: 'Salespad', icon: <ShoppingCart className="h-6 w-6 text-red-500" />, token: '', connected: false },
   { name: 'Autoquotes', icon: <Presentation className="h-6 w-6 text-yellow-500" />, token: '', connected: false },
   { name: 'Website CMS', icon: <Globe className="h-6 w-6 text-green-500" />, token: '', connected: false },
+  { name: 'Web Scrapper', icon: <SearchCode className="h-6 w-6 text-purple-500" />, token: '', connected: true }, // Web scrapper is always "connected"
 ];
 
 type UserData = {

@@ -244,6 +244,7 @@ export function DataSyncCard({ platforms }: { platforms: Platform[] }) {
                                                 <TableHead>Salespad</TableHead>
                                                 <TableHead>Autoquotes</TableHead>
                                                 <TableHead>Website</TableHead>
+                                                <TableHead>Web Scrapper</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -254,6 +255,7 @@ export function DataSyncCard({ platforms }: { platforms: Platform[] }) {
                                                     <TableCell>{d.values.salespad || 'N/A'}</TableCell>
                                                     <TableCell>{d.values.autoquotes || 'N/A'}</TableCell>
                                                     <TableCell>{d.values.website || 'N/A'}</TableCell>
+                                                    <TableCell>{d.values.webscrapper || 'N/A'}</TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>
@@ -281,5 +283,3 @@ export function DataSyncCard({ platforms }: { platforms: Platform[] }) {
     </Card>
   );
 }
-
-    

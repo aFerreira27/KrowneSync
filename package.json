@@ -37,6 +37,7 @@
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.1.6",
     "lucide-react": "^0.407.0",
+    "puppeteer": "^22.12.1",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7"
   },
