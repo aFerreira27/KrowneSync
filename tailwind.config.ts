@@ -94,5 +94,5 @@ export default {
       },
     },
   },
-  plugins: [require('tailwindcss-animate'), require('@tailwindcss/postcss')],
-};
+  plugins: [require('tailwindcss-animate')],
+} satisfies Config;
