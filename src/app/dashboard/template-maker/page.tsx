@@ -19,52 +19,16 @@ import {
 } from '@/lib/pdfSchemas';
 import { image, table, text } from '@pdfme/schemas';
 
-// Helper to fetch an asset and convert it to a base64 data URI (kept for potential future use)
-const getAssetAsDataUri = async (path: string): Promise<string> => {
-    try {
-        const response = await fetch(path);
-        if (!response.ok) throw new Error(`Failed to fetch asset: ${path}`);
-        const blob = await response.blob();
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-        });
-    } catch (error) {
-        console.error(`Error loading asset ${path}:`, error);
-        return '';
-    }
-};
-
 const BLANK_TEMPLATE: Template = {
   basePdf: BLANK_A4_PDF,
   schemas: [
-    { ...headerImageSchema },
-    {
-      ...productNameSchema,
-      position: { x: 20, y: 50 },
-    },
-    {
-      ...skuSchema,
-       position: { x: 20, y: 60 },
-    },
-    {
-      ...descriptionSchema,
-      position: { x: 20, y: 75 },
-      height: 20,
-    },
-    {
-      ...standardFeaturesSchema,
-      position: { x: 20, y: 100 },
-      height: 40,
-    },
-     {
-      ...specificationsTableSchema,
-      position: { x: 20, y: 150 },
-      height: 80,
-    },
-    { ...footerImageSchema }
+    headerImageSchema,
+    productNameSchema,
+    skuSchema,
+    descriptionSchema,
+    standardFeaturesSchema,
+    specificationsTableSchema,
+    footerImageSchema
   ],
 };
 
