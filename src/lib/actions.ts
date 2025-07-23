@@ -4,7 +4,7 @@
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { findDataDiscrepancies, type FindDataDiscrepanciesOutput } from '@/ai/flows/find-data-discrepancies';
-import { getFirebaseAuth, getFirestore } from '@/lib/firebase-admin';
+import { auth, db } from '@/lib/firebase-admin';
 import { scrapeKrowneWebsite, type ScrapeResult, type ScrapeError } from '@/services/web-scrapper'; // Import types
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -253,7 +253,6 @@ export async function saveContactMessage(prevState: any, formData: FormData) {
         }
 
         const { name, email, message } = validatedFields.data;
-        const db = getFirestore();
         await db.collection('contact_messages').add({
             name,
             email,
@@ -270,23 +269,16 @@ export async function saveContactMessage(prevState: any, formData: FormData) {
 }
 
 async function createSpecSheetPdf(productData: ProductData): Promise<Uint8Array> {
-  const templatePath = path.join(process.cwd(), 'public', 'templates', 'template.pdf');
-  const existingPdfBytes = await fs.readFile(templatePath);
-
-  const pdfDoc = await PDFDocument.load(existingPdfBytes);
-  
-  // Register fontkit
+  const pdfDoc = await PDFDocument.create();
   pdfDoc.registerFontkit(fontkit);
 
-  // Embed a font
+  // Embed a font by reading it from the filesystem.
   const fontPath = path.join(process.cwd(), 'public', 'fonts', 'HelveticaNeueLTStd-Roman.otf');
   const fontBytes = await fs.readFile(fontPath);
   const helveticaFont = await pdfDoc.embedFont(fontBytes);
 
-
-  const pages = pdfDoc.getPages();
+  const pages = [pdfDoc.addPage()];
   const firstPage = pages[0];
-
   const { width, height } = firstPage.getSize();
   const fontSize = 10;
   const textColor = rgb(0, 0, 0);
