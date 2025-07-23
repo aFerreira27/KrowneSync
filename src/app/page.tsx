@@ -141,7 +141,7 @@ export default function LoginPage() {
             className={cn("mx-auto mb-4", isCtrlPressed && "cursor-pointer")} 
             onClick={handleLogoClick}
           >
-             <Image src="/images/krowneSync.svg" alt="KrowneSync Logo" width={164} height={40} className="h-12 w-auto" priority />
+             <img src="/images/krowneSync.svg" alt="KrowneSync Logo" width={164} height={40} className="h-12 w-auto"/>
           </div>
           <CardTitle className="font-headline text-3xl">Welcome to KrowneSync</CardTitle>
           <CardDescription>Sign in with your Microsoft account to access your dashboard.</CardDescription>
