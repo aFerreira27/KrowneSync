@@ -3,6 +3,7 @@
   "name": "nextn",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbo",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
@@ -13,9 +14,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@genkit-ai/firebase": "^1.15.2",
-    "@genkit-ai/googleai": "^1.15.2",
-    "@genkit-ai/next": "^1.15.2",
+    "@genkit-ai/firebase": "1.15.2",
+    "@genkit-ai/googleai": "1.15.2",
+    "@genkit-ai/next": "1.15.2",
     "@hookform/resolvers": "^4.1.3",
     "@pdf-lib/fontkit": "^1.1.1",
     "@radix-ui/react-accordion": "^1.2.3",
@@ -36,9 +37,9 @@
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.1.6",
-    "firebase": "^10.12.3",
+    "firebase": "12.0.0",
     "lucide-react": "^0.407.0",
-    "next": "14.2.5",
+    "next": "15.0.0",
     "pdf-lib": "^1.17.1",
     "puppeteer": "^22.12.1",
     "react": "18.3.1",
