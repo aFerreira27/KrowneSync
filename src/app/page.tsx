@@ -170,6 +170,7 @@ export default function LoginPage() {
                   required 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  placeholder="****************"
                 />
               </div>
               <Button type="submit" className="w-full" disabled={isLoading}>
