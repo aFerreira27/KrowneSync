@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { createContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useState, useCallback, ReactNode, JSX } from 'react';
 import { Database, ShoppingCart, Presentation, Globe, SearchCode } from "lucide-react";
 
 export type Platform = {

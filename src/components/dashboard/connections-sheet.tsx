@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useState, ChangeEvent, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import type { Platform } from '@/components/dashboard/dashboard-client-layout';
+import type { Platform } from '@/components/dashboard/dashboard-provider';
 import { Switch } from '../ui/switch';
 
 type ConnectionsSheetProps = {
@@ -143,7 +143,7 @@ export function ConnectionsSheet({ open, onOpenChange, platforms: initialPlatfor
                   <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
                       <Input 
                           id={`${platform.name}-token`}
-                          ref={(el) => (inputRefs.current[platform.name] = el)}
+                          ref={(el) => { inputRefs.current[platform.name] = el; }}
                           type="password"
                           placeholder="Enter API Key / Token"
                           value={platform.token}

@@ -140,8 +140,7 @@ export default function LoginPage() {
         <CardHeader className="text-center">
           <div 
             className={cn("mx-auto mb-4", isCtrlPressed && "cursor-pointer")} 
-            onClick={handleLogoClick} 
-            title="Hold CTRL and click for emergency login"
+            onClick={handleLogoClick}
           >
              <Image src="/images/krowneSync.svg" alt="KrowneSync Logo" width={164} height={40} className="h-12 w-auto" priority />
           </div>

@@ -2,7 +2,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Platform } from "@/components/dashboard/dashboard-client-layout";
+import type { Platform } from "@/components/dashboard/dashboard-provider";
 import { Link } from "lucide-react";
 
 export function ConnectedPlatforms({ platforms: platformData, onConnectClick }: { platforms: Platform[], onConnectClick?: (platformName: string) => void; }) {
