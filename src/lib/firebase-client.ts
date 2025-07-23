@@ -1,8 +1,8 @@
 
 'use client';
 
-import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { Auth, getAuth, initializeAuth, indexedDBLocalPersistence, browserLocalPersistence } from 'firebase/auth';
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
+import { getAuth, initializeAuth, indexedDBLocalPersistence, browserLocalPersistence, type Auth } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -13,37 +13,42 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Singleton pattern to ensure single instance
-let app: FirebaseApp;
-let auth: Auth;
-
-function initializeFirebase() {
-  if (typeof window === 'undefined') {
-    return;
+// This function ensures that we only initialize the Firebase app once.
+function getClientSideFirebaseApp(): FirebaseApp {
+  if (getApps().length > 0) {
+    return getApp();
   }
-  if (!getApps().length) {
-    app = initializeApp(firebaseConfig);
-    auth = initializeAuth(app, {
+  return initializeApp(firebaseConfig);
+}
+
+// This function ensures that we only initialize Firebase Auth once.
+function getClientSideFirebaseAuth(): Auth {
+  const app = getClientSideFirebaseApp();
+  // getAuth() will return the existing instance, or create one if it doesn't exist.
+  // We use initializeAuth here to be explicit about persistence.
+  try {
+     return getAuth(app);
+  } catch (error) {
+    // If getAuth throws (e.g., in some environments or due to multiple calls),
+    // we use initializeAuth which is more robust for setting persistence.
+    return initializeAuth(app, {
       persistence: [indexedDBLocalPersistence, browserLocalPersistence]
     });
-  } else {
-    app = getApp();
-    // getAuth() retrieves the existing instance associated with the app
-    auth = getAuth(app);
   }
 }
 
-// Initialize on first load
-initializeFirebase();
-
 export function getFirebaseApp() {
-  if (typeof window === 'undefined') return null;
-  if (!app) initializeFirebase();
-  return app;
+  // Return null on the server
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  return getClientSideFirebaseApp();
 }
 
 export function getFirebaseAuth() {
-  if (typeof window === 'undefined') return null;
-  if (!auth) initializeFirebase();
-  return auth;
+  // Return null on the server
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  return getClientSideFirebaseAuth();
 }
