@@ -27,22 +27,22 @@ env:
       - BUILD
       - RUNTIME
   - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
-    value: krownesync.appspot.com
+    value: krownesync.firebasestorage.app
     availability:
       - BUILD
       - RUNTIME
   - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-    value: "9825134569"
+    value: "554316461559"
     availability:
       - BUILD
       - RUNTIME
   - variable: NEXT_PUBLIC_FIREBASE_APP_ID
-    value: 1:9825134569:web:13b942e61298455d311915
+    value: 1:554316461559:web:56d1ec610ee0fafeec6af2
     availability:
       - BUILD
       - RUNTIME
   - variable: NEXT_PUBLIC_FIREBASE_TENANT_ID
-    value: krowne-com-k5c3j
+    value: 55cac52c-e4a2-4d55-b791-717b8871b532
     availability:
       - BUILD
       - RUNTIME

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { signInWithPopup, OAuthProvider, signInWithEmailAndPassword } from 'firebase/auth';
