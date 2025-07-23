@@ -13,10 +13,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@genkit-ai/core": "^1.15.2",
     "@genkit-ai/firebase": "1.15.2",
-    "@genkit-ai/googleai": "1.15.2",
+    "@genkit-ai/googleai": "^1.15.2",
     "@genkit-ai/next": "1.15.2",
     "@hookform/resolvers": "^4.1.3",
+    "@opentelemetry/exporter-jaeger": "^2.0.1",
+    "@opentelemetry/winston-transport": "^0.14.0",
     "@pdf-lib/fontkit": "^1.1.1",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.1.6",
@@ -35,6 +38,7 @@
     "class-variance-authority": "^0.7.0",
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
+    "dotprompt": "^1.1.1",
     "embla-carousel-react": "^8.1.6",
     "firebase": "12.0.0",
     "lucide-react": "^0.407.0",

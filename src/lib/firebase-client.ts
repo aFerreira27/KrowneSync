@@ -36,7 +36,6 @@ function initializeFirebase() {
 // Initialize on first load
 initializeFirebase();
 
-
 export function getFirebaseApp() {
   if (typeof window === 'undefined') return null;
   if (!app) initializeFirebase();
