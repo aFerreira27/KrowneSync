@@ -2,7 +2,7 @@
 'use client';
 
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth, initializeAuth, indexedDBLocalPersistence, browserLocalPersistence } from 'firebase/auth';
+import { Auth, initializeAuth, indexedDBLocalPersistence, browserLocalPersistence } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -13,36 +13,36 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-let app: FirebaseApp;
-let auth: Auth;
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
 
 function getFirebaseApp() {
   if (typeof window === 'undefined') {
-    return null; 
+    return null;
   }
 
-  if (!getApps().length) {
-    app = initializeApp(firebaseConfig);
-  } else {
-    app = getApp();
+  if (!app) {
+    if (!getApps().length) {
+      app = initializeApp(firebaseConfig);
+    } else {
+      app = getApp();
+    }
   }
   return app;
 }
 
 function getFirebaseAuth() {
   if (typeof window === 'undefined') {
-    // This is a placeholder for the server, it should not be used for auth operations.
     return null;
   }
   
-  const app = getFirebaseApp();
-  if (!app) {
+  const currentApp = getFirebaseApp();
+  if (!currentApp) {
      return null;
   }
   
   if (!auth) {
-    // Use initializeAuth with persistence to solve cross-origin issues in dev
-    auth = initializeAuth(app, {
+    auth = initializeAuth(currentApp, {
         persistence: [indexedDBLocalPersistence, browserLocalPersistence]
     });
   }
