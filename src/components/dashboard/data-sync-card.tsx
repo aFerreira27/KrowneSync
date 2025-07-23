@@ -318,6 +318,7 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
                                                     width={600}
                                                     height={400}
                                                     className="rounded-lg object-cover aspect-video"
+                                                    data-ai-hint="product image"
                                                 />
                                             </CarouselItem>
                                         ))
