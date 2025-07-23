@@ -204,7 +204,7 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
       const syncRecord: SyncRecord = { sku: productIdentifier, syncedAt: state.syncedAt, status: syncStatus };
       onSyncComplete([syncRecord]);
     }
-  }, [singleSyncState, onSyncComplete, productIdentifier]);
+  }, [singleSyncState]);
 
    useEffect(() => {
     const state = bulkSyncState; // Process bulk sync results
@@ -225,7 +225,7 @@ export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Pl
             description: `Successfully processed ${state.results.length} SKUs.`
         });
     }
-  }, [bulkSyncState, onSyncComplete, toast]);
+  }, [bulkSyncState]);
 
   const handleSyncAll = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
