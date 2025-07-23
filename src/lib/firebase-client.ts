@@ -2,7 +2,7 @@
 'use client';
 
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { Auth, initializeAuth, indexedDBLocalPersistence, browserLocalPersistence } from 'firebase/auth';
+import { Auth, getAuth, initializeAuth, indexedDBLocalPersistence, browserLocalPersistence } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -13,40 +13,38 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-let app: FirebaseApp | null = null;
-let auth: Auth | null = null;
+// Singleton pattern to ensure single instance
+let app: FirebaseApp;
+let auth: Auth;
 
-function getFirebaseApp() {
+function initializeFirebase() {
   if (typeof window === 'undefined') {
-    return null;
+    return;
   }
+  if (!getApps().length) {
+    app = initializeApp(firebaseConfig);
+    auth = initializeAuth(app, {
+      persistence: [indexedDBLocalPersistence, browserLocalPersistence]
+    });
+  } else {
+    app = getApp();
+    // getAuth() retrieves the existing instance associated with the app
+    auth = getAuth(app);
+  }
+}
 
-  if (!app) {
-    if (!getApps().length) {
-      app = initializeApp(firebaseConfig);
-    } else {
-      app = getApp();
-    }
-  }
+// Initialize on first load
+initializeFirebase();
+
+
+export function getFirebaseApp() {
+  if (typeof window === 'undefined') return null;
+  if (!app) initializeFirebase();
   return app;
 }
 
-function getFirebaseAuth() {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-  
-  const currentApp = getFirebaseApp();
-  if (!currentApp) {
-     return null;
-  }
-  
-  if (!auth) {
-    auth = initializeAuth(currentApp, {
-        persistence: [indexedDBLocalPersistence, browserLocalPersistence]
-    });
-  }
+export function getFirebaseAuth() {
+  if (typeof window === 'undefined') return null;
+  if (!auth) initializeFirebase();
   return auth;
 }
-
-export { getFirebaseApp, getFirebaseAuth };
