@@ -25,8 +25,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import React, { useEffect, useRef } from "react";
-import { useFormState, useFormStatus } from 'react-dom';
+import React, { useEffect, useRef, useActionState } from "react";
+import { useFormStatus } from 'react-dom';
 import { saveContactMessage } from "@/lib/actions";
 import { Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -112,7 +112,7 @@ const initialState = {
 
 export function SupportDialog({ open, onOpenChange }: SupportDialogProps) {
     const { toast } = useToast();
-    const [state, formAction] = useFormState(saveContactMessage, initialState);
+    const [state, formAction] = useActionState(saveContactMessage, initialState);
     const formRef = useRef<HTMLFormElement>(null);
 
     useEffect(() => {

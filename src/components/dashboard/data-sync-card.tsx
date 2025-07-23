@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
-import { useFormStatus, useFormState } from 'react-dom';
+import { useRef, useState, useEffect, useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { getSyncData, generateSpecSheetPdfAction, getBulkSyncData, type ActionState, type ProductData, type BulkActionState, type SyncRecord } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -137,8 +137,8 @@ const initialBulkActionState: BulkActionState = {
 
 
 export function DataSyncCard({ platforms = [], onSyncComplete }: { platforms: Platform[], onSyncComplete: (records: SyncRecord[]) => void }) {
-  const [singleSyncState, singleSyncFormAction] = useFormState(getSyncData, initialActionState);
-  const [bulkSyncState, bulkSyncFormAction] = useFormState(getBulkSyncData, initialBulkActionState);
+  const [singleSyncState, singleSyncFormAction] = useActionState(getSyncData, initialActionState);
+  const [bulkSyncState, bulkSyncFormAction] = useActionState(getBulkSyncData, initialBulkActionState);
   
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
