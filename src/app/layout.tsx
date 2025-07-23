@@ -8,6 +8,7 @@ import { FirebaseProvider } from '@/components/firebase-provider';
 export const metadata: Metadata = {
   title: 'KrowneSync',
   description: 'Synchronize your product data seamlessly.',
+  icons: null,
 };
 
 export default function RootLayout({
