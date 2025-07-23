@@ -1,7 +1,8 @@
+
 'use client';
 
 import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase'; // Import initialized auth
+import { useAuth } from '@/components/firebase-provider';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
@@ -10,9 +11,11 @@ import { useToast } from '@/hooks/use-toast';
 
 function LogoutButton() {
   const router = useRouter();
+  const { auth } = useAuth();
   const { toast } = useToast();
 
   const handleLogout = async () => {
+    if (!auth) return;
     try {
       await signOut(auth);
       router.push('/');

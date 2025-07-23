@@ -16,8 +16,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Logo from "@/components/logo";
 import { Home, Link as LinkIcon, LifeBuoy, ShieldCheck, Loader2, User as UserIcon } from "lucide-react";
-import { auth } from '@/lib/firebase';
-import { onAuthStateChanged, User } from 'firebase/auth';
+import type { User } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
 import { ConnectionsSheet } from '@/components/dashboard/connections-sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -26,6 +25,7 @@ import { SupportDialog } from '@/components/dashboard/support-dialog';
 import { ProfileDialog } from '@/components/dashboard/profile-dialog';
 import Link from 'next/link';
 import { DashboardContext } from '@/components/dashboard/dashboard-provider';
+import { useAuth } from '@/components/firebase-provider';
 
 type UserData = {
   name: string;
@@ -42,9 +42,8 @@ export function DashboardClientLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [user, setUser] = useState<User | null>(null);
+  const { user, loading } = useAuth();
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [loading, setLoading] = useState(true);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -62,23 +61,17 @@ export function DashboardClientLayout({
   } = context;
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        setUserData({
-          name: currentUser.displayName || 'User',
-          email: currentUser.email || '',
-          initials: currentUser.displayName ? currentUser.displayName.charAt(0).toUpperCase() : 'U',
-          photoURL: currentUser.photoURL || `https://placehold.co/40x40.png`
-        });
-        setLoading(false);
-      } else {
-        router.push('/');
-      }
-    });
-
-    return () => unsubscribe();
-  }, [router]);
+    if (!loading && !user) {
+      router.push('/');
+    } else if (user) {
+      setUserData({
+        name: user.displayName || 'User',
+        email: user.email || '',
+        initials: user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U',
+        photoURL: user.photoURL || `https://placehold.co/40x40.png`
+      });
+    }
+  }, [user, loading, router]);
 
 
   if (loading || !user || !userData) {

@@ -1,13 +1,15 @@
+
 {
-  "hosting": {
-    "source": ".",
+  "apphosting": {
+    "backendId": "krownesync",
+    "rootDir": "/",
     "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
+      "node_modules",
+      ".git",
+      "firebase-debug.log",
+      "firebase-debug.*.log",
+      "functions"
     ],
-    "frameworksBackend": {
-      "region": "us-central1"
-    }
+    "alwaysDeployFromSource": true
   }
 }

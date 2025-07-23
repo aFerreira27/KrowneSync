@@ -2,7 +2,7 @@
 'use client';
 
 import { signInWithPopup, OAuthProvider, signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase'; // Import initialized auth
+import { useAuth } from '@/components/firebase-provider';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,9 +17,9 @@ import { cn } from '@/lib/utils';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { auth, user, loading } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useState(auth.currentUser);
 
   // State for emergency email/password login
   const [showEmergencyLogin, setShowEmergencyLogin] = useState(false);
@@ -29,13 +29,12 @@ export default function LoginPage() {
 
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
-      if (user) {
-        router.push('/dashboard');
-      }
-    });
+    if (!loading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, loading, router]);
 
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Control') {
         setIsCtrlPressed(true);
@@ -51,11 +50,10 @@ export default function LoginPage() {
     window.addEventListener('keyup', handleKeyUp);
 
     return () => {
-        unsubscribe();
         window.removeEventListener('keydown', handleKeyDown);
         window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [router]);
+  }, []);
 
   const handleLogoClick = (e: React.MouseEvent) => {
     if (e.ctrlKey) {
@@ -64,6 +62,7 @@ export default function LoginPage() {
   };
 
   const handleMicrosoftSignIn = () => {
+    if (!auth) return;
     setIsLoading(true);
     const provider = new OAuthProvider('microsoft.com');
     
@@ -99,6 +98,7 @@ export default function LoginPage() {
 
   const handleEmailPasswordAuth = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!auth) return;
     setIsLoading(true);
     
     signInWithEmailAndPassword(auth, email, password)
@@ -126,7 +126,7 @@ export default function LoginPage() {
     });
   };
 
-  if (user) {
+  if (loading || user) {
      return (
       <div className="flex h-screen w-full items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />

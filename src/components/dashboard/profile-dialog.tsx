@@ -1,7 +1,7 @@
 
 'use client';
 
-import { User } from 'firebase/auth';
+import { User, updateProfile } from 'firebase/auth';
 import React, { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import {
@@ -16,8 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
-import { auth, updateProfile } from '@/lib/firebase';
 import { Loader2, UploadCloud } from 'lucide-react';
+import { useAuth } from '@/components/firebase-provider';
 
 type ProfileDialogProps = {
   user: User | null;
@@ -26,6 +26,7 @@ type ProfileDialogProps = {
 };
 
 export function ProfileDialog({ user, open, onOpenChange }: ProfileDialogProps) {
+  const { auth } = useAuth();
   const { toast } = useToast();
   const [newPhoto, setNewPhoto] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -65,7 +66,7 @@ export function ProfileDialog({ user, open, onOpenChange }: ProfileDialogProps) 
   };
 
   const handleSave = async () => {
-    if (!auth.currentUser || !newPhoto) return;
+    if (!auth?.currentUser || !newPhoto) return;
 
     setIsSaving(true);
     try {
