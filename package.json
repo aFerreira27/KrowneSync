@@ -7,7 +7,8 @@
     "dev": "next dev --turbo",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
-    "build": "next build",
+    "copy-public-node": "node -e \"require('fs').cpSync('public', '.next', { recursive: true });\"",
+    "build": "next build && npm run copy-public-node",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"
@@ -55,6 +56,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.19",
+    "copyfiles": "^2.4.1",
     "postcss": "^8.4.38",
     "typescript": "5.4.5"
   }
