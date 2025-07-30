@@ -201,3 +201,5 @@ const ComparisonResults = ({ results, onExport }) => {
     </div>
   );
 };
+
+export default ComparisonResults;

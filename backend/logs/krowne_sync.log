@@ -9,3 +9,55 @@
 2025-07-30 15:03:21,973 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 15:03:21] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
 2025-07-30 15:03:29,999 - werkzeug - INFO - 192.168.0.36 - - [30/Jul/2025 15:03:29] "[33mGET / HTTP/1.1[0m" 404 -
 2025-07-30 15:03:30,094 - werkzeug - INFO - 192.168.0.36 - - [30/Jul/2025 15:03:30] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-07-30 16:24:44,480 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-30 16:24:44,480 - __main__ - INFO - Debug mode: False
+2025-07-30 16:24:44,513 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-07-30 16:24:44,514 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-30 16:24:48,880 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 16:24:48] "[33mGET / HTTP/1.1[0m" 404 -
+2025-07-30 16:24:48,967 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 16:24:48] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-07-30 16:34:28,842 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 16:34:28] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-07-30 16:37:38,102 - app.services.csv_processor - INFO - Successfully read CSV with utf-8 encoding
+2025-07-30 16:37:38,102 - app.services.csv_processor - ERROR - Error processing CSV file: Missing required columns: product_id, name, price, description
+2025-07-30 16:37:38,105 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 16:37:38] "[35m[1mPOST /api/upload-csv HTTP/1.1[0m" 500 -
+2025-07-30 16:59:54,718 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 16:59:54] "OPTIONS /api/salesforce-sync HTTP/1.1" 200 -
+2025-07-30 16:59:55,821 - app.services.salesforce_client - ERROR - Salesforce authentication failed: 400 Client Error: Bad Request for url: https://login.salesforce.com/services/oauth2/token
+2025-07-30 16:59:55,823 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 16:59:55] "[35m[1mPOST /api/salesforce-sync HTTP/1.1[0m" 500 -
+2025-07-30 17:00:02,861 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 17:00:02] "OPTIONS /api/salesforce-sync HTTP/1.1" 200 -
+2025-07-30 17:00:03,935 - app.services.salesforce_client - ERROR - Salesforce authentication failed: 400 Client Error: Bad Request for url: https://login.salesforce.com/services/oauth2/token
+2025-07-30 17:00:03,937 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 17:00:03] "[35m[1mPOST /api/salesforce-sync HTTP/1.1[0m" 500 -
+2025-07-30 17:01:44,993 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 17:01:44] "OPTIONS /api/salesforce-sync HTTP/1.1" 200 -
+2025-07-30 17:01:45,943 - app.services.salesforce_client - ERROR - Salesforce authentication failed: 400 Client Error: Bad Request for url: https://login.salesforce.com/services/oauth2/token
+2025-07-30 17:01:45,944 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 17:01:45] "[35m[1mPOST /api/salesforce-sync HTTP/1.1[0m" 500 -
+2025-07-30 17:02:09,859 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-30 17:02:09,859 - __main__ - INFO - Debug mode: False
+2025-07-30 17:02:09,886 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-07-30 17:02:09,887 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-30 17:03:37,075 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 17:03:37] "OPTIONS /api/salesforce-sync HTTP/1.1" 200 -
+2025-07-30 17:03:38,379 - app.services.salesforce_client - ERROR - Salesforce authentication failed: 400 Client Error: Bad Request for url: https://login.salesforce.com/services/oauth2/token
+2025-07-30 17:03:38,386 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 17:03:38] "[35m[1mPOST /api/salesforce-sync HTTP/1.1[0m" 500 -
+2025-07-30 17:03:44,292 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 17:03:44] "OPTIONS /api/salesforce-sync HTTP/1.1" 200 -
+2025-07-30 17:03:45,337 - app.services.salesforce_client - ERROR - Salesforce authentication failed: 400 Client Error: Bad Request for url: https://login.salesforce.com/services/oauth2/token
+2025-07-30 17:03:45,340 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 17:03:45] "[35m[1mPOST /api/salesforce-sync HTTP/1.1[0m" 500 -
+2025-07-30 17:05:45,996 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 17:05:45] "OPTIONS /api/salesforce-sync HTTP/1.1" 200 -
+2025-07-30 17:05:46,739 - app.services.salesforce_client - ERROR - Salesforce authentication failed: 400 Client Error: Bad Request for url: https://login.salesforce.com/services/oauth2/token
+2025-07-30 17:05:46,741 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 17:05:46] "[35m[1mPOST /api/salesforce-sync HTTP/1.1[0m" 500 -
+2025-07-30 17:07:41,924 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 17:07:41] "OPTIONS /api/salesforce-sync HTTP/1.1" 200 -
+2025-07-30 17:07:42,941 - app.services.salesforce_client - ERROR - Salesforce authentication failed: 400 Client Error: Bad Request for url: https://login.salesforce.com/services/oauth2/token
+2025-07-30 17:07:42,943 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 17:07:42] "[35m[1mPOST /api/salesforce-sync HTTP/1.1[0m" 500 -
+2025-07-30 17:07:56,699 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-30 17:07:56,699 - __main__ - INFO - Debug mode: False
+2025-07-30 17:07:56,727 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-07-30 17:07:56,728 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-30 17:09:06,557 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 17:09:06] "OPTIONS /api/salesforce-sync HTTP/1.1" 200 -
+2025-07-30 17:09:06,992 - app.services.salesforce_client - ERROR - Salesforce authentication failed: 400 Client Error: Bad Request for url: https://login.salesforce.com/services/oauth2/token
+2025-07-30 17:09:06,994 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 17:09:06] "[35m[1mPOST /api/salesforce-sync HTTP/1.1[0m" 500 -
+2025-07-30 17:11:42,095 - werkzeug - INFO - 127.0.0.1 - - [30/Jul/2025 17:11:42] "OPTIONS /api/salesforce-sync HTTP/1.1" 200 -

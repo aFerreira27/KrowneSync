@@ -70,3 +70,5 @@ const FileUpload = ({ onFileUpload, loading }) => {
     </div>
   );
 };
+
+export default FileUpload;

@@ -28,8 +28,13 @@ class SalesforceClient:
                 'password': self.password + self.security_token
             }
             
+            print("Auth data:", auth_data)
             response = requests.post(auth_url, data=auth_data)
+            print("Here", response.text)
             response.raise_for_status()
+            print("Here", response.text)
+
+            
             
             auth_info = response.json()
             self.access_token = auth_info['access_token']

@@ -140,3 +140,5 @@ const SalesforceConfig = ({ onConfigSave, loading }) => {
     </div>
   );
 };
+
+export default SalesforceConfig;
