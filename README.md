@@ -88,17 +88,12 @@ SECRET_KEY=your-secret-key-here
 FLASK_HOST=0.0.0.0
 FLASK_PORT=5000
 REDIS_URL=redis://redis:6379/0
-KROWNE_BASE_URL=https://krowne.com
-SCRAPING_DELAY=1
-MAX_CONCURRENT_REQUESTS=5
-LOG_LEVEL=INFO
 ```
 
 #### Frontend (.env)
 ```env
 REACT_APP_API_URL=http://localhost:5000
 REACT_APP_VERSION=1.0.0
-REACT_APP_ENVIRONMENT=development
 ```
 
 ### Salesforce Configuration
@@ -227,13 +222,7 @@ krowne-sync/
 │   └── Dockerfile
 ├── nginx/
 │   └── nginx.conf
-├── k8s/
-│   ├── backend-deployment.yaml
-│   ├── frontend-deployment.yaml
-│   ├── nginx-deployment.yaml
-│   └── redis-deployment.yaml
 ├── docker-compose.yml
-├── docker-compose.prod.yml
 └── README.md
 ```
 
@@ -277,13 +266,6 @@ npm test
 docker-compose -f docker-compose.test.yml up --abort-on-container-exit
 ```
 
-### End-to-End Tests
-```bash
-cd e2e-tests
-npm install
-npm run test
-```
-
 ## Deployment
 
 ### Production Deployment
@@ -298,129 +280,279 @@ npm run test
 docker-compose -f docker-compose.prod.yml up -d
 ```
 
-3. **Kubernetes Deployment**:
-```bash
-# Apply all Kubernetes manifests
-kubectl apply -f k8s/
+3. **Kubernetes Deployment** (optional):
+   - Use provided Kubernetes manifests in `k8s/` directory
+   - Configure ingress and persistent volumes
+   - Set up horizontal pod autoscaling
 
-# Or apply individually
-kubectl apply -f k8s/redis-deployment.yaml
-kubectl apply -f k8s/backend-deployment.yaml
-kubectl apply -f k8s/frontend-deployment.yaml
-kubectl apply -f k8s/nginx-deployment.yaml
+### Environment-Specific Configurations
 
-# Check deployment status
-kubectl get pods
-kubectl get services
+#### Development
+```yaml
+# docker-compose.override.yml
+version: '3.8'
+services:
+  backend:
+    environment:
+      - FLASK_ENV=development
+    volumes:
+      - ./backend:/app
+    command: flask run --host=0.0.0.0 --reload
+  
+  frontend:
+    volumes:
+      - ./frontend/src:/app/src
+    command: npm start
 ```
 
-### Monitoring and Logging
-
-1. **Application Logs**:
-```bash
-# Docker Compose
-docker-compose logs -f
-
-# Kubernetes
-kubectl logs -f deployment/krownesync-backend
-kubectl logs -f deployment/krownesync-frontend
+#### Production
+```yaml
+# docker-compose.prod.yml
+version: '3.8'
+services:
+  backend:
+    environment:
+      - FLASK_ENV=production
+    restart: always
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+  
+  frontend:
+    restart: always
+    deploy:
+      replicas: 2
 ```
 
-2. **Health Monitoring**:
-   - Backend health endpoint: `/api/health`
-   - Frontend build info: accessible via browser dev tools
-   - Redis monitoring: Use Redis CLI or monitoring tools
+## Monitoring and Logging
 
-### SSL/TLS Configuration
+### Application Monitoring
 
-For production deployments, configure SSL certificates:
+The application includes built-in health checks and monitoring endpoints:
 
-1. **Let's Encrypt with Certbot**:
-```bash
-certbot --nginx -d your-domain.com
+- **Health Check**: `/api/health`
+- **Metrics**: `/api/metrics` (if enabled)
+- **Status Dashboard**: Available in the frontend
+
+### Logging Configuration
+
+Logs are structured and include:
+- Request/response logging
+- Error tracking
+- Performance metrics
+- Business logic events
+
+```python
+# Example log configuration
+LOGGING_CONFIG = {
+    'version': 1,
+    'formatters': {
+        'default': {
+            'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+        }
+    },
+    'handlers': {
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'logs/krowne_sync.log',
+            'formatter': 'default'
+        }
+    },
+    'root': {
+        'level': 'INFO',
+        'handlers': ['file']
+    }
+}
 ```
 
-2. **Custom SSL Certificates**:
-   - Place certificates in `nginx/certs/`
-   - Update `nginx/nginx.conf` with SSL configuration
+### Performance Optimization
+
+1. **Backend Optimizations**:
+   - Async processing for web scraping
+   - Redis caching for repeated requests
+   - Connection pooling for database operations
+   - Request rate limiting
+
+2. **Frontend Optimizations**:
+   - Code splitting and lazy loading
+   - Image optimization
+   - CDN integration for static assets
+   - Service worker for offline functionality
+
+3. **Infrastructure Optimizations**:
+   - Nginx caching and compression
+   - Docker multi-stage builds
+   - Container resource limits
+   - Load balancing
+
+## Security Considerations
+
+### Backend Security
+
+- **Input Validation**: All inputs are validated and sanitized
+- **SQL Injection Prevention**: Using parameterized queries
+- **Rate Limiting**: API endpoints are rate-limited
+- **CORS Configuration**: Proper CORS headers configured
+- **File Upload Security**: File type and size validation
+
+### Frontend Security
+
+- **XSS Prevention**: Input sanitization and CSP headers
+- **CSRF Protection**: CSRF tokens for state-changing operations
+- **Secure Headers**: Security headers configured in Nginx
+- **Authentication**: Secure session management
+
+### Infrastructure Security
+
+- **Container Security**: Non-root users, minimal base images
+- **Network Security**: Internal container communication
+- **SSL/TLS**: HTTPS encryption in production
+- **Secrets Management**: Environment variables for sensitive data
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Connection Refused Errors**:
-   - Check if all services are running: `docker-compose ps`
-   - Verify network connectivity between containers
-   - Check environment variables
+#### Backend Issues
 
-2. **Salesforce Authentication Errors**:
-   - Verify credentials and security token
-   - Check IP restrictions in Salesforce
-   - Ensure Connected App permissions are correct
+**Issue**: CSV upload fails
+```bash
+# Check file permissions
+ls -la backend/uploads/
 
-3. **Web Scraping Issues**:
-   - Check if Krowne.com is accessible
-   - Verify scraping rate limits
-   - Review user-agent settings
+# Check disk space
+df -h
 
-4. **CSV Processing Errors**:
-   - Validate CSV format and required columns
-   - Check file encoding (UTF-8 recommended)
-   - Verify data types match expected formats
+# View logs
+docker-compose logs backend
+```
 
-### Performance Optimization
+**Issue**: Salesforce connection fails
+```bash
+# Test credentials
+curl -X POST http://localhost:5000/api/salesforce-sync \
+  -H "Content-Type: application/json" \
+  -d '{"client_id":"...","client_secret":"...","username":"...","password":"...","security_token":"..."}'
 
-1. **Backend Optimization**:
-   - Implement Redis caching for frequently accessed data
-   - Use connection pooling for database connections
-   - Optimize scraping with concurrent requests (within limits)
+# Check network connectivity
+docker-compose exec backend ping login.salesforce.com
+```
 
-2. **Frontend Optimization**:
-   - Implement lazy loading for large datasets
-   - Use pagination for results display
-   - Optimize bundle size with code splitting
+**Issue**: Web scraping fails
+```bash
+# Check target website availability
+curl -I https://krowne.com
+
+# Verify user agent and rate limiting
+docker-compose logs backend | grep scraper
+```
+
+#### Frontend Issues
+
+**Issue**: API calls failing
+```bash
+# Check backend connectivity
+curl http://localhost:5000/api/health
+
+# Verify CORS configuration
+docker-compose logs nginx
+```
+
+**Issue**: Build failures
+```bash
+# Clear node modules and rebuild
+cd frontend
+rm -rf node_modules package-lock.json
+npm install
+npm run build
+```
+
+#### Infrastructure Issues
+
+**Issue**: Docker compose fails to start
+```bash
+# Check port conflicts
+netstat -tulpn | grep :80
+netstat -tulpn | grep :3000
+netstat -tulpn | grep :5000
+
+# Check Docker resources
+docker system df
+docker system prune
+```
+
+**Issue**: Performance problems
+```bash
+# Monitor resource usage
+docker stats
+
+# Check logs for bottlenecks
+docker-compose logs --tail=100 -f
+```
+
+### Debug Mode
+
+Enable debug mode for detailed logging:
+
+```bash
+# Backend debug
+export FLASK_ENV=development
+export FLASK_DEBUG=1
+
+# Frontend debug
+export REACT_APP_DEBUG=true
+```
 
 ## Contributing
 
-### Getting Started
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/new-feature`
-3. Make your changes
-4. Add tests for new functionality
-5. Run the test suite: `npm test` and `pytest`
-6. Commit your changes: `git commit -m 'Add new feature'`
-7. Push to the branch: `git push origin feature/new-feature`
-8. Submit a pull request
-
-### Code Style Guidelines
-
-- **Python**: Follow PEP 8 standards, use `black` for formatting
-- **JavaScript**: Use ESLint and Prettier for consistent formatting
-- **Commit Messages**: Use conventional commit format
-
 ### Development Workflow
 
-1. **Local Development**: Use development Docker Compose setup
-2. **Testing**: Ensure all tests pass before submitting PR
-3. **Documentation**: Update README and API docs for new features
-4. **Code Review**: All changes require peer review
+1. **Fork the repository**
+2. **Create a feature branch**:
+   ```bash
+   git checkout -b feature/new-feature
+   ```
 
-## Security
+3. **Make changes and commit**:
+   ```bash
+   git add .
+   git commit -m "Add new feature"
+   ```
 
-### Best Practices
+4. **Run tests**:
+   ```bash
+   # Backend tests
+   cd backend && pytest
 
-- Store sensitive configuration in environment variables
-- Use HTTPS in production
-- Implement rate limiting for API endpoints
-- Regular security updates for dependencies
-- Input validation and sanitization
+   # Frontend tests
+   cd frontend && npm test
+   ```
 
-### Data Privacy
+5. **Submit a pull request**
 
-- CSV files are processed in memory and not permanently stored
-- Salesforce credentials are not logged or cached
-- Web scraping respects robots.txt and rate limits
+### Code Standards
+
+#### Backend (Python)
+- Follow PEP 8 style guide
+- Use type hints where appropriate
+- Write docstrings for all functions
+- Maintain test coverage above 80%
+
+#### Frontend (React)
+- Use functional components with hooks
+- Follow ESLint configuration
+- Write PropTypes for all components
+- Use meaningful component and variable names
+
+#### Git Workflow
+- Use conventional commit messages
+- Squash commits before merging
+- Include tests for new features
+- Update documentation
 
 ## License
 
@@ -430,26 +562,34 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For support and questions:
 
-- Create an issue in the GitHub repository
-- Contact the development team
-- Check the troubleshooting section above
+- **Documentation**: Check this README and inline code comments
+- **Issues**: Create a GitHub issue for bugs and feature requests
+- **Discussions**: Use GitHub Discussions for general questions
+- **Email**: [your-email@domain.com]
 
-## Changelog
+## Roadmap
 
-### Version 1.0.0
-- Initial release
-- CSV upload and processing
-- Salesforce integration
-- Web scraping functionality
-- Docker containerization
-- React.js frontend dashboard
+### Version 1.1
+- [ ] Advanced filtering and search in results
+- [ ] Bulk operations for product updates
+- [ ] API rate limiting dashboard
+- [ ] Enhanced error reporting
 
-### Future Roadmap
+### Version 1.2
+- [ ] Multiple website support beyond Krowne.com
+- [ ] Scheduled sync operations
+- [ ] Email notifications for sync results
+- [ ] Advanced analytics and reporting
 
-- [ ] Advanced matching algorithms (machine learning)
+### Version 2.0
+- [ ] Machine learning for improved product matching
 - [ ] Real-time sync capabilities
-- [ ] Additional data source integrations
-- [ ] Enhanced reporting and analytics
-- [ ] Mobile-responsive design improvements
-- [ ] API rate limiting and authentication
-- [ ] Webhook support for real-time updates
+- [ ] Multi-tenant support
+- [ ] Advanced API with GraphQL
+
+## Acknowledgments
+
+- React community for excellent documentation
+- Flask team for the robust web framework
+- BeautifulSoup for reliable web scraping
+- Docker team for containerization technology

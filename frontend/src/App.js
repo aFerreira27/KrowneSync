@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Dashboard from './components/Dashboard';
 import FileUpload from './components/FileUpload';
@@ -9,10 +9,29 @@ import { api } from './services/api';
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [uploadedFile, setUploadedFile] = useState(null);
-  const [salesforceConfig, setSalesforceConfig] = useState(null);
+  const [salesforceAuth, setSalesforceAuth] = useState({
+    authenticated: false,
+    userInfo: null,
+    instanceUrl: null
+  });
   const [comparisonResults, setComparisonResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Check for URL parameters on app load (OAuth callback handling)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const authStatus = urlParams.get('auth');
+    const errorParam = urlParams.get('error');
+    
+    if (authStatus === 'success') {
+      setError(null);
+      // Auth status will be checked by SalesforceConfig component
+    } else if (errorParam) {
+      const errorMsg = urlParams.get('error_description') || urlParams.get('message') || errorParam;
+      setError(`Authentication failed: ${errorMsg}`);
+    }
+  }, []);
 
   const handleFileUpload = async (file) => {
     setLoading(true);
@@ -33,22 +52,10 @@ function App() {
     }
   };
 
-  const handleSalesforceConfig = async (config) => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const result = await api.testSalesforceConnection(config);
-      setSalesforceConfig({
-        ...config,
-        products_count: result.products_count,
-        preview: result.products
-      });
+  const handleSalesforceAuth = (authData) => {
+    setSalesforceAuth(authData);
+    if (authData.authenticated) {
       setActiveTab('dashboard');
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -61,14 +68,8 @@ function App() {
       
       if (sourceType === 'csv' && uploadedFile) {
         comparisonData.filename = uploadedFile.filename;
-      } else if (sourceType === 'salesforce' && salesforceConfig) {
-        comparisonData.salesforce_config = {
-          client_id: salesforceConfig.client_id,
-          client_secret: salesforceConfig.client_secret,
-          username: salesforceConfig.username,
-          password: salesforceConfig.password,
-          security_token: salesforceConfig.security_token
-        };
+      } else if (sourceType === 'salesforce' && salesforceAuth.authenticated) {
+        // No need to pass credentials with OAuth - they're in the session
       } else {
         throw new Error(`No ${sourceType} data configured`);
       }
@@ -78,6 +79,29 @@ function App() {
       setActiveTab('results');
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSalesforceSync = async (includePricing = false) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const result = await api.salesforceSync({ include_pricing: includePricing });
+      
+      // Update salesforce auth with preview data
+      setSalesforceAuth(prev => ({
+        ...prev,
+        products_count: result.products_count || result.total_products,
+        preview: result.products
+      }));
+      
+      return result;
+    } catch (err) {
+      setError(err.message);
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -110,6 +134,11 @@ function App() {
         <div className="container">
           <h1>KrowneSync</h1>
           <p>Product Data Synchronization Tool</p>
+          {salesforceAuth.authenticated && (
+            <div className="auth-indicator">
+              ✅ Connected to Salesforce as {salesforceAuth.userInfo?.name}
+            </div>
+          )}
         </div>
       </header>
 
@@ -131,7 +160,7 @@ function App() {
             className={`tab-button ${activeTab === 'salesforce' ? 'active' : ''}`}
             onClick={() => setActiveTab('salesforce')}
           >
-            Salesforce
+            Salesforce {salesforceAuth.authenticated ? '✅' : ''}
           </button>
           <button 
             className={`tab-button ${activeTab === 'results' ? 'active' : ''}`}
@@ -162,8 +191,9 @@ function App() {
           {activeTab === 'dashboard' && (
             <Dashboard
               uploadedFile={uploadedFile}
-              salesforceConfig={salesforceConfig}
+              salesforceAuth={salesforceAuth}
               onStartComparison={handleStartComparison}
+              onSalesforceSync={handleSalesforceSync}
               loading={loading}
             />
           )}
@@ -177,7 +207,7 @@ function App() {
 
           {activeTab === 'salesforce' && (
             <SalesforceConfig
-              onConfigSave={handleSalesforceConfig}
+              onConfigSave={handleSalesforceAuth}
               loading={loading}
             />
           )}

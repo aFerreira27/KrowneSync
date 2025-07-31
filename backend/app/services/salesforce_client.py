@@ -1,6 +1,8 @@
 import requests
 import logging
-from typing import List, Dict, Any
+import urllib.parse
+import secrets
+from typing import List, Dict, Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -8,78 +10,215 @@ class SalesforceClient:
     def __init__(self, config: Dict[str, str]):
         self.client_id = config['client_id']
         self.client_secret = config['client_secret']
-        self.username = config['username']
-        self.password = config['password']
-        self.security_token = config['security_token']
+        self.redirect_uri = config.get('redirect_uri', 'http://localhost:5000/api/auth/callback/salesforce')
+        self.sandbox = config.get('sandbox', False)  # True for sandbox, False for production
         self.instance_url = None
         self.access_token = None
+        self.refresh_token = None
         self.api_version = 'v58.0'
+        
+        # Set login URL based on environment
+        self.login_url = 'https://test.salesforce.com' if self.sandbox else 'https://login.salesforce.com'
     
-    def authenticate(self):
-        """Authenticate with Salesforce and get access token"""
-        try:
-            auth_url = 'https://login.salesforce.com/services/oauth2/token'
+    def get_authorization_url(self, state: Optional[str] = None) -> str:
+        """
+        Generate the authorization URL for OAuth 2.0 web server flow
+        
+        Args:
+            state: Optional state parameter for CSRF protection
             
-            auth_data = {
-                'grant_type': 'password',
+        Returns:
+            Authorization URL for user to visit
+        """
+        if not state:
+            state = secrets.token_urlsafe(32)
+        
+        params = {
+            'response_type': 'code',
+            'client_id': self.client_id,
+            'redirect_uri': self.redirect_uri,
+            'scope': 'api refresh_token offline_access',
+            'state': state
+        }
+        
+        auth_url = f"{self.login_url}/services/oauth2/authorize?" + urllib.parse.urlencode(params)
+        logger.info(f"Generated authorization URL for Salesforce OAuth")
+        return auth_url
+    
+    def exchange_code_for_tokens(self, authorization_code: str) -> Dict[str, Any]:
+        """
+        Exchange authorization code for access and refresh tokens
+        
+        Args:
+            authorization_code: The code received from Salesforce callback
+            
+        Returns:
+            Dictionary containing token info
+        """
+        try:
+            token_url = f"{self.login_url}/services/oauth2/token"
+            
+            token_data = {
+                'grant_type': 'authorization_code',
                 'client_id': self.client_id,
                 'client_secret': self.client_secret,
-                'username': self.username,
-                'password': self.password + self.security_token
+                'redirect_uri': self.redirect_uri,
+                'code': authorization_code
             }
             
-            print("Auth data:", auth_data)
-            response = requests.post(auth_url, data=auth_data)
-            print("Here", response.text)
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Accept': 'application/json'
+            }
+            
+            response = requests.post(token_url, data=token_data, headers=headers)
             response.raise_for_status()
-            print("Here", response.text)
-
             
+            token_info = response.json()
             
-            auth_info = response.json()
-            self.access_token = auth_info['access_token']
-            self.instance_url = auth_info['instance_url']
+            # Store tokens
+            self.access_token = token_info['access_token']
+            self.refresh_token = token_info.get('refresh_token')
+            self.instance_url = token_info['instance_url']
             
-            logger.info("Successfully authenticated with Salesforce")
+            logger.info("Successfully exchanged authorization code for tokens")
+            return token_info
+            
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Token exchange failed: {str(e)}")
+            if hasattr(e.response, 'text'):
+                logger.error(f"Response: {e.response.text}")
+            raise Exception(f"Token exchange failed: {str(e)}")
+    
+    def refresh_access_token(self) -> bool:
+        """
+        Refresh the access token using the refresh token
+        
+        Returns:
+            True if successful, False otherwise
+        """
+        if not self.refresh_token:
+            logger.error("No refresh token available")
+            return False
+        
+        try:
+            token_url = f"{self.login_url}/services/oauth2/token"
+            
+            refresh_data = {
+                'grant_type': 'refresh_token',
+                'client_id': self.client_id,
+                'client_secret': self.client_secret,
+                'refresh_token': self.refresh_token
+            }
+            
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Accept': 'application/json'
+            }
+            
+            response = requests.post(token_url, data=refresh_data, headers=headers)
+            response.raise_for_status()
+            
+            token_info = response.json()
+            self.access_token = token_info['access_token']
+            self.instance_url = token_info['instance_url']
+            
+            logger.info("Successfully refreshed access token")
             return True
             
         except requests.exceptions.RequestException as e:
-            logger.error(f"Salesforce authentication failed: {str(e)}")
-            raise Exception(f"Salesforce authentication failed: {str(e)}")
+            logger.error(f"Token refresh failed: {str(e)}")
+            return False
+    
+    def set_tokens(self, access_token: str, refresh_token: str, instance_url: str):
+        """
+        Manually set tokens (useful when loading from storage)
+        
+        Args:
+            access_token: The access token
+            refresh_token: The refresh token
+            instance_url: The Salesforce instance URL
+        """
+        self.access_token = access_token
+        self.refresh_token = refresh_token
+        self.instance_url = instance_url
+    
+    def is_authenticated(self) -> bool:
+        """Check if client has valid authentication"""
+        return bool(self.access_token and self.instance_url)
+    
+    def _make_authenticated_request(self, method: str, url: str, **kwargs) -> requests.Response:
+        """
+        Make an authenticated request to Salesforce API with automatic token refresh
+        
+        Args:
+            method: HTTP method (GET, POST, PATCH, etc.)
+            url: Full URL or path relative to instance_url
+            **kwargs: Additional arguments for requests
+            
+        Returns:
+            Response object
+        """
+        if not self.is_authenticated():
+            raise Exception("Not authenticated. Please complete OAuth flow first.")
+        
+        # Ensure URL is complete
+        if not url.startswith('http'):
+            url = f"{self.instance_url}{url}"
+        
+        # Add authorization header
+        headers = kwargs.get('headers', {})
+        headers['Authorization'] = f'Bearer {self.access_token}'
+        kwargs['headers'] = headers
+        
+        # Make request
+        response = requests.request(method, url, **kwargs)
+        
+        # Handle token expiration
+        if response.status_code == 401:
+            logger.info("Access token expired, attempting refresh")
+            if self.refresh_access_token():
+                # Retry with new token
+                headers['Authorization'] = f'Bearer {self.access_token}'
+                response = requests.request(method, url, **kwargs)
+            else:
+                raise Exception("Authentication failed and token refresh unsuccessful")
+        
+        return response
     
     def get_products(self) -> List[Dict[str, Any]]:
         """Retrieve products from Salesforce"""
-        if not self.access_token:
-            self.authenticate()
-        
         try:
             # SOQL query to get product data
-            # Adjust field names based on your Salesforce schema
             query = """
             SELECT Id, Name, ProductCode, Description, 
-                   UnitPrice, IsActive, Family
+                   UnitPrice, IsActive, Family, CreatedDate, LastModifiedDate
             FROM Product2 
             WHERE IsActive = true
             ORDER BY Name
             """
             
-            headers = {
-                'Authorization': f'Bearer {self.access_token}',
-                'Content-Type': 'application/json'
-            }
-            
-            query_url = f"{self.instance_url}/services/data/{self.api_version}/query/"
+            query_url = f"/services/data/{self.api_version}/query/"
             params = {'q': query}
             
-            response = requests.get(query_url, headers=headers, params=params)
+            response = self._make_authenticated_request('GET', query_url, params=params)
             response.raise_for_status()
             
             data = response.json()
             records = data.get('records', [])
             
+            # Handle pagination if needed
+            all_records = records[:]
+            while not data.get('done', True) and data.get('nextRecordsUrl'):
+                next_url = data['nextRecordsUrl']
+                response = self._make_authenticated_request('GET', next_url)
+                response.raise_for_status()
+                data = response.json()
+                all_records.extend(data.get('records', []))
+            
             # Transform Salesforce data to standardized format
             products = []
-            for record in records:
+            for record in all_records:
                 product = {
                     'product_id': record.get('ProductCode') or record.get('Id'),
                     'name': record.get('Name', ''),
@@ -87,7 +226,9 @@ class SalesforceClient:
                     'description': record.get('Description', ''),
                     'salesforce_id': record.get('Id'),
                     'family': record.get('Family', ''),
-                    'is_active': record.get('IsActive', False)
+                    'is_active': record.get('IsActive', False),
+                    'created_date': record.get('CreatedDate'),
+                    'last_modified_date': record.get('LastModifiedDate')
                 }
                 products.append(product)
             
@@ -98,52 +239,72 @@ class SalesforceClient:
             logger.error(f"Error retrieving products from Salesforce: {str(e)}")
             raise Exception(f"Error retrieving products from Salesforce: {str(e)}")
     
-    def get_price_book_entries(self) -> List[Dict[str, Any]]:
-        """Get price book entries for more detailed pricing info"""
-        if not self.access_token:
-            self.authenticate()
+    def get_price_book_entries(self, pricebook_name: Optional[str] = None) -> List[Dict[str, Any]]:
+        """
+        Get price book entries for more detailed pricing info
         
+        Args:
+            pricebook_name: Optional pricebook name to filter by
+            
+        Returns:
+            List of pricebook entries
+        """
         try:
-            query = """
+            base_query = """
             SELECT Id, Product2Id, Product2.Name, Product2.ProductCode,
-                   UnitPrice, Pricebook2Id, Pricebook2.Name, IsActive
+                   UnitPrice, Pricebook2Id, Pricebook2.Name, IsActive,
+                   Product2.Description, Product2.Family
             FROM PricebookEntry 
-            WHERE IsActive = true
-            ORDER BY Product2.Name
+            WHERE IsActive = true AND Product2.IsActive = true
             """
             
-            headers = {
-                'Authorization': f'Bearer {self.access_token}',
-                'Content-Type': 'application/json'
-            }
+            if pricebook_name:
+                query = f"{base_query} AND Pricebook2.Name = '{pricebook_name}'"
+            else:
+                query = f"{base_query}"
             
-            query_url = f"{self.instance_url}/services/data/{self.api_version}/query/"
+            query += " ORDER BY Product2.Name"
+            
+            query_url = f"/services/data/{self.api_version}/query/"
             params = {'q': query}
             
-            response = requests.get(query_url, headers=headers, params=params)
+            response = self._make_authenticated_request('GET', query_url, params=params)
             response.raise_for_status()
             
             data = response.json()
-            return data.get('records', [])
+            records = data.get('records', [])
+            
+            # Handle pagination
+            all_records = records[:]
+            while not data.get('done', True) and data.get('nextRecordsUrl'):
+                next_url = data['nextRecordsUrl']
+                response = self._make_authenticated_request('GET', next_url)
+                response.raise_for_status()
+                data = response.json()
+                all_records.extend(data.get('records', []))
+            
+            logger.info(f"Retrieved {len(all_records)} price book entries from Salesforce")
+            return all_records
             
         except requests.exceptions.RequestException as e:
             logger.error(f"Error retrieving price book entries: {str(e)}")
             raise Exception(f"Error retrieving price book entries: {str(e)}")
     
     def update_product(self, product_id: str, updates: Dict[str, Any]) -> bool:
-        """Update a product in Salesforce"""
-        if not self.access_token:
-            self.authenticate()
+        """
+        Update a product in Salesforce
         
+        Args:
+            product_id: Salesforce ID of the product
+            updates: Dictionary of fields to update
+            
+        Returns:
+            True if successful
+        """
         try:
-            headers = {
-                'Authorization': f'Bearer {self.access_token}',
-                'Content-Type': 'application/json'
-            }
+            update_url = f"/services/data/{self.api_version}/sobjects/Product2/{product_id}"
             
-            update_url = f"{self.instance_url}/services/data/{self.api_version}/sobjects/Product2/{product_id}"
-            
-            response = requests.patch(update_url, headers=headers, json=updates)
+            response = self._make_authenticated_request('PATCH', update_url, json=updates)
             response.raise_for_status()
             
             logger.info(f"Successfully updated product {product_id}")
@@ -151,4 +312,72 @@ class SalesforceClient:
             
         except requests.exceptions.RequestException as e:
             logger.error(f"Error updating product {product_id}: {str(e)}")
+            if hasattr(e.response, 'text'):
+                logger.error(f"Response: {e.response.text}")
             raise Exception(f"Error updating product {product_id}: {str(e)}")
+    
+    def create_product(self, product_data: Dict[str, Any]) -> str:
+        """
+        Create a new product in Salesforce
+        
+        Args:
+            product_data: Dictionary containing product fields
+            
+        Returns:
+            ID of the created product
+        """
+        try:
+            create_url = f"/services/data/{self.api_version}/sobjects/Product2/"
+            
+            response = self._make_authenticated_request('POST', create_url, json=product_data)
+            response.raise_for_status()
+            
+            result = response.json()
+            product_id = result.get('id')
+            
+            logger.info(f"Successfully created product {product_id}")
+            return product_id
+            
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error creating product: {str(e)}")
+            if hasattr(e.response, 'text'):
+                logger.error(f"Response: {e.response.text}")
+            raise Exception(f"Error creating product: {str(e)}")
+    
+    def get_user_info(self) -> Dict[str, Any]:
+        """Get information about the authenticated user"""
+        try:
+            user_url = f"/services/oauth2/userinfo"
+            
+            response = self._make_authenticated_request('GET', user_url)
+            response.raise_for_status()
+            
+            return response.json()
+            
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error getting user info: {str(e)}")
+            raise Exception(f"Error getting user info: {str(e)}")
+    
+    def revoke_token(self) -> bool:
+        """Revoke the current tokens"""
+        try:
+            revoke_url = f"{self.login_url}/services/oauth2/revoke"
+            
+            revoke_data = {
+                'token': self.access_token or self.refresh_token
+            }
+            
+            response = requests.post(revoke_url, data=revoke_data)
+            response.raise_for_status()
+            
+            # Clear stored tokens
+            self.access_token = None
+            self.refresh_token = None
+            self.instance_url = None
+            
+            logger.info("Successfully revoked tokens")
+            return True
+            
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error revoking token: {str(e)}")
+            return False

@@ -1,74 +1,151 @@
-import axios from 'axios';
+// Updated API service with OAuth support
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Request interceptor
-api.interceptors.request.use(
-  (config) => {
-    console.log(`Making ${config.method.toUpperCase()} request to ${config.url}`);
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// Response interceptor
-api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    console.error('API Error:', error.response?.data || error.message);
-    return Promise.reject(error);
-  }
-);
-
-export const apiService = {
-  // Health check
-  healthCheck: async () => {
-    const response = await api.get('/api/health');
-    return response.data;
-  },
-
-  // CSV upload
+const api = {
+  // Existing methods (keep your current implementations)
   uploadCSV: async (file) => {
     const formData = new FormData();
     formData.append('file', file);
     
-    const response = await api.post('/api/upload-csv', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+    const response = await fetch('/api/upload-csv', {
+      method: 'POST',
+      body: formData,
     });
-    return response.data;
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Upload failed');
+    }
+    
+    return response.json();
   },
 
-  // Salesforce connection test
-  testSalesforceConnection: async (config) => {
-    const response = await api.post('/api/salesforce-sync', config);
-    return response.data;
+  // Updated for OAuth - no longer needs credentials in body
+  salesforceSync: async (options = {}) => {
+    const response = await fetch('/api/salesforce-sync', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(options),
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Salesforce sync failed');
+    }
+    
+    return response.json();
   },
 
-  // Compare products
   compareProducts: async (data) => {
-    const response = await api.post('/api/compare', data);
-    return response.data;
+    const response = await fetch('/api/compare', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Comparison failed');
+    }
+    
+    return response.json();
   },
 
-  // Export results
   exportResults: async (results) => {
-    const response = await api.post('/api/export-results', { results });
-    return response.data;
+    const response = await fetch('/api/export-results', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ results }),
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Export failed');
+    }
+    
+    return response.json();
   },
+
+  // New OAuth-specific methods
+  getSalesforceStatus: async () => {
+    const response = await fetch('/api/salesforce/status');
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Status check failed');
+    }
+    
+    return response.json();
+  },
+
+  initiateSalesforceAuth: async (config) => {
+    const response = await fetch('/api/auth/salesforce/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(config),
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Authentication initiation failed');
+    }
+    
+    return response.json();
+  },
+
+  salesforceLogout: async () => {
+    const response = await fetch('/api/salesforce/logout', {
+      method: 'POST',
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Logout failed');
+    }
+    
+    return response.json();
+  },
+
+  getSalesforceProducts: async (options = {}) => {
+    const params = new URLSearchParams();
+    if (options.limit) params.append('limit', options.limit);
+    if (options.family) params.append('family', options.family);
+    if (options.active_only !== undefined) params.append('active_only', options.active_only);
+    
+    const response = await fetch(`/api/salesforce/products?${params}`);
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to get products');
+    }
+    
+    return response.json();
+  },
+
+  getSalesforceUser: async () => {
+    const response = await fetch('/api/salesforce/user');
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to get user info');
+    }
+    
+    return response.json();
+  },
+
+  // Legacy method for backward compatibility (deprecated)
+  testSalesforceConnection: async (config) => {
+    // This method is deprecated with OAuth, but kept for compatibility
+    console.warn('testSalesforceConnection is deprecated. Use OAuth flow instead.');
+    throw new Error('Please use OAuth authentication instead of username/password');
+  }
 };
 
-export { apiService as api };
+export { api };
