@@ -33,7 +33,11 @@ def get_authenticated_sf_client():
 
 @main.route('/api/health', methods=['GET'])
 def health_check():
-    return jsonify({'status': 'healthy', 'service': 'KrowneSync'})
+    return jsonify({
+        'status': 'healthy', 
+        'service': 'KrowneSync',
+        'salesforce_configured': bool(current_app.config.get('SALESFORCE_CLIENT_ID'))
+    })
 
 @main.route('/api/upload-csv', methods=['POST'])
 def upload_csv():
@@ -67,22 +71,30 @@ def upload_csv():
         return jsonify({'error': str(e)}), 500
 
 # OAuth Authentication Routes
-@main.route('/api/auth/salesforce/login', methods=['POST'])
+@main.route('/api/auth/salesforce/initiate', methods=['POST'])
 def initiate_salesforce_auth():
-    """Initiate Salesforce OAuth flow"""
+    """Initiate Salesforce OAuth flow using app configuration"""
     try:
-        # Get configuration from request
-        config = request.get_json()
+        # Get configuration from Flask app config (loaded from environment variables)
+        client_id = current_app.config.get('SALESFORCE_CLIENT_ID')
+        client_secret = current_app.config.get('SALESFORCE_CLIENT_SECRET')
+        redirect_uri = current_app.config.get('SALESFORCE_REDIRECT_URI')
+        sandbox = current_app.config.get('SALESFORCE_SANDBOX', False)
         
-        # Validate required fields
-        required_fields = ['client_id', 'client_secret']
-        for field in required_fields:
-            if field not in config:
-                return jsonify({'error': f'Missing required field: {field}'}), 400
+        # Validate required configuration
+        if not client_id:
+            return jsonify({'error': 'SALESFORCE_CLIENT_ID not configured in environment'}), 500
+        if not client_secret:
+            return jsonify({'error': 'SALESFORCE_CLIENT_SECRET not configured in environment'}), 500
+        if not redirect_uri:
+            return jsonify({'error': 'SALESFORCE_REDIRECT_URI not configured in environment'}), 500
         
-        # Add default redirect URI if not provided
-        if 'redirect_uri' not in config:
-            config['redirect_uri'] = url_for('main.salesforce_callback', _external=True)
+        config = {
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'redirect_uri': redirect_uri,
+            'sandbox': sandbox
+        }
         
         # Create Salesforce client
         sf_client = SalesforceClient(config)
@@ -90,21 +102,32 @@ def initiate_salesforce_auth():
         # Generate state for CSRF protection
         state = secrets.token_urlsafe(32)
         session['oauth_state'] = state
-        session['sf_config'] = {
-            'client_id': config['client_id'],
-            'client_secret': config['client_secret'],
-            'redirect_uri': config['redirect_uri'],
-            'sandbox': config.get('sandbox', False)
-        }
+        session['sf_config'] = config
         
         # Get authorization URL
         auth_url = sf_client.get_authorization_url(state=state)
         
         return jsonify({
-            'authorization_url': auth_url,
-            'state': state
+            'auth_url': auth_url,
+            'redirect_uri': redirect_uri,
+            'state': state,
+            'sandbox': sandbox
         })
         
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@main.route('/api/salesforce/config', methods=['GET'])
+def get_salesforce_config():
+    """Get Salesforce configuration (non-sensitive data only)"""
+    try:
+        return jsonify({
+            'configured': bool(current_app.config.get('SALESFORCE_CLIENT_ID') and current_app.config.get('SALESFORCE_CLIENT_SECRET')),
+            'client_id_configured': bool(current_app.config.get('SALESFORCE_CLIENT_ID')),
+            'client_secret_configured': bool(current_app.config.get('SALESFORCE_CLIENT_SECRET')),
+            'redirect_uri': current_app.config.get('SALESFORCE_REDIRECT_URI'),
+            'sandbox': current_app.config.get('SALESFORCE_SANDBOX', False)
+        })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -124,12 +147,12 @@ def salesforce_callback():
         
         # Validate state parameter
         if not state or state != session.get('oauth_state'):
-            return redirect("/?error=invalid_state")
+            return redirect("/?error=invalid_state&message=State parameter mismatch")
         
         # Get stored configuration
         sf_config = session.get('sf_config')
         if not sf_config:
-            return redirect("/?error=session_expired")
+            return redirect("/?error=session_expired&message=OAuth session expired")
         
         # Create Salesforce client and exchange code for tokens
         sf_client = SalesforceClient(sf_config)
@@ -379,9 +402,7 @@ def get_salesforce_user():
         sf_client = get_authenticated_sf_client()
         user_info = sf_client.get_user_info()
         
-        return jsonify({
-            'user_info': user_info
-        })
+        return jsonify(user_info)
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500

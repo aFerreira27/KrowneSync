@@ -1,7 +1,7 @@
-// Updated API service with OAuth support
+// Updated API service with proper OAuth support
 
 const api = {
-  // Existing methods (keep your current implementations)
+  // Existing methods
   uploadCSV: async (file) => {
     const formData = new FormData();
     formData.append('file', file);
@@ -19,19 +19,12 @@ const api = {
     return response.json();
   },
 
-  // Updated for OAuth - no longer needs credentials in body
-  salesforceSync: async (options = {}) => {
-    const response = await fetch('/api/salesforce-sync', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(options),
-    });
+  getSalesforceConfig: async () => {
+    const response = await fetch('/api/salesforce/config');
     
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Salesforce sync failed');
+      throw new Error(error.error || 'Config check failed');
     }
     
     return response.json();
@@ -71,7 +64,7 @@ const api = {
     return response.json();
   },
 
-  // New OAuth-specific methods
+  // OAuth-specific methods
   getSalesforceStatus: async () => {
     const response = await fetch('/api/salesforce/status');
     
@@ -83,8 +76,9 @@ const api = {
     return response.json();
   },
 
-  initiateSalesforceAuth: async (config) => {
-    const response = await fetch('/api/auth/salesforce/login', {
+  // FIXED: Updated to use the correct endpoint
+  initiateSalesforceAuth: async (config = {}) => {
+    const response = await fetch('/api/auth/salesforce/initiate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -140,6 +134,18 @@ const api = {
     return response.json();
   },
 
+  // Utility method for health check
+  healthCheck: async () => {
+    const response = await fetch('/api/health');
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Health check failed');
+    }
+    
+    return response.json();
+  },
+
   // Legacy method for backward compatibility (deprecated)
   testSalesforceConnection: async (config) => {
     // This method is deprecated with OAuth, but kept for compatibility
@@ -148,4 +154,4 @@ const api = {
   }
 };
 
-export { api };
+export default api;

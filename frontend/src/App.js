@@ -4,7 +4,7 @@ import Dashboard from './components/Dashboard';
 import FileUpload from './components/FileUpload';
 import SalesforceConfig from './components/SalesforceConfig';
 import ComparisonResults from './components/ComparisonResults';
-import { api } from './services/api';
+import api from './services/api';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -18,6 +18,11 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Check Salesforce authentication status on app load
+  useEffect(() => {
+    checkSalesforceStatus();
+  }, []);
+
   // Check for URL parameters on app load (OAuth callback handling)
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -26,12 +31,42 @@ function App() {
     
     if (authStatus === 'success') {
       setError(null);
-      // Auth status will be checked by SalesforceConfig component
+      // Refresh Salesforce status after successful OAuth
+      setTimeout(() => checkSalesforceStatus(), 1000);
+      // Clean up URL parameters
+      window.history.replaceState({}, document.title, window.location.pathname);
     } else if (errorParam) {
       const errorMsg = urlParams.get('error_description') || urlParams.get('message') || errorParam;
       setError(`Authentication failed: ${errorMsg}`);
     }
   }, []);
+
+  const checkSalesforceStatus = async () => {
+    try {
+      const status = await api.getSalesforceStatus();
+      if (status.authenticated) {
+        const userInfo = await api.getSalesforceUser();
+        setSalesforceAuth({
+          authenticated: true,
+          userInfo: userInfo,
+          instanceUrl: status.instance_url || null
+        });
+      } else {
+        setSalesforceAuth({
+          authenticated: false,
+          userInfo: null,
+          instanceUrl: null
+        });
+      }
+    } catch (err) {
+      // Silently handle - user just isn't authenticated
+      setSalesforceAuth({
+        authenticated: false,
+        userInfo: null,
+        instanceUrl: null
+      });
+    }
+  };
 
   const handleFileUpload = async (file) => {
     setLoading(true);
@@ -52,10 +87,41 @@ function App() {
     }
   };
 
-  const handleSalesforceAuth = (authData) => {
-    setSalesforceAuth(authData);
-    if (authData.authenticated) {
-      setActiveTab('dashboard');
+  const handleSalesforceAuth = async (config = {}) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Initiate OAuth flow - config is optional since OAuth uses environment variables
+      const response = await api.initiateSalesforceAuth(config);
+      
+      if (response.auth_url) {
+        // Redirect to Salesforce OAuth
+        window.location.href = response.auth_url;
+      } else {
+        throw new Error('No authentication URL received');
+      }
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  const handleSalesforceLogout = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      await api.salesforceLogout();
+      setSalesforceAuth({
+        authenticated: false,
+        userInfo: null,
+        instanceUrl: null
+      });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -84,17 +150,21 @@ function App() {
     }
   };
 
-  const handleSalesforceSync = async (includePricing = false) => {
+  const handleSalesforceSync = async (options = {}) => {
     setLoading(true);
     setError(null);
     
     try {
-      const result = await api.salesforceSync({ include_pricing: includePricing });
+      const result = await api.getSalesforceProducts({
+        limit: options.limit || 10,
+        active_only: options.active_only !== false,
+        family: options.family
+      });
       
       // Update salesforce auth with preview data
       setSalesforceAuth(prev => ({
         ...prev,
-        products_count: result.products_count || result.total_products,
+        products_count: result.total_products || result.products?.length || 0,
         preview: result.products
       }));
       
@@ -136,7 +206,14 @@ function App() {
           <p>Product Data Synchronization Tool</p>
           {salesforceAuth.authenticated && (
             <div className="auth-indicator">
-              ✅ Connected to Salesforce as {salesforceAuth.userInfo?.name}
+              ✅ Connected to Salesforce as {salesforceAuth.userInfo?.display_name || salesforceAuth.userInfo?.name}
+              <button 
+                onClick={handleSalesforceLogout}
+                className="logout-button"
+                style={{ marginLeft: '10px', padding: '2px 8px', fontSize: '12px' }}
+              >
+                Logout
+              </button>
             </div>
           )}
         </div>
@@ -207,7 +284,9 @@ function App() {
 
           {activeTab === 'salesforce' && (
             <SalesforceConfig
+              salesforceAuth={salesforceAuth}
               onConfigSave={handleSalesforceAuth}
+              onLogout={handleSalesforceLogout}
               loading={loading}
             />
           )}

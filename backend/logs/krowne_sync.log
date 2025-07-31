@@ -110,3 +110,117 @@
 2025-07-31 09:06:27,183 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth
 2025-07-31 09:06:27,188 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 09:06:27] "POST /api/auth/salesforce/login HTTP/1.1" 200 -
 2025-07-31 09:13:42,390 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 09:13:42] "[33mGET /main.3a51b81c08018c11a67d.hot-update.json HTTP/1.1[0m" 404 -
+2025-07-31 09:39:00,620 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 09:39:00,621 - __main__ - INFO - Debug mode: False
+2025-07-31 09:39:01,934 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-07-31 09:39:01,935 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-31 09:39:56,308 - app.services.csv_processor - INFO - Successfully read headerless CSV with utf-8 encoding
+2025-07-31 09:39:56,814 - app.services.csv_processor - INFO - Processed 56 products from CSV
+2025-07-31 09:39:56,817 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 09:39:56] "POST /api/upload-csv HTTP/1.1" 200 -
+2025-07-31 09:40:09,111 - app.services.csv_processor - INFO - Successfully read headerless CSV with utf-8 encoding
+2025-07-31 09:40:09,507 - app.services.csv_processor - INFO - Processed 56 products from CSV
+2025-07-31 09:40:09,509 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 09:40:09] "POST /api/upload-csv HTTP/1.1" 200 -
+2025-07-31 09:41:37,813 - app.services.csv_processor - INFO - Successfully read headerless CSV with utf-8 encoding
+2025-07-31 09:41:38,265 - app.services.csv_processor - INFO - Processed 56 products from CSV
+2025-07-31 09:41:38,268 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 09:41:38] "POST /api/upload-csv HTTP/1.1" 200 -
+2025-07-31 09:42:01,981 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 09:42:01,981 - __main__ - INFO - Debug mode: False
+2025-07-31 09:42:03,281 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-07-31 09:42:03,281 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-31 09:42:25,198 - app.services.csv_processor - INFO - Successfully read headerless CSV with utf-8 encoding
+2025-07-31 09:42:26,140 - app.services.csv_processor - INFO - Processed 56 products from CSV
+2025-07-31 09:42:26,143 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 09:42:26] "POST /api/upload-csv HTTP/1.1" 200 -
+2025-07-31 09:48:34,449 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 09:48:34] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 09:48:34,726 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 09:48:34] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:25:49,572 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 11:25:49,572 - __main__ - INFO - Debug mode: True
+2025-07-31 11:25:50,906 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-07-31 11:25:50,907 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-31 11:25:50,910 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 11:25:52,486 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 11:25:52,486 - __main__ - INFO - Debug mode: True
+2025-07-31 11:25:52,501 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 11:25:52,505 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 11:26:17,135 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:26:17] "[33mGET /main.259543021ce0fffec88b.hot-update.json HTTP/1.1[0m" 404 -
+2025-07-31 11:26:18,199 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:26:18] "[33mGET /main.259543021ce0fffec88b.hot-update.json HTTP/1.1[0m" 404 -
+2025-07-31 11:30:17,605 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:30:17] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:30:17,869 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:30:17] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:31:56,535 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:31:56] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:31:56,542 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:31:56] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:32:15,157 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:32:15] "[33mPOST /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:32:18,161 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:32:18] "[33mPOST /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:32:19,542 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:32:19] "[33mPOST /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:32:20,426 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:32:20] "[33mPOST /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:32:21,365 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:32:21] "[33mPOST /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:33:30,340 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:33:30] "[33mPOST /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:33:32,249 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:33:32] "[33mPOST /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:33:33,061 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:33:33] "[33mPOST /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:33:33,584 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:33:33] "[33mPOST /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:33:34,407 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:33:34] "[33mPOST /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:33:35,088 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:33:35] "[33mPOST /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:33:35,835 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:33:35] "[33mPOST /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:33:36,329 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:33:36] "[33mPOST /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:37:05,891 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:37:05] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:37:05,902 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:37:05] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:37:19,840 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:37:19] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:37:19,847 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:37:19] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:37:25,181 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:37:25] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:37:25,496 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:37:25] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:37:26,886 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:37:26] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:37:27,094 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:37:27] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:37:28,073 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:37:28] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:37:28,082 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:37:28] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:37:31,177 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:37:31] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:37:31,201 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:37:31] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:37:32,150 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:37:32] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:37:32,157 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:37:32] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:37:33,575 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:37:33] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:37:33,888 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:37:33] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:41:04,518 - app.services.csv_processor - INFO - Successfully read headerless CSV with utf-8 encoding
+2025-07-31 11:41:05,388 - app.services.csv_processor - ERROR - Error processing CSV file: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-07-31 11:41:05,389 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:41:05] "[35m[1mPOST /api/upload-csv HTTP/1.1[0m" 500 -
+2025-07-31 11:44:39,973 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:44:39] "[33mGET / HTTP/1.1[0m" 404 -
+2025-07-31 11:44:40,001 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:44:40] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-07-31 11:44:44,680 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:44:44] "[33mGET /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:44:47,174 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:44:47] "[33mGET /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:46:49,521 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:46:49] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:46:49,535 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:46:49] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:46:51,990 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:46:51] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:46:52,254 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:46:52] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 11:49:52,044 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:49:52] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 11:49:52,237 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:49:52] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 11:49:59,807 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:49:59] "[33mPOST /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:50:01,392 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:50:01] "[33mPOST /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:50:02,184 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 11:50:02] "[33mPOST /api/auth/salesforce/login HTTP/1.1[0m" 404 -
+2025-07-31 11:53:32,666 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-07-31 11:53:32,795 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 11:53:34,204 - __main__ - ERROR - Failed to start application: View function mapping is overwriting an existing endpoint function: main.get_salesforce_config
+2025-07-31 12:55:19,237 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 12:55:19,238 - __main__ - INFO - Debug mode: True
+2025-07-31 12:55:20,556 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-07-31 12:55:20,557 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-31 12:55:20,558 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 12:55:21,969 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 12:55:21,970 - __main__ - INFO - Debug mode: True
+2025-07-31 12:55:21,983 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 12:55:21,987 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 12:55:36,515 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 12:55:36] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 12:55:36,525 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 12:55:36] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 12:58:56,353 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 12:58:56] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 12:58:56,609 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 12:58:56] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 12:58:58,062 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth
+2025-07-31 12:58:58,066 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 12:58:58] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-07-31 13:00:04,688 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\__init__.py', reloading
+2025-07-31 13:00:04,798 - werkzeug - INFO -  * Restarting with stat

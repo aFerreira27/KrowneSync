@@ -2,7 +2,10 @@ import requests
 import logging
 import urllib.parse
 import secrets
+import base64
+import os
 from typing import List, Dict, Any, Optional
+
 
 logger = logging.getLogger(__name__)
 
@@ -17,8 +20,10 @@ class SalesforceClient:
         self.refresh_token = None
         self.api_version = 'v58.0'
         
-        # Set login URL based on environment
-        self.login_url = 'https://test.salesforce.com' if self.sandbox else 'https://login.salesforce.com'
+        # Get My Domain URL if provided, otherwise use default login URL
+        self.login_url = config.get('my_domain_url')
+        if not self.login_url:
+            self.login_url = 'https://test.salesforce.com' if self.sandbox else 'https://login.salesforce.com'
     
     def get_authorization_url(self, state: Optional[str] = None) -> str:
         """
@@ -90,9 +95,57 @@ class SalesforceClient:
                 logger.error(f"Response: {e.response.text}")
             raise Exception(f"Token exchange failed: {str(e)}")
     
+    def get_client_credentials_token(self) -> Dict[str, Any]:
+        """
+        Get an access token using the OAuth 2.0 client credentials flow.
+        This is for server-to-server integration without user interaction.
+        Note: This flow does not support refresh tokens.
+        
+        Returns:
+            Dictionary containing token info
+        """
+        try:
+            token_url = f"{self.login_url}/services/oauth2/token"
+            
+            # Create the Basic auth header with client credentials
+            auth_str = f"{self.client_id}:{self.client_secret}"
+            auth_bytes = auth_str.encode('ascii')
+            auth_b64 = base64.b64encode(auth_bytes).decode('ascii')
+            
+            headers = {
+                'Authorization': f'Basic {auth_b64}',
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Accept': 'application/json'
+            }
+            
+            # Only grant_type is needed in body when using Basic auth
+            token_data = {
+                'grant_type': 'client_credentials'
+            }
+            
+            response = requests.post(token_url, data=token_data, headers=headers)
+            response.raise_for_status()
+            
+            token_info = response.json()
+            
+            # Store tokens (no refresh token in this flow)
+            self.access_token = token_info['access_token']
+            self.instance_url = token_info['instance_url']
+            self.refresh_token = None  # Client credentials flow doesn't support refresh tokens
+            
+            logger.info("Successfully obtained access token using client credentials flow")
+            return token_info
+            
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Client credentials token request failed: {str(e)}")
+            if hasattr(e.response, 'text'):
+                logger.error(f"Response: {e.response.text}")
+            raise Exception(f"Client credentials token request failed: {str(e)}")
+
     def refresh_access_token(self) -> bool:
         """
-        Refresh the access token using the refresh token
+        Refresh the access token using the refresh token.
+        Note: This is only available for the authorization code flow, not the client credentials flow.
         
         Returns:
             True if successful, False otherwise
