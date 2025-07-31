@@ -224,3 +224,301 @@
 2025-07-31 12:58:58,066 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 12:58:58] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
 2025-07-31 13:00:04,688 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\__init__.py', reloading
 2025-07-31 13:00:04,798 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 13:00:06,420 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 13:00:06,420 - __main__ - INFO - Debug mode: True
+2025-07-31 13:00:06,434 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 13:00:06,438 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 13:02:16,793 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:02:16] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:02:17,054 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:02:17] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:02:17,937 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth
+2025-07-31 13:02:17,938 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:02:17] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-07-31 13:03:01,391 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 13:03:01,393 - __main__ - INFO - Debug mode: True
+2025-07-31 13:03:02,701 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-07-31 13:03:02,702 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-31 13:03:02,708 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 13:03:03,985 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 13:03:03,985 - __main__ - INFO - Debug mode: True
+2025-07-31 13:03:04,000 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 13:03:04,004 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 13:03:58,960 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:03:58] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:03:58,968 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:03:58] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:03:59,334 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:03:59] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:03:59,410 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:03:59] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:04:02,558 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:04:02] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:04:02,819 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:04:02] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:04:03,594 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth
+2025-07-31 13:04:03,595 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:04:03] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-07-31 13:13:25,769 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\salesforce_client.py', reloading
+2025-07-31 13:13:25,866 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 13:13:27,217 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 13:13:27,218 - __main__ - INFO - Debug mode: True
+2025-07-31 13:13:27,231 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 13:13:27,235 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 13:13:49,052 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\salesforce_client.py', reloading
+2025-07-31 13:13:49,153 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 13:13:50,575 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 13:13:50,575 - __main__ - INFO - Debug mode: True
+2025-07-31 13:13:50,588 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 13:13:50,593 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 13:14:02,515 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:14:02] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:14:04,223 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:14:04] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:14:04,541 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:14:04] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:14:05,190 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth
+2025-07-31 13:14:05,191 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:14:05] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-07-31 13:14:05,656 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:14:05] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:14:05,832 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:14:05] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:14:08,270 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:14:08] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:14:08,578 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:14:08] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:14:10,996 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth
+2025-07-31 13:14:10,997 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:14:10] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-07-31 13:14:11,419 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:14:11] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:14:11,610 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:14:11] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:17:20,302 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\salesforce_client.py', reloading
+2025-07-31 13:17:20,397 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 13:17:21,945 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 13:17:21,945 - __main__ - INFO - Debug mode: True
+2025-07-31 13:17:21,960 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 13:17:21,964 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 13:17:23,456 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:17:23] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:17:23,466 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:17:23] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:17:26,163 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:17:26] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:17:26,170 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:17:26] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:17:28,035 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-07-31 13:17:28,035 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:17:28] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-07-31 13:17:28,367 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:17:28] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:17:28,379 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:17:28] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:17:35,826 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:17:35] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:17:36,090 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:17:36] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:17:36,883 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-07-31 13:17:36,884 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:17:36] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-07-31 13:17:37,259 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:17:37] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:17:37,279 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:17:37] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:17:41,503 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:17:41] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:17:41,811 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:17:41] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:17:42,843 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-07-31 13:17:42,845 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:17:42] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-07-31 13:17:43,492 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:17:43] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:17:43,529 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:17:43] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:21:59,747 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:21:59] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:21:59,763 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:21:59] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:22:08,515 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:22:08] "GET /api/health HTTP/1.1" 200 -
+2025-07-31 13:22:08,549 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:22:08] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-07-31 13:22:08,779 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:22:08] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-07-31 13:23:43,829 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-07-31 13:23:43,925 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 13:23:45,315 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 13:23:45,315 - __main__ - INFO - Debug mode: True
+2025-07-31 13:23:45,328 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 13:23:45,332 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 13:27:12,565 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\salesforce_client.py', reloading
+2025-07-31 13:27:12,674 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 13:27:14,443 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 13:27:14,443 - __main__ - INFO - Debug mode: True
+2025-07-31 13:27:14,458 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 13:27:14,463 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 13:27:17,204 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:27:17] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:27:17,213 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:27:17] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:27:18,340 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:27:18] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:27:18,662 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:27:18] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:27:20,137 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-07-31 13:27:20,138 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:27:20] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-07-31 13:27:21,156 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:27:21] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:27:21,166 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:27:21] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:30:38,144 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:30:38] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:30:38,414 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:30:38] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:30:40,345 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-07-31 13:30:40,347 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:30:40] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-07-31 13:30:41,154 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:30:41] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:30:41,167 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:30:41] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:30:42,501 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:30:42] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:30:42,822 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:30:42] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:31:01,056 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\salesforce_client.py', reloading
+2025-07-31 13:31:01,173 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 13:31:02,634 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 13:31:02,634 - __main__ - INFO - Debug mode: True
+2025-07-31 13:31:02,648 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 13:31:02,652 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 13:31:05,618 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-07-31 13:31:05,619 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:31:05] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-07-31 13:31:06,502 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:31:06] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:31:06,518 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:31:06] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:31:14,101 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 13:31:14,101 - __main__ - INFO - Debug mode: True
+2025-07-31 13:31:15,417 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-07-31 13:31:15,418 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-31 13:31:15,420 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 13:31:16,795 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 13:31:16,795 - __main__ - INFO - Debug mode: True
+2025-07-31 13:31:16,809 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 13:31:16,813 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 13:31:28,736 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:31:28] "[33mGET / HTTP/1.1[0m" 404 -
+2025-07-31 13:31:28,795 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:31:28] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-07-31 13:31:45,011 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:31:45] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:31:45,323 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:31:45] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 13:31:47,409 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-07-31 13:31:47,410 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:31:47] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-07-31 13:31:48,170 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:31:48] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:31:48,185 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:31:48] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 13:37:09,226 - app.services.csv_processor - INFO - Successfully read headerless CSV with utf-8 encoding
+2025-07-31 13:37:10,107 - app.services.csv_processor - ERROR - Error processing CSV file: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-07-31 13:37:10,110 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 13:37:10] "[35m[1mPOST /api/upload-csv HTTP/1.1[0m" 500 -
+2025-07-31 13:41:59,556 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\csv_processor.py', reloading
+2025-07-31 13:41:59,665 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 13:42:01,180 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 13:42:01,180 - __main__ - INFO - Debug mode: True
+2025-07-31 13:42:01,193 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 13:42:01,197 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 13:47:41,653 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-07-31 13:47:41,748 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 13:47:42,314 - __main__ - ERROR - Failed to start application: No module named 'app.services.enhanced_csv_processor'
+2025-07-31 15:09:26,443 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 15:09:26,443 - __main__ - INFO - Debug mode: True
+2025-07-31 15:09:27,764 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-07-31 15:09:27,764 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-31 15:09:27,766 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 15:09:29,158 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 15:09:29,158 - __main__ - INFO - Debug mode: True
+2025-07-31 15:09:29,172 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 15:09:29,176 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 15:10:03,248 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:10:03] "[33mGET /api/salesforce/status HTTP/1.1[0m" 404 -
+2025-07-31 15:10:03,259 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:10:03] "[33mGET /api/salesforce/status HTTP/1.1[0m" 404 -
+2025-07-31 15:10:14,921 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:10:14] "[33mGET /api/salesforce/config HTTP/1.1[0m" 404 -
+2025-07-31 15:10:15,238 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:10:15] "[33mGET /api/salesforce/config HTTP/1.1[0m" 404 -
+2025-07-31 15:10:20,191 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:10:20] "[33mGET /api/salesforce/config HTTP/1.1[0m" 404 -
+2025-07-31 15:10:21,568 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:10:21] "[33mGET /api/salesforce/config HTTP/1.1[0m" 404 -
+2025-07-31 15:10:22,006 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:10:22] "[33mGET /api/salesforce/config HTTP/1.1[0m" 404 -
+2025-07-31 15:19:08,870 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-07-31 15:19:08,970 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 15:19:10,384 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 15:19:10,384 - __main__ - INFO - Debug mode: True
+2025-07-31 15:19:10,398 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 15:19:10,401 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 15:22:08,857 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-07-31 15:22:08,976 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 15:22:10,454 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 15:22:10,455 - __main__ - INFO - Debug mode: True
+2025-07-31 15:22:10,468 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 15:22:10,471 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 15:22:18,308 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-07-31 15:22:18,424 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 15:22:19,893 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 15:22:19,894 - __main__ - INFO - Debug mode: True
+2025-07-31 15:22:19,908 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 15:22:19,912 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 15:23:32,753 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:23:32] "[33mGET /main.c9a5f04224ebd376e5d7.hot-update.json HTTP/1.1[0m" 404 -
+2025-07-31 15:23:33,242 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:23:33] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:23:33,250 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:23:33] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:23:34,549 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:23:34] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:23:34,557 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:23:34] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:23:36,085 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:23:36] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 15:23:36,402 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:23:36] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 15:23:37,707 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-07-31 15:23:37,708 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:23:37] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-07-31 15:23:38,718 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:23:38] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:23:38,726 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:23:38] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:25:53,168 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:25:53] "[33mGET /api/salesforce/debug HTTP/1.1[0m" 404 -
+2025-07-31 15:30:51,102 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\salesforce_client.py', reloading
+2025-07-31 15:30:51,200 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 15:30:52,598 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 15:30:52,598 - __main__ - INFO - Debug mode: True
+2025-07-31 15:30:52,612 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 15:30:52,616 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 15:30:57,534 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:30:57] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:30:57,556 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:30:57] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:30:58,917 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:30:58] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 15:30:59,238 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:30:59] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 15:31:00,770 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-07-31 15:31:00,771 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:31:00] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-07-31 15:31:01,608 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:31:01] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:31:01,616 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:31:01] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:54:25,521 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:54:25] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:54:25,533 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:54:25] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:54:27,864 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:54:27] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 15:54:28,186 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:54:28] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 15:54:29,230 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-07-31 15:54:29,232 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:54:29] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-07-31 15:54:30,187 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:54:30] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:54:30,195 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:54:30] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:54:37,736 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:54:37] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 15:54:38,057 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:54:38] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 15:54:44,734 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:54:44] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 15:54:45,049 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:54:45] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 15:54:46,237 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:54:46] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 15:54:46,558 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:54:46] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 15:55:43,711 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\salesforce_client.py', reloading
+2025-07-31 15:55:43,802 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 15:55:45,181 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 15:55:45,182 - __main__ - INFO - Debug mode: True
+2025-07-31 15:55:45,194 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 15:55:45,197 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 15:55:55,898 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 15:55:55,898 - __main__ - INFO - Debug mode: True
+2025-07-31 15:55:57,229 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-07-31 15:55:57,229 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-31 15:55:57,230 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 15:55:58,598 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 15:55:58,598 - __main__ - INFO - Debug mode: True
+2025-07-31 15:55:58,610 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 15:55:58,621 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 15:56:11,658 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:56:11] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:56:11,663 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:56:11] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:57:26,333 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:57:26] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:57:26,349 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:57:26] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 15:58:29,329 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:58:29] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 15:58:29,604 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 15:58:29] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 16:00:08,662 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\salesforce_client.py', reloading
+2025-07-31 16:00:08,755 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 16:00:10,028 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 16:00:10,029 - __main__ - INFO - Debug mode: True
+2025-07-31 16:00:10,041 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 16:00:10,045 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 16:01:16,941 - app.services.csv_processor - INFO - Successfully read headerless CSV with utf-8 encoding
+2025-07-31 16:01:17,751 - app.services.csv_processor - WARNING - Data validation issues: Found 3421 duplicate SKUs - keeping first occurrence; Found 1 products without descriptions
+2025-07-31 16:01:17,752 - app.services.csv_processor - INFO - Validation removed 3365 rows. 56 products remaining.
+2025-07-31 16:01:17,775 - app.services.csv_processor - ERROR - Unexpected error processing CSV file: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+2025-07-31 16:01:17,778 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:01:17] "[31m[1mPOST /api/upload-csv HTTP/1.1[0m" 400 -
+2025-07-31 16:03:50,564 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\csv_processor.py', reloading
+2025-07-31 16:03:50,668 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 16:03:51,272 - __main__ - ERROR - Failed to start application: expected an indented block after function definition on line 280 (csv_processor.py, line 281)
+2025-07-31 16:11:42,200 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 16:11:42,201 - __main__ - INFO - Debug mode: True
+2025-07-31 16:11:43,529 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-07-31 16:11:43,530 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-31 16:11:43,531 - werkzeug - INFO -  * Restarting with stat
+2025-07-31 16:11:44,949 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-07-31 16:11:44,950 - __main__ - INFO - Debug mode: True
+2025-07-31 16:11:44,963 - werkzeug - WARNING -  * Debugger is active!
+2025-07-31 16:11:44,967 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-07-31 16:22:03,966 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:22:03] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 16:22:03,975 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:22:03] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 16:28:49,190 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:28:49] "[33mGET /main.4bf7f4e9a452d7bc65b9.hot-update.json HTTP/1.1[0m" 404 -
+2025-07-31 16:28:49,192 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:28:49] "[33mGET /main.6e9610830806ef8d6597.hot-update.json HTTP/1.1[0m" 404 -
+2025-07-31 16:28:49,202 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:28:49] "[33mGET /main.6e9610830806ef8d6597.hot-update.json HTTP/1.1[0m" 404 -
+2025-07-31 16:28:49,807 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:28:49] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 16:28:49,816 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:28:49] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 16:28:49,845 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:28:49] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 16:28:49,854 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:28:49] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 16:28:49,870 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:28:49] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 16:28:49,884 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:28:49] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 16:28:50,204 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:28:50] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 16:29:15,565 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:29:15] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 16:29:15,879 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:29:15] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-07-31 16:29:17,039 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-07-31 16:29:17,040 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:29:17] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-07-31 16:29:18,162 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:29:18] "GET /api/salesforce/status HTTP/1.1" 200 -

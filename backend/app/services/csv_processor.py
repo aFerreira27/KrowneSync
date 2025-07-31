@@ -1,15 +1,29 @@
 import pandas as pd
 import numpy as np
 import logging
+import os
+from typing import List, Dict, Any, Optional, Callable
+import json
 
 logger = logging.getLogger(__name__)
 
 class CSVProcessor:
-    def __init__(self):
-        self.required_columns = ['SKU', 'Family', 'Product_Description', 'List_Price']  # Primary required columns
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
+        """
+        Initialize CSV Processor with optional configuration
+        
+        Args:
+            config: Configuration dictionary with processor settings
+        """
+        self.config = config or {}
+        
+        # Configure required columns from config or use defaults
+        self.required_columns = self.config.get('required_columns', [
+            'SKU', 'Family', 'Product_Description', 'List_Price'
+        ])
         
         # Define columns that should be treated as arrays (comma-separated values)
-        self.array_columns = [
+        self.array_columns = self.config.get('array_columns', [
             'Parent_Products',
             'Parts_&_Accessories',
             'Related_Products',
@@ -22,8 +36,9 @@ class CSVProcessor:
             'DoorDrawer_Finish_Options',
             'Beverage_Compatibility_Options',
             'Features'
-        ]
+        ])
         
+        # All possible columns in order
         self.all_columns = [
             'SKU', 'Family', 'Products_Available_to_Serve', 'Shipping_Dimensions', 'Case_Dimensions_(in.)',
             'Product_Length_(in.)', 'Product_Weight_(lbs.)', 'List_Price', 'MAP_Price', 'UPC', 'HTS_Code',
@@ -53,18 +68,66 @@ class CSVProcessor:
             'Product_Width_(in.)', 'California_Prop_Warning', 'Website_Link', 'Product_Height_Without_Legs_(in)',
             'INTERNAL_ONLY_PRODUCT', 'COO'
         ]
+        
+        # Configure chunking for large files
+        self.chunk_size = self.config.get('chunk_size', None)
+        
+        # Configure validation settings
+        self.validate_data = self.config.get('validate_data', True)
+        self.allow_negative_prices = self.config.get('allow_negative_prices', False)
     
-    def process_file(self, filepath):
-        """Process CSV file and return standardized product data"""
+    def process_file(self, filepath: str, progress_callback: Optional[Callable[[str, int], None]] = None) -> List[Dict[str, Any]]:
+        """
+        Process CSV file and return standardized product data
+        
+        Args:
+            filepath: Path to the CSV file
+            progress_callback: Optional callback function for progress updates (message, percentage)
+            
+        Returns:
+            List of product dictionaries
+            
+        Raises:
+            FileNotFoundError: If the CSV file doesn't exist
+            ValueError: If the CSV file is invalid or empty
+            Exception: For other processing errors
+        """
         try:
+            # Check file existence
+            if not os.path.exists(filepath):
+                raise FileNotFoundError(f"CSV file not found: {filepath}")
+            
+            if progress_callback:
+                progress_callback("Starting file processing", 0)
+            
             # Read CSV with different encodings fallback
             df = self._read_csv_safe(filepath)
+            
+            if df.empty:
+                logger.warning("CSV file is empty")
+                return []
+            
+            if progress_callback:
+                progress_callback("Data loaded successfully", 20)
             
             # Validate required columns and handle extra columns
             df = self._validate_columns(df)
             
+            if progress_callback:
+                progress_callback("Columns validated", 40)
+            
             # Clean and standardize data
             df = self._clean_data(df)
+            
+            if progress_callback:
+                progress_callback("Data cleaned", 60)
+            
+            # Validate data if enabled
+            if self.validate_data:
+                df = self._validate_business_rules(df)
+            
+            if progress_callback:
+                progress_callback("Data validated", 80)
             
             # Convert numeric NaN to None and clean up the DataFrame
             df = df.replace({pd.NA: None})  # Replace pandas NA
@@ -82,45 +145,114 @@ class CSVProcessor:
                         cleaned_record[key] = value
                 products.append(cleaned_record)
             
-            logger.info(f"Processed {len(products)} products from CSV")
+            if progress_callback:
+                progress_callback("Processing complete", 100)
+            
+            logger.info(f"Successfully processed {len(products)} products from CSV")
             return products
             
+        except FileNotFoundError as e:
+            logger.error(f"File error: {str(e)}")
+            raise
+        except pd.errors.EmptyDataError:
+            logger.error("CSV file is empty or has no valid data")
+            raise ValueError("CSV file contains no data")
+        except pd.errors.ParserError as e:
+            logger.error(f"Error parsing CSV: {str(e)}")
+            raise ValueError(f"Error parsing CSV file: {str(e)}")
         except Exception as e:
-            logger.error(f"Error processing CSV file: {str(e)}")
+            logger.error(f"Unexpected error processing CSV file: {str(e)}")
             raise
     
-    def _read_csv_safe(self, filepath):
-        """Attempt to read CSV with different encodings. Handles both headerless files and files with headers."""
+    def _read_csv_safe(self, filepath: str) -> pd.DataFrame:
+        """
+        Attempt to read CSV with different encodings and handle chunking for large files
+        
+        Args:
+            filepath: Path to the CSV file
+            
+        Returns:
+            DataFrame with the CSV data
+            
+        Raises:
+            ValueError: If unable to read the file with any encoding
+        """
         encodings = ['utf-8', 'latin-1', 'cp1252', 'iso-8859-1']
         
         for encoding in encodings:
             try:
-                # First try reading with headers
-                df = pd.read_csv(filepath, encoding=encoding)
-                
-                # Check if the first row contains recognizable column names
-                first_row_cols = set(df.columns.str.strip())
-                known_cols = set(self.all_columns)
-                
-                # If less than 2 known columns are found, assume it's headerless
-                if len(first_row_cols.intersection(known_cols)) < 2:
-                    df = pd.read_csv(filepath, encoding=encoding, header=None, names=self.all_columns)
-                    logger.info(f"Successfully read headerless CSV with {encoding} encoding")
+                if self.chunk_size:
+                    # Handle large files in chunks
+                    chunks = []
+                    try:
+                        # First try reading with headers
+                        chunk_iter = pd.read_csv(filepath, encoding=encoding, chunksize=self.chunk_size)
+                        first_chunk = next(chunk_iter)
+                        
+                        # Check if the first row contains recognizable column names
+                        first_row_cols = set(first_chunk.columns.str.strip())
+                        known_cols = set(self.all_columns)
+                        
+                        if len(first_row_cols.intersection(known_cols)) < 2:
+                            # Headerless file - re-read with column names
+                            chunk_iter = pd.read_csv(
+                                filepath, encoding=encoding, chunksize=self.chunk_size,
+                                header=None, names=self.all_columns
+                            )
+                            logger.info(f"Reading headerless CSV in chunks with {encoding} encoding")
+                        else:
+                            # Add the first chunk back
+                            chunks.append(first_chunk)
+                            logger.info(f"Reading CSV with headers in chunks using {encoding} encoding")
+                        
+                        # Read remaining chunks
+                        for chunk in chunk_iter:
+                            chunks.append(chunk)
+                        
+                        return pd.concat(chunks, ignore_index=True)
+                        
+                    except StopIteration:
+                        # Handle case where file has only headers or is very small
+                        return first_chunk if 'first_chunk' in locals() else pd.DataFrame()
                 else:
-                    logger.info(f"Successfully read CSV with headers using {encoding} encoding")
-                
-                return df
-                
+                    # Regular file reading
+                    # First try reading with headers
+                    df = pd.read_csv(filepath, encoding=encoding)
+                    
+                    # Check if the first row contains recognizable column names
+                    first_row_cols = set(df.columns.str.strip())
+                    known_cols = set(self.all_columns)
+                    
+                    # If less than 2 known columns are found, assume it's headerless
+                    if len(first_row_cols.intersection(known_cols)) < 2:
+                        df = pd.read_csv(filepath, encoding=encoding, header=None, names=self.all_columns)
+                        logger.info(f"Successfully read headerless CSV with {encoding} encoding")
+                    else:
+                        logger.info(f"Successfully read CSV with headers using {encoding} encoding")
+                    
+                    return df
+                    
             except UnicodeDecodeError:
                 continue
             except pd.errors.ParserError as e:
-                logger.error(f"Error parsing CSV: {str(e)}")
-                raise ValueError(f"Error parsing CSV file: {str(e)}")
+                logger.error(f"Error parsing CSV with {encoding}: {str(e)}")
+                continue
         
         raise ValueError("Unable to read CSV file with any supported encoding")
     
-    def _validate_columns(self, df):
-        """Validate that required columns are present and handle extra columns"""
+    def _validate_columns(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Validate that required columns are present and handle extra columns
+        
+        Args:
+            df: Input DataFrame
+            
+        Returns:
+            DataFrame with validated columns
+            
+        Raises:
+            ValueError: If required columns are missing
+        """
         # Standardize column names by stripping whitespace
         df.columns = df.columns.str.strip()
         
@@ -145,8 +277,70 @@ class CSVProcessor:
         
         return df
     
-    def _clean_data(self, df):
-        """Clean and standardize the data"""
+    def _validate_business_rules(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Validate business rules for the data
+        
+        Args:
+            df: Input DataFrame
+            
+        Returns:
+            DataFrame after validation (may have rows removed)
+        """
+        issues = []
+        initial_count = len(df)
+        
+        # Check for negative prices if not allowed
+        if not self.allow_negative_prices and 'List_Price' in df.columns:
+            negative_prices = df[df['List_Price'] < 0]
+            if not negative_prices.empty:
+                issues.append(f"Found {len(negative_prices)} products with negative prices")
+                df = df[df['List_Price'] >= 0]  # Remove negative prices
+        
+        # Check for extremely high prices (potential data entry errors)
+        if 'List_Price' in df.columns:
+            high_price_threshold = self.config.get('max_reasonable_price', 100000)
+            high_prices = df[df['List_Price'] > high_price_threshold]
+            if not high_prices.empty:
+                issues.append(f"Found {len(high_prices)} products with unusually high prices (>${high_price_threshold})")
+        
+        # Check for duplicate SKUs after cleaning
+        duplicates = df[df.duplicated(subset=['SKU'], keep=False)]
+        if not duplicates.empty:
+            issues.append(f"Found {len(duplicates)} duplicate SKUs - keeping first occurrence")
+            df = df.drop_duplicates(subset=['SKU'], keep='first')
+        
+        # Check for missing product descriptions
+        if 'Product_Description' in df.columns:
+            # Fix: Use proper pandas boolean indexing
+            missing_desc = df[
+                df['Product_Description'].isna() | 
+                (df['Product_Description'] == '') | 
+                (df['Product_Description'] == None)
+            ]
+            if not missing_desc.empty:
+                issues.append(f"Found {len(missing_desc)} products without descriptions")
+        
+        # Log validation results
+        if issues:
+            logger.warning("Data validation issues: " + "; ".join(issues))
+        
+        final_count = len(df)
+        if final_count != initial_count:
+            logger.info(f"Validation removed {initial_count - final_count} rows. {final_count} products remaining.")
+        
+        return df
+    
+    def _clean_data(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Clean and standardize the data
+        
+        Args:
+            df: Input DataFrame
+            
+        Returns:
+            Cleaned DataFrame
+        """
         # Drop empty rows
         df = df.dropna(how='all')
         
@@ -157,7 +351,7 @@ class CSVProcessor:
         df['SKU'] = df['SKU'].astype(str).str.strip()
         df['SKU'] = df['SKU'].replace('nan', '')
         
-        # Clean numeric fields
+        # Define numeric columns
         numeric_columns = [
             'List_Price', 'MAP_Price', 'Product_Weight_(lbs.)', 'Case_Weight_(lbs.)',
             'Product_Length_(in.)', 'Product_Width_(in.)', 'Product_Height_(in.)',
@@ -167,24 +361,16 @@ class CSVProcessor:
             'Working_Height_(in.)', 'Trunk_Line_Length_(in.)', 'Height_of_Ceiling_(in.)',
             'Diameter_(in.)', 'Caster_Quantity', 'Wheel_Diameter_(in.)',
             'Spray_Head_Flow_Rate_(GPM)', 'Hose_Length_(in.)', 'Hose_Length_(ft.)',
-            'Gallon_Capacity', 'Hertz_(Hz.)', 'Spout_Size_(in.)', 'HP'
+            'Gallon_Capacity', 'Hertz_(Hz.)', 'Spout_Size_(in.)', 'HP', 'Amps',
+            'Load_Capacity_(lbs._per_caster)', 'Plate_Size_(in.)', 'Caster_Overall_Height_(in.)',
+            'Compressor_Size_(in.)', 'Backsplash_Height_(in.)', 'Bowl_Size_(in.)',
+            'Product_Depth_(in.)'
         ]
         
-        # Define special handling for numeric values
-        def clean_numeric(val):
-            if pd.isna(val) or str(val).strip().lower() in ['', 'nan', 'none', 'null']:
-                return None
-            try:
-                # Remove currency symbols and other non-numeric characters
-                cleaned = str(val).replace('$', '').replace(',', '').replace(' ', '')
-                return float(cleaned) if cleaned else None
-            except (ValueError, TypeError):
-                return None
-        
+        # Clean numeric fields
         for col in numeric_columns:
             if col in df.columns:
-                # Apply the clean_numeric function
-                df[col] = df[col].apply(clean_numeric)
+                df[col] = df[col].apply(self._clean_numeric_value)
         
         # Handle text fields
         text_columns = [col for col in df.columns if col not in numeric_columns]
@@ -200,30 +386,41 @@ class CSVProcessor:
                 # If the field is empty or just whitespace, set to empty string
                 df[col] = df[col].replace(r'^\s*$', '', regex=True)
         
-        # Remove duplicate SKUs, keeping the first occurrence
-        df = df.drop_duplicates(subset=['SKU'], keep='first')
-        
-        return df
-        df['product_id'] = df['product_id'].astype(str).str.strip()
-        
-        # Clean text columns
-        text_columns = ['name', 'description']
-        for col in text_columns:
-            if col in df.columns:
-                df[col] = df[col].astype(str).str.strip()
-                df[col] = df[col].replace('nan', '')
-        
-        # Clean price column
-        if 'price' in df.columns:
-            df['price'] = self._clean_price_column(df['price'])
-        
-        # Remove duplicates
-        df = df.drop_duplicates(subset=['product_id'])
-        
         return df
     
-    def _process_array_field(self, value):
-        """Process a field that should be an array of values"""
+    def _clean_numeric_value(self, val: Any) -> Optional[float]:
+        """
+        Clean a single numeric value
+        
+        Args:
+            val: Value to clean
+            
+        Returns:
+            Cleaned numeric value or None
+        """
+        if pd.isna(val) or str(val).strip().lower() in ['', 'nan', 'none', 'null']:
+            return None
+        try:
+            # Remove currency symbols and other non-numeric characters
+            cleaned = str(val).replace('$', '').replace('€', '').replace('£', '')
+            cleaned = cleaned.replace(',', '').replace(' ', '').replace('%', '')
+            # Handle ranges (take the first number)
+            if '-' in cleaned and not cleaned.startswith('-'):
+                cleaned = cleaned.split('-')[0]
+            return float(cleaned) if cleaned else None
+        except (ValueError, TypeError):
+            return None
+    
+    def _process_array_field(self, value: Any) -> List[str]:
+        """
+        Process a field that should be an array of values
+        
+        Args:
+            value: Value to process into array
+            
+        Returns:
+            List of cleaned string values
+        """
         if pd.isna(value) or str(value).strip().lower() in ['', 'nan', 'none', 'null']:
             return []
             
@@ -233,52 +430,66 @@ class CSVProcessor:
         # If the value is already looking like a JSON array, try to parse it
         if value_str.startswith('[') and value_str.endswith(']'):
             try:
-                import json
-                return json.loads(value_str)
+                parsed = json.loads(value_str)
+                if isinstance(parsed, list):
+                    return [str(item).strip() for item in parsed if str(item).strip()]
             except json.JSONDecodeError:
                 pass
         
         # Split by common delimiters and clean each item
         items = []
-        # First try splitting by comma
-        split_items = value_str.split(',')
+        # Try different delimiters in order of preference
+        delimiters = [',', ';', '|', '\n', '\t']
         
-        # If no comma found, try splitting by semicolon or pipe
-        if len(split_items) == 1:
-            if ';' in value_str:
-                split_items = value_str.split(';')
-            elif '|' in value_str:
-                split_items = value_str.split('|')
+        split_items = [value_str]  # Default to single item
+        for delimiter in delimiters:
+            if delimiter in value_str:
+                split_items = value_str.split(delimiter)
+                break
         
         # Clean each item
         for item in split_items:
             cleaned_item = item.strip()
-            if cleaned_item and cleaned_item.lower() not in ['nan', 'none', 'null']:
+            if cleaned_item and cleaned_item.lower() not in ['nan', 'none', 'null', '']:
                 items.append(cleaned_item)
                 
         return items
-
-    def _clean_price_column(self, price_series):
-        """Clean and standardize price data"""
-        # Remove currency symbols and clean price
-        cleaned_prices = []
+    
+    def get_processing_stats(self, products: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Get statistics about the processed products
         
-        for price in price_series:
-            try:
-                # Convert to string and remove common currency symbols
-                price_str = str(price).strip()
-                price_str = price_str.replace('$', '').replace('€', '').replace('£', '')
-                price_str = price_str.replace(',', '').replace(' ', '')
-                
-                # Convert to float
-                if price_str and price_str != 'nan':
-                    cleaned_price = float(price_str)
-                else:
-                    cleaned_price = 0.0
-                    
-                cleaned_prices.append(cleaned_price)
-                
-            except (ValueError, TypeError):
-                cleaned_prices.append(0.0)
+        Args:
+            products: List of processed product dictionaries
+            
+        Returns:
+            Dictionary with processing statistics
+        """
+        if not products:
+            return {"total_products": 0, "error": "No products to analyze"}
         
-        return cleaned_prices
+        stats = {
+            "total_products": len(products),
+            "products_with_prices": sum(1 for p in products if p.get('List_Price') is not None),
+            "unique_families": len(set(p.get('Family', '') for p in products if p.get('Family'))),
+            "average_price": None,
+            "price_range": None,
+            "products_with_images": sum(1 for p in products if p.get('Images') and len(p.get('Images', [])) > 0),
+            "most_common_family": None
+        }
+        
+        # Calculate price statistics
+        prices = [p.get('List_Price') for p in products if p.get('List_Price') is not None]
+        if prices:
+            stats["average_price"] = sum(prices) / len(prices)
+            stats["price_range"] = {"min": min(prices), "max": max(prices)}
+        
+        # Find most common family
+        families = [p.get('Family', '') for p in products if p.get('Family')]
+        if families:
+            family_counts = {}
+            for family in families:
+                family_counts[family] = family_counts.get(family, 0) + 1
+            stats["most_common_family"] = max(family_counts.items(), key=lambda x: x[1])
+        
+        return stats

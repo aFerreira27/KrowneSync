@@ -4,7 +4,8 @@ import urllib.parse
 import secrets
 import base64
 import os
-from typing import List, Dict, Any, Optional
+import hashlib
+from typing import List, Dict, Any, Optional, Tuple
 
 
 logger = logging.getLogger(__name__)
@@ -13,7 +14,7 @@ class SalesforceClient:
     def __init__(self, config: Dict[str, str]):
         self.client_id = config['client_id']
         self.client_secret = config['client_secret']
-        self.redirect_uri = config.get('redirect_uri', 'http://localhost:5000/api/auth/callback/salesforce')
+        self.redirect_uri = config.get('redirect_uri', 'http://localhost:3000/api/auth/callback/salesforce')
         self.sandbox = config.get('sandbox', False)  # True for sandbox, False for production
         self.instance_url = None
         self.access_token = None
@@ -24,43 +25,80 @@ class SalesforceClient:
         self.login_url = config.get('my_domain_url')
         if not self.login_url:
             self.login_url = 'https://test.salesforce.com' if self.sandbox else 'https://login.salesforce.com'
+        
+        # Store for PKCE verification
+        self._code_verifier = None
     
-    def get_authorization_url(self, state: Optional[str] = None) -> str:
+    def _generate_pkce_pair(self) -> Tuple[str, str]:
         """
-        Generate the authorization URL for OAuth 2.0 web server flow
+        Generate PKCE code verifier and challenge
+        
+        Returns:
+            Tuple of (code_verifier, code_challenge)
+        """
+        # Generate code verifier - random string of 43-128 characters
+        code_verifier = base64.urlsafe_b64encode(secrets.token_bytes(32)).decode('utf-8').rstrip('=')
+        
+        # Generate code challenge - SHA256 hash of verifier
+        challenge_bytes = hashlib.sha256(code_verifier.encode('utf-8')).digest()
+        code_challenge = base64.urlsafe_b64encode(challenge_bytes).decode('utf-8').rstrip('=')
+        
+        return code_verifier, code_challenge
+    
+    def get_authorization_url(self, state: Optional[str] = None) -> Dict[str, str]:
+        """
+        Generate the authorization URL for OAuth 2.0 web server flow with PKCE
         
         Args:
             state: Optional state parameter for CSRF protection
             
         Returns:
-            Authorization URL for user to visit
+            Dictionary containing authorization URL and PKCE verifier
         """
         if not state:
             state = secrets.token_urlsafe(32)
+        
+        # Generate PKCE pair
+        code_verifier, code_challenge = self._generate_pkce_pair()
+        self._code_verifier = code_verifier  # Store for later use
         
         params = {
             'response_type': 'code',
             'client_id': self.client_id,
             'redirect_uri': self.redirect_uri,
             'scope': 'api refresh_token offline_access',
-            'state': state
+            'state': state,
+            'code_challenge': code_challenge,
+            'code_challenge_method': 'S256'  # SHA256 method
         }
         
         auth_url = f"{self.login_url}/services/oauth2/authorize?" + urllib.parse.urlencode(params)
-        logger.info(f"Generated authorization URL for Salesforce OAuth")
-        return auth_url
+        logger.info(f"Generated authorization URL for Salesforce OAuth with PKCE")
+        
+        # Return both URL and verifier so it can be stored in session
+        return {
+            'auth_url': auth_url,
+            'code_verifier': code_verifier,
+            'state': state
+        }
     
-    def exchange_code_for_tokens(self, authorization_code: str) -> Dict[str, Any]:
+    def exchange_code_for_tokens(self, authorization_code: str, code_verifier: Optional[str] = None) -> Dict[str, Any]:
         """
-        Exchange authorization code for access and refresh tokens
+        Exchange authorization code for access and refresh tokens with PKCE
         
         Args:
             authorization_code: The code received from Salesforce callback
+            code_verifier: The PKCE code verifier (if not stored in instance)
             
         Returns:
             Dictionary containing token info
         """
         try:
+            # Use provided verifier or stored one
+            verifier = code_verifier or self._code_verifier
+            if not verifier:
+                raise ValueError("Code verifier not provided and not stored in instance")
+            
             token_url = f"{self.login_url}/services/oauth2/token"
             
             token_data = {
@@ -68,7 +106,8 @@ class SalesforceClient:
                 'client_id': self.client_id,
                 'client_secret': self.client_secret,
                 'redirect_uri': self.redirect_uri,
-                'code': authorization_code
+                'code': authorization_code,
+                'code_verifier': verifier  # Include PKCE verifier
             }
             
             headers = {
@@ -85,6 +124,9 @@ class SalesforceClient:
             self.access_token = token_info['access_token']
             self.refresh_token = token_info.get('refresh_token')
             self.instance_url = token_info['instance_url']
+            
+            # Clear the stored verifier after use
+            self._code_verifier = None
             
             logger.info("Successfully exchanged authorization code for tokens")
             return token_info

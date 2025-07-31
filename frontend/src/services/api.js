@@ -1,140 +1,12 @@
-// Updated API service with proper OAuth support
+// Main API index - combines CSV and Salesforce APIs
+// api/index.js
 
-const api = {
-  // Existing methods
-  uploadCSV: async (file) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    const response = await fetch('/api/upload-csv', {
-      method: 'POST',
-      body: formData,
-    });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Upload failed');
-    }
-    
-    return response.json();
-  },
+import csvApi from './csvApi.js';
+import salesforceApi from './salesforceApi.js';
 
-  getSalesforceConfig: async () => {
-    const response = await fetch('/api/salesforce/config');
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Config check failed');
-    }
-    
-    return response.json();
-  },
-
-  compareProducts: async (data) => {
-    const response = await fetch('/api/compare', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Comparison failed');
-    }
-    
-    return response.json();
-  },
-
-  exportResults: async (results) => {
-    const response = await fetch('/api/export-results', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ results }),
-    });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Export failed');
-    }
-    
-    return response.json();
-  },
-
-  // OAuth-specific methods
-  getSalesforceStatus: async () => {
-    const response = await fetch('/api/salesforce/status');
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Status check failed');
-    }
-    
-    return response.json();
-  },
-
-  // FIXED: Updated to use the correct endpoint
-  initiateSalesforceAuth: async (config = {}) => {
-    const response = await fetch('/api/auth/salesforce/initiate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(config),
-    });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Authentication initiation failed');
-    }
-    
-    return response.json();
-  },
-
-  salesforceLogout: async () => {
-    const response = await fetch('/api/salesforce/logout', {
-      method: 'POST',
-    });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Logout failed');
-    }
-    
-    return response.json();
-  },
-
-  getSalesforceProducts: async (options = {}) => {
-    const params = new URLSearchParams();
-    if (options.limit) params.append('limit', options.limit);
-    if (options.family) params.append('family', options.family);
-    if (options.active_only !== undefined) params.append('active_only', options.active_only);
-    
-    const response = await fetch(`/api/salesforce/products?${params}`);
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to get products');
-    }
-    
-    return response.json();
-  },
-
-  getSalesforceUser: async () => {
-    const response = await fetch('/api/salesforce/user');
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to get user info');
-    }
-    
-    return response.json();
-  },
-
-  // Utility method for health check
+// Utility API methods that work across both services
+const utilityApi = {
+  // General health check
   healthCheck: async () => {
     const response = await fetch('/api/health');
     
@@ -146,12 +18,144 @@ const api = {
     return response.json();
   },
 
-  // Legacy method for backward compatibility (deprecated)
-  testSalesforceConnection: async (config) => {
-    // This method is deprecated with OAuth, but kept for compatibility
-    console.warn('testSalesforceConnection is deprecated. Use OAuth flow instead.');
-    throw new Error('Please use OAuth authentication instead of username/password');
+  // Combined system status
+  getSystemStatus: async () => {
+    try {
+      const [health, salesforceHealth] = await Promise.all([
+        utilityApi.healthCheck(),
+        salesforceApi.healthCheck()
+      ]);
+      
+      return {
+        overall: 'healthy',
+        services: {
+          api: health,
+          salesforce: salesforceHealth,
+          csv: { available: true, healthy: true }
+        },
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      return {
+        overall: 'unhealthy',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      };
+    }
+  },
+
+  // Error reporting and logging
+  reportError: async (error, context = {}) => {
+    try {
+      const errorReport = {
+        message: error.message,
+        stack: error.stack,
+        timestamp: new Date().toISOString(),
+        context: context,
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+      
+      // Log locally
+      console.error('API Error Report:', errorReport);
+      
+      // You could send to an error tracking service here
+      // await fetch('/api/errors', { method: 'POST', body: JSON.stringify(errorReport) });
+      
+      return errorReport;
+    } catch (reportingError) {
+      console.error('Failed to report error:', reportingError);
+    }
+  }
+};
+
+// Main API object that combines all services
+const api = {
+  // CSV operations
+  csv: csvApi,
+  
+  // Salesforce operations
+  salesforce: salesforceApi,
+  
+  // Utility operations
+  utils: utilityApi,
+  
+  // Legacy methods for backward compatibility
+  // (These delegate to the appropriate service)
+  
+  uploadCSV: csvApi.uploadCSV,
+  compareProducts: csvApi.compareProducts,
+  exportResults: csvApi.exportResults,
+  
+  getSalesforceStatus: salesforceApi.getSalesforceStatus,
+  initiateSalesforceAuth: salesforceApi.initiateSalesforceAuth,
+  salesforceLogout: salesforceApi.salesforceLogout,
+  getSalesforceProducts: salesforceApi.getSalesforceProducts,
+  getSalesforceUser: salesforceApi.getSalesforceUser,
+  getSalesforceConfig: salesforceApi.getSalesforceConfig,
+  
+  healthCheck: utilityApi.healthCheck,
+
+  // Enhanced methods that combine both services
+  
+  // Test connection to both systems
+  testConnections: async () => {
+    try {
+      const [health, csvConfig, sfStatus] = await Promise.all([
+        utilityApi.healthCheck(),
+        csvApi.getCSVConfigOptions().catch(() => ({ available: false })),
+        salesforceApi.getAuthStatus().catch(() => ({ isAuthenticated: false }))
+      ]);
+      
+      return {
+        api: health.status === 'healthy',
+        csv: csvConfig.available !== false,
+        salesforce: sfStatus.isAuthenticated,
+        overall: health.status === 'healthy' && 
+                  csvConfig.available !== false && 
+                  sfStatus.isAuthenticated
+      };
+    } catch (error) {
+      return {
+        api: false,
+        csv: false,
+        salesforce: false,
+        overall: false,
+        error: error.message
+      };
+    }
+  },
+
+  // Initialize the application
+  initialize: async () => {
+    try {
+      // Check system status
+      const systemStatus = await api.utils.getSystemStatus();
+      
+      // Handle OAuth callback if present
+      const oauthCallback = salesforceApi.handleOAuthCallback();
+      
+      // Load CSV configuration
+      const csvConfig = await csvApi.getCSVConfigOptions().catch(() => null);
+      
+      return {
+        systemStatus,
+        oauthCallback,
+        csvConfig,
+        initialized: true,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      return {
+        initialized: false,
+        error: error.message,
+        timestamp: new Date().toISOString()
+      };
+    }
   }
 };
 
 export default api;
+
+// Also export individual services for direct access
+export { csvApi, salesforceApi, utilityApi };
