@@ -522,3 +522,4 @@
 2025-07-31 16:29:17,039 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
 2025-07-31 16:29:17,040 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:29:17] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
 2025-07-31 16:29:18,162 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:29:18] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-07-31 16:29:18,174 - werkzeug - INFO - 127.0.0.1 - - [31/Jul/2025 16:29:18] "GET /api/salesforce/status HTTP/1.1" 200 -
