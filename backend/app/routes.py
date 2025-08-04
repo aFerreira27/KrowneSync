@@ -1,9 +1,12 @@
-from flask import Blueprint, request, jsonify, current_app, session, url_for, redirect
-from werkzeug.utils import secure_filename
 import os
 import asyncio
 import secrets
 import logging
+
+from flask import Blueprint, request, jsonify, current_app, session, url_for, redirect
+from werkzeug.utils import secure_filename
+from datetime import datetime
+
 from app.services.csv_processor import CSVProcessor  # Your enhanced processor
 from app.services.salesforce_client import SalesforceClient
 from app.services.web_scraper import KrowneScraper
@@ -390,39 +393,102 @@ def get_salesforce_config():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# Add this to your Flask routes file - Replace your existing callback handler
 @main.route('/api/auth/callback/salesforce')
 def salesforce_callback():
-    """Handle Salesforce OAuth callback with PKCE"""
+    """Handle Salesforce OAuth callback with PKCE - Debug Version"""
     try:
+        logger.info("=== SALESFORCE OAUTH CALLBACK STARTED ===")
+        logger.info(f"Request URL: {request.url}")
+        logger.info(f"Request args: {dict(request.args)}")
+        logger.info(f"Request method: {request.method}")
+        logger.info(f"User agent: {request.user_agent}")
+        
         # Get parameters from callback
         code = request.args.get('code')
         state = request.args.get('state')
         error = request.args.get('error')
         
-        # Handle OAuth errors
+        logger.info(f"Callback parameters:")
+        logger.info(f"  - Code present: {'✅' if code else '❌'}")
+        logger.info(f"  - State present: {'✅' if state else '❌'}")
+        logger.info(f"  - Error: {error or 'None'}")
+        
+        # Handle OAuth errors from Salesforce
         if error:
             error_description = request.args.get('error_description', 'Unknown error')
+            logger.error(f"OAuth error from Salesforce: {error} - {error_description}")
             return redirect(f"/?error={error}&error_description={error_description}")
         
+        # Validate we have a code
+        if not code:
+            logger.error("❌ No authorization code received from Salesforce")
+            return redirect("/?error=no_code&message=No authorization code received")
+        
+        # Check session data
+        session_state = session.get('oauth_state')
+        code_verifier = session.get('code_verifier')
+        sf_config = session.get('sf_config')
+        
+        logger.info(f"Session data check:")
+        logger.info(f"  - oauth_state in session: {'✅' if session_state else '❌'}")
+        logger.info(f"  - code_verifier in session: {'✅' if code_verifier else '❌'}")
+        logger.info(f"  - sf_config in session: {'✅' if sf_config else '❌'}")
+        
+        if session_state:
+            logger.info(f"  - State match: {'✅' if state == session_state else '❌'}")
+        
         # Validate state parameter
-        if not state or state != session.get('oauth_state'):
+        if not state or state != session_state:
+            logger.error(f"❌ State mismatch - Received: {state}, Expected: {session_state}")
             return redirect("/?error=invalid_state&message=State parameter mismatch")
         
-        # Get stored configuration and PKCE verifier
-        sf_config = session.get('sf_config')
-        code_verifier = session.get('code_verifier')
-        
         if not sf_config:
+            logger.error("❌ Salesforce config not found in session")
             return redirect("/?error=session_expired&message=OAuth session expired")
         
         if not code_verifier:
+            logger.error("❌ PKCE code verifier not found in session")
             return redirect("/?error=pkce_error&message=Code verifier not found in session")
         
-        # Create Salesforce client and exchange code for tokens with PKCE
-        sf_client = SalesforceClient(sf_config)
-        token_info = sf_client.exchange_code_for_tokens(code, code_verifier)
+        # Create Salesforce client and exchange code for tokens
+        logger.info("🔄 Creating Salesforce client for token exchange...")
+        try:
+            sf_client = SalesforceClient(sf_config)
+            logger.info("✅ Salesforce client created successfully")
+        except Exception as client_error:
+            logger.error(f"❌ Failed to create Salesforce client: {str(client_error)}")
+            return redirect(f"/?error=client_creation_failed&message={str(client_error)}")
         
-        # Store tokens in session (in production, use secure storage)
+        try:
+            logger.info("🔄 Attempting token exchange...")
+            logger.info(f"  - Using code: {code[:20]}...")
+            logger.info(f"  - Using code_verifier: {code_verifier[:20]}...")
+            
+            token_info = sf_client.exchange_code_for_tokens(code, code_verifier)
+            logger.info("✅ Token exchange successful!")
+            
+            # Log token info (safely)
+            logger.info(f"Token exchange response:")
+            logger.info(f"  - access_token present: {'✅' if token_info.get('access_token') else '❌'}")
+            logger.info(f"  - refresh_token present: {'✅' if token_info.get('refresh_token') else '❌'}")
+            logger.info(f"  - instance_url: {token_info.get('instance_url', 'Not provided')}")
+            
+            # Validate token response
+            if not token_info.get('access_token'):
+                logger.error("❌ No access token in response")
+                raise Exception("No access token received from Salesforce")
+            
+            if not token_info.get('instance_url'):
+                logger.error("❌ No instance URL in response")
+                raise Exception("No instance URL received from Salesforce")
+                
+        except Exception as token_error:
+            logger.error(f"❌ Token exchange failed: {str(token_error)}", exc_info=True)
+            return redirect(f"/?error=token_exchange_failed&message={str(token_error)}")
+        
+        # Store tokens in session
+        logger.info("🔄 Storing tokens in session...")
         session['sf_tokens'] = {
             'access_token': token_info['access_token'],
             'refresh_token': token_info.get('refresh_token'),
@@ -430,20 +496,59 @@ def salesforce_callback():
             'client_config': sf_config
         }
         
+        # Test the tokens by getting user info
+        try:
+            logger.info("🔄 Testing tokens by fetching user info...")
+            sf_client.set_tokens(
+                token_info['access_token'],
+                token_info.get('refresh_token'),
+                token_info['instance_url']
+            )
+            user_info = sf_client.get_user_info()
+            logger.info(f"✅ User info retrieved: {user_info.get('display_name', 'Unknown user')}")
+            
+        except Exception as user_error:
+            logger.warning(f"⚠️ Token test failed but tokens stored: {str(user_error)}")
+            # Continue anyway - tokens might still work for other operations
+        
         # Clean up temporary session data
+        logger.info("🔄 Cleaning up temporary session data...")
         session.pop('oauth_state', None)
         session.pop('code_verifier', None)
         session.pop('sf_config', None)
+        
+        # Force session save
+        session.modified = True
+        logger.info("✅ Session updated successfully")
+        
+        logger.info("=== SALESFORCE OAUTH CALLBACK COMPLETED SUCCESSFULLY ===")
         
         # Redirect to frontend with success message
         return redirect("/?auth=success")
         
     except Exception as e:
+        logger.error(f"💥 UNEXPECTED ERROR in OAuth callback: {str(e)}", exc_info=True)
+        
         # Clean up session on error
         session.pop('oauth_state', None)
         session.pop('code_verifier', None)
         session.pop('sf_config', None)
+        session.modified = True
+        
         return redirect(f"/?error=auth_failed&message={str(e)}")
+
+# Also add a test endpoint to check if the proxy is working
+@main.route('/api/test-proxy', methods=['GET'])
+def test_proxy():
+    """Test endpoint to verify proxy is working"""
+    logger.info(f"Test proxy endpoint called from: {request.remote_addr}")
+    logger.info(f"Request headers: {dict(request.headers)}")
+    return jsonify({
+        'message': 'Proxy is working!',
+        'timestamp': datetime.now().isoformat(),
+        'remote_addr': request.remote_addr,
+        'user_agent': str(request.user_agent)
+    })
 
 @main.route('/api/salesforce/status')
 def salesforce_auth_status():
