@@ -1,0 +1,533 @@
+import requests
+import logging
+import urllib.parse
+import secrets
+import base64
+import hashlib
+from typing import List, Dict, Any, Optional, Tuple
+
+logger = logging.getLogger(__name__)
+
+class PimlySalesforceClient:
+    def __init__(self, config: Dict[str, str]):
+        """
+        Initialize Pimly API client with Salesforce authentication
+        
+        Config should contain:
+        - client_id: Salesforce connected app client ID
+        - client_secret: Salesforce connected app client secret
+        - redirect_uri: OAuth redirect URI
+        - sandbox: True for sandbox, False for production
+        - my_domain_url: Salesforce My Domain URL (optional)
+        - pimly_base_url: Pimly API base URL (e.g., 'https://yourcompany.pimly.com')
+        """
+        # Salesforce OAuth configuration
+        self.client_id = config['client_id']
+        self.client_secret = config['client_secret']
+        self.redirect_uri = config.get('redirect_uri', 'http://localhost:5000/api/auth/callback/salesforce')
+        self.sandbox = config.get('sandbox', False)
+        
+        # Pimly configuration
+        self.pimly_base_url = config['pimly_base_url'].rstrip('/')
+        self.pimly_api_version = config.get('pimly_api_version', 'v1')
+        self.pimly_api_base = f"{self.pimly_base_url}/api/{self.pimly_api_version}"
+        
+        # Salesforce configuration
+        self.login_url = config.get('my_domain_url')
+        if not self.login_url:
+            self.login_url = 'https://test.salesforce.com' if self.sandbox else 'https://login.salesforce.com'
+        
+        # Authentication state
+        self.salesforce_instance_url = None
+        self.salesforce_access_token = None
+        self.refresh_token = None
+        self.salesforce_api_version = 'v58.0'
+        
+        # Store for PKCE verification
+        self._code_verifier = None
+        
+        # Initialize sessions
+        self.salesforce_session = requests.Session()
+        self.pimly_session = requests.Session()
+        
+        # Setup logging
+        self.logger = logging.getLogger(__name__)
+        
+        # Set default headers for Pimly requests
+        self.pimly_session.headers.update({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+    
+    def _generate_pkce_pair(self) -> Tuple[str, str]:
+        """Generate PKCE code verifier and challenge"""
+        code_verifier = base64.urlsafe_b64encode(secrets.token_bytes(32)).decode('utf-8').rstrip('=')
+        challenge_bytes = hashlib.sha256(code_verifier.encode('utf-8')).digest()
+        code_challenge = base64.urlsafe_b64encode(challenge_bytes).decode('utf-8').rstrip('=')
+        return code_verifier, code_challenge
+    
+    def get_authorization_url(self, state: Optional[str] = None) -> Dict[str, str]:
+        """Generate the authorization URL for Salesforce OAuth 2.0 web server flow with PKCE"""
+        if not state:
+            state = secrets.token_urlsafe(32)
+        
+        code_verifier, code_challenge = self._generate_pkce_pair()
+        self._code_verifier = code_verifier
+        
+        params = {
+            'response_type': 'code',
+            'client_id': self.client_id,
+            'redirect_uri': self.redirect_uri,
+            'scope': 'api refresh_token offline_access',
+            'state': state,
+            'code_challenge': code_challenge,
+            'code_challenge_method': 'S256'
+        }
+        
+        auth_url = f"{self.login_url}/services/oauth2/authorize?" + urllib.parse.urlencode(params)
+        self.logger.info(f"Generated Salesforce authorization URL for Pimly API access")
+        
+        return {
+            'auth_url': auth_url,
+            'code_verifier': code_verifier,
+            'state': state
+        }
+    
+    def exchange_code_for_tokens(self, authorization_code: str, code_verifier: Optional[str] = None) -> Dict[str, Any]:
+        """Exchange authorization code for Salesforce access tokens"""
+        try:
+            verifier = code_verifier or self._code_verifier
+            if not verifier:
+                raise ValueError("Code verifier not provided and not stored in instance")
+            
+            token_url = f"{self.login_url}/services/oauth2/token"
+            
+            token_data = {
+                'grant_type': 'authorization_code',
+                'client_id': self.client_id,
+                'client_secret': self.client_secret,
+                'redirect_uri': self.redirect_uri,
+                'code': authorization_code,
+                'code_verifier': verifier
+            }
+            
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Accept': 'application/json'
+            }
+            
+            response = requests.post(token_url, data=token_data, headers=headers)
+            
+            if response.status_code != 200:
+                self.logger.error(f"Salesforce token exchange failed: {response.status_code} - {response.text}")
+                response.raise_for_status()
+            
+            token_info = response.json()
+            
+            # Store Salesforce tokens
+            self.salesforce_access_token = token_info['access_token']
+            self.refresh_token = token_info.get('refresh_token')
+            self.salesforce_instance_url = token_info['instance_url']
+            
+            # Update Salesforce session headers
+            self.salesforce_session.headers.update({
+                'Authorization': f'Bearer {self.salesforce_access_token}',
+                'Content-Type': 'application/json'
+            })
+            
+            # Update Pimly session with Salesforce session ID
+            self.pimly_session.headers.update({
+                'Authorization': f'Bearer {self.salesforce_access_token}'
+            })
+            
+            self._code_verifier = None
+            
+            self.logger.info("Successfully exchanged authorization code for tokens and configured Pimly access")
+            return token_info
+            
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f"Token exchange failed: {str(e)}")
+            if hasattr(e, 'response') and e.response:
+                self.logger.error(f"Response: {e.response.text}")
+            raise Exception(f"Token exchange failed: {str(e)}")
+    
+    def refresh_access_token(self) -> bool:
+        """Refresh the Salesforce access token and update Pimly authentication"""
+        if not self.refresh_token:
+            self.logger.error("No refresh token available")
+            return False
+        
+        try:
+            token_url = f"{self.login_url}/services/oauth2/token"
+            
+            refresh_data = {
+                'grant_type': 'refresh_token',
+                'client_id': self.client_id,
+                'client_secret': self.client_secret,
+                'refresh_token': self.refresh_token
+            }
+            
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Accept': 'application/json'
+            }
+            
+            response = requests.post(token_url, data=refresh_data, headers=headers)
+            
+            if response.status_code != 200:
+                self.logger.error(f"Token refresh failed: {response.status_code} - {response.text}")
+                return False
+            
+            token_info = response.json()
+            self.salesforce_access_token = token_info['access_token']
+            self.salesforce_instance_url = token_info.get('instance_url', self.salesforce_instance_url)
+            
+            # Update both session headers
+            self.salesforce_session.headers.update({
+                'Authorization': f'Bearer {self.salesforce_access_token}'
+            })
+            
+            self.pimly_session.headers.update({
+                'Authorization': f'Bearer {self.salesforce_access_token}'
+            })
+            
+            self.logger.info("Successfully refreshed access token for both Salesforce and Pimly")
+            return True
+            
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f"Token refresh failed: {str(e)}")
+            return False
+    
+    def set_tokens(self, access_token: str, refresh_token: Optional[str], instance_url: str):
+        """Manually set tokens (useful when loading from storage)"""
+        self.salesforce_access_token = access_token
+        self.refresh_token = refresh_token
+        self.salesforce_instance_url = instance_url
+        
+        # Update both session headers
+        self.salesforce_session.headers.update({
+            'Authorization': f'Bearer {self.salesforce_access_token}',
+            'Content-Type': 'application/json'
+        })
+        
+        self.pimly_session.headers.update({
+            'Authorization': f'Bearer {self.salesforce_access_token}'
+        })
+    
+    def is_authenticated(self) -> bool:
+        """Check if client has valid authentication"""
+        return bool(self.salesforce_access_token and self.salesforce_instance_url)
+    
+    def _make_pimly_request(self, method: str, endpoint: str, **kwargs) -> requests.Response:
+        """Make HTTP request to Pimly API with error handling and token refresh"""
+        if not self.is_authenticated():
+            raise Exception("Not authenticated. Please complete Salesforce OAuth flow first.")
+        
+        url = f"{self.pimly_api_base}/{endpoint.lstrip('/')}"
+        
+        try:
+            response = self.pimly_session.request(method, url, **kwargs)
+            
+            # Handle authentication errors by refreshing Salesforce token
+            if response.status_code == 401:
+                self.logger.info("Pimly API returned 401, attempting to refresh Salesforce token")
+                if self.refresh_access_token():
+                    response = self.pimly_session.request(method, url, **kwargs)
+                else:
+                    raise Exception("Token expired and refresh failed")
+            
+            return response
+            
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f"Pimly API request failed: {str(e)}")
+            raise Exception(f"Pimly API request failed: {str(e)}")
+    
+    def get_products(self, limit: Optional[int] = None, offset: int = 0, filters: Optional[Dict] = None) -> List[Dict[str, Any]]:
+        """Get products from Pimly API"""
+        try:
+            params = {'offset': offset}
+            
+            if limit:
+                params['limit'] = limit
+            
+            if filters:
+                params.update(filters)
+            
+            response = self._make_pimly_request('GET', '/products', params=params)
+            
+            if response.status_code != 200:
+                self.logger.error(f"Get products failed: {response.status_code} - {response.text}")
+                response.raise_for_status()
+            
+            data = response.json()
+            
+            # Handle different response formats
+            if isinstance(data, dict):
+                products = data.get('data', data.get('products', data.get('results', [])))
+            else:
+                products = data
+            
+            self.logger.info(f"Retrieved {len(products)} products from Pimly API")
+            return products
+            
+        except Exception as e:
+            self.logger.error(f"Failed to get products: {str(e)}")
+            raise Exception(f"Error retrieving products from Pimly API: {str(e)}")
+    
+    def get_product_by_id(self, product_id: str) -> Dict[str, Any]:
+        """Get a specific product by ID from Pimly API"""
+        try:
+            response = self._make_pimly_request('GET', f'/products/{product_id}')
+            
+            if response.status_code != 200:
+                self.logger.error(f"Get product failed: {response.status_code} - {response.text}")
+                response.raise_for_status()
+            
+            product = response.json()
+            self.logger.info(f"Retrieved product {product_id} from Pimly API")
+            return product
+            
+        except Exception as e:
+            self.logger.error(f"Failed to get product {product_id}: {str(e)}")
+            raise Exception(f"Error retrieving product {product_id} from Pimly API: {str(e)}")
+    
+    def search_products(self, query: str, limit: Optional[int] = 20) -> List[Dict[str, Any]]:
+        """Search products in Pimly API"""
+        try:
+            params = {'q': query, 'search': query}
+            
+            if limit:
+                params['limit'] = limit
+            
+            response = self._make_pimly_request('GET', '/products/search', params=params)
+            
+            if response.status_code != 200:
+                # Try alternative search endpoint
+                response = self._make_pimly_request('GET', '/products', params=params)
+            
+            if response.status_code != 200:
+                self.logger.error(f"Search products failed: {response.status_code} - {response.text}")
+                response.raise_for_status()
+            
+            data = response.json()
+            
+            if isinstance(data, dict):
+                products = data.get('data', data.get('products', data.get('results', [])))
+            else:
+                products = data
+            
+            self.logger.info(f"Found {len(products)} products matching '{query}' in Pimly API")
+            return products
+            
+        except Exception as e:
+            self.logger.error(f"Failed to search products: {str(e)}")
+            raise Exception(f"Error searching products in Pimly API: {str(e)}")
+    
+    def get_categories(self) -> List[Dict[str, Any]]:
+        """Get product categories from Pimly API"""
+        try:
+            response = self._make_pimly_request('GET', '/categories')
+            
+            if response.status_code != 200:
+                # Try alternative endpoints
+                for endpoint in ['/families', '/product-families', '/taxonomies']:
+                    response = self._make_pimly_request('GET', endpoint)
+                    if response.status_code == 200:
+                        break
+            
+            if response.status_code != 200:
+                self.logger.error(f"Get categories failed: {response.status_code} - {response.text}")
+                response.raise_for_status()
+            
+            data = response.json()
+            
+            if isinstance(data, dict):
+                categories = data.get('data', data.get('categories', data.get('results', [])))
+            else:
+                categories = data
+            
+            self.logger.info(f"Retrieved {len(categories)} categories from Pimly API")
+            return categories
+            
+        except Exception as e:
+            self.logger.error(f"Failed to get categories: {str(e)}")
+            raise Exception(f"Error retrieving categories from Pimly API: {str(e)}")
+    
+    def create_product(self, product_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a new product in Pimly"""
+        try:
+            response = self._make_pimly_request('POST', '/products', json=product_data)
+            
+            if response.status_code not in [200, 201]:
+                self.logger.error(f"Create product failed: {response.status_code} - {response.text}")
+                response.raise_for_status()
+            
+            product = response.json()
+            self.logger.info(f"Created product in Pimly: {product.get('id', 'unknown')}")
+            return product
+            
+        except Exception as e:
+            self.logger.error(f"Failed to create product: {str(e)}")
+            raise Exception(f"Error creating product in Pimly: {str(e)}")
+    
+    def update_product(self, product_id: str, product_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Update an existing product in Pimly"""
+        try:
+            response = self._make_pimly_request('PUT', f'/products/{product_id}', json=product_data)
+            
+            if response.status_code not in [200, 204]:
+                response = self._make_pimly_request('PATCH', f'/products/{product_id}', json=product_data)
+            
+            if response.status_code not in [200, 204]:
+                self.logger.error(f"Update product failed: {response.status_code} - {response.text}")
+                response.raise_for_status()
+            
+            if response.status_code == 204:
+                return self.get_product_by_id(product_id)
+            
+            product = response.json()
+            self.logger.info(f"Updated product in Pimly: {product_id}")
+            return product
+            
+        except Exception as e:
+            self.logger.error(f"Failed to update product {product_id}: {str(e)}")
+            raise Exception(f"Error updating product {product_id} in Pimly: {str(e)}")
+    
+    def get_user_info(self) -> Dict[str, Any]:
+        """Get information about the authenticated Salesforce user"""
+        try:
+            if not self.is_authenticated():
+                raise Exception("Not authenticated. Please complete OAuth flow first.")
+            
+            response = self.salesforce_session.get(f"{self.salesforce_instance_url}/services/oauth2/userinfo")
+            
+            if response.status_code == 401:
+                self.logger.info("Access token expired, attempting refresh")
+                if self.refresh_access_token():
+                    response = self.salesforce_session.get(f"{self.salesforce_instance_url}/services/oauth2/userinfo")
+                else:
+                    raise Exception("Token expired and refresh failed")
+            
+            if response.status_code != 200:
+                response.raise_for_status()
+            
+            user_info = response.json()
+            self.logger.info(f"Retrieved Salesforce user info for: {user_info.get('name', 'Unknown')}")
+            
+            return user_info
+            
+        except Exception as e:
+            self.logger.error(f"Error getting user info: {str(e)}")
+            raise Exception(f"Error getting user info: {str(e)}")
+    
+    def test_pimly_connection(self) -> Dict[str, Any]:
+        """Test connection to Pimly API"""
+        try:
+            # Try different health check endpoints
+            for endpoint in ['/health', '/status', '/ping']:
+                try:
+                    response = self._make_pimly_request('GET', endpoint)
+                    if response.status_code == 200:
+                        return {
+                            'status': 'connected',
+                            'endpoint': endpoint,
+                            'data': response.json() if response.content else {}
+                        }
+                except:
+                    continue
+            
+            # Try a simple products request
+            response = self._make_pimly_request('GET', '/products', params={'limit': 1})
+            if response.status_code == 200:
+                return {
+                    'status': 'connected',
+                    'endpoint': '/products',
+                    'message': 'Pimly API accessible via products endpoint'
+                }
+            
+            return {
+                'status': 'error',
+                'message': f'No Pimly endpoints responding. Last status: {response.status_code}'
+            }
+            
+        except Exception as e:
+            return {
+                'status': 'error',
+                'error': str(e)
+            }
+    
+    def revoke_token(self) -> bool:
+        """Revoke the current Salesforce tokens"""
+        try:
+            revoke_url = f"{self.login_url}/services/oauth2/revoke"
+            
+            revoke_data = {
+                'token': self.salesforce_access_token or self.refresh_token
+            }
+            
+            response = requests.post(revoke_url, data=revoke_data)
+            
+            # Clear stored tokens
+            self.salesforce_access_token = None
+            self.refresh_token = None
+            self.salesforce_instance_url = None
+            
+            # Clear session headers
+            self.salesforce_session.headers.pop('Authorization', None)
+            self.pimly_session.headers.pop('Authorization', None)
+            
+            self.logger.info("Successfully revoked Salesforce tokens")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Error revoking token: {str(e)}")
+            return False
+
+    # Legacy compatibility methods
+    def get_pimly_products(self, limit=None, active_only=True):
+        """Legacy method for compatibility"""
+        filters = {}
+        if active_only:
+            filters['active'] = True
+        return self.get_products(limit=limit, filters=filters)
+    
+    def search_pimly_products(self, search_term, limit=20):
+        """Legacy method for compatibility"""
+        return self.search_products(search_term, limit=limit)
+    
+    def get_pimly_categories(self):
+        """Legacy method for compatibility"""
+        return self.get_categories()
+
+# Usage example:
+"""
+# Configuration
+config = {
+    'client_id': 'your_salesforce_client_id',
+    'client_secret': 'your_salesforce_client_secret',
+    'redirect_uri': 'http://localhost:5000/api/auth/callback/salesforce',
+    'sandbox': False,  # True for sandbox
+    'my_domain_url': 'https://yourcompany.my.salesforce.com',  # Optional
+    'pimly_base_url': 'https://yourcompany.pimly.com'
+}
+
+# Initialize client
+client = PimlySalesforceClient(config)
+
+# Step 1: Get authorization URL for user to authenticate with Salesforce
+auth_data = client.get_authorization_url()
+print(f"Go to: {auth_data['auth_url']}")
+
+# Step 2: After user authenticates, exchange code for tokens
+# authorization_code comes from the callback
+client.exchange_code_for_tokens(authorization_code)
+
+# Step 3: Now you can access Pimly API using Salesforce session
+products = client.get_products(limit=10)
+search_results = client.search_products('laptop')
+categories = client.get_categories()
+
+# Test the connection
+connection_status = client.test_pimly_connection()
+print(f"Pimly API Status: {connection_status['status']}")
+"""

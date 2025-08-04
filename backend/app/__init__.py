@@ -35,11 +35,11 @@ def create_app():
     # Salesforce OAuth configuration
     app.config['SALESFORCE_CLIENT_ID'] = os.environ.get('SALESFORCE_CLIENT_ID')
     app.config['SALESFORCE_CLIENT_SECRET'] = os.environ.get('SALESFORCE_CLIENT_SECRET')
-    app.config['SALESFORCE_REDIRECT_URI'] = os.environ.get('SALESFORCE_REDIRECT_URI', 'http://localhost:3000/api/auth/callback/salesforce')
+    app.config['SALESFORCE_REDIRECT_URI'] = os.environ.get('SALESFORCE_REDIRECT_URI', 'http://localhost:5000/api/auth/callback/salesforce')
     app.config['SALESFORCE_SANDBOX'] = os.environ.get('SALESFORCE_SANDBOX', 'false').lower() == 'true'
     
     # Enable CORS for React frontend
-    CORS(app, origins=["http://localhost:3000", "http://frontend:3000"])
+    CORS(app, origins=["http://localhost:3000", "http://frontend:3000"], supports_credentials=True)
     
     # Ensure upload directory exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
