@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ProductCard from './ProductCard';
 import api from '../services/api';
 
@@ -7,9 +7,16 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
   const [productData, setProductData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  
+  // Use refs to track search state without causing re-renders
+  const lastSearchedSkuRef = useRef('');
+  const isSearchingRef = useRef(false);
 
-  const handleSearch = useCallback(async (searchSku = sku) => {
-    if (!searchSku.trim()) {
+  const handleSearch = async (searchSku) => {
+    // Use the passed SKU parameter or fall back to current state
+    const skuToSearch = searchSku || sku;
+    
+    if (!skuToSearch.trim()) {
       setError('Please enter a SKU to search');
       return;
     }
@@ -19,15 +26,23 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
       return;
     }
 
+    // Prevent duplicate searches
+    if (isSearchingRef.current || lastSearchedSkuRef.current === skuToSearch) {
+      console.log('Skipping duplicate search for:', skuToSearch);
+      return;
+    }
+
+    isSearchingRef.current = true;
     setLoading(true);
     setError(null);
     setProductData(null);
+    lastSearchedSkuRef.current = skuToSearch;
 
     try {
-      console.log('Searching for SKU:', searchSku);
+      console.log('Searching for SKU:', skuToSearch);
       
       // Search Pimly products
-      const searchResults = await api.searchPimlyProducts(searchSku, 1);
+      const searchResults = await api.searchPimlyProducts(skuToSearch, 1);
       console.log('Pimly search results:', searchResults);
 
       let pimlyProduct = null;
@@ -49,14 +64,14 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
           comparisonResult = await api.compareProducts({
             source_type: 'pimly',
             limit: 1,
-            search: searchSku
+            search: skuToSearch
           });
         } else {
           // If no Pimly product, search Krowne directly
           comparisonResult = await api.compareProducts({
             source_type: 'krowne',
             limit: 1,
-            search: searchSku
+            search: skuToSearch
           });
         }
 
@@ -68,8 +83,8 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
           // Check if this is the right product match
           if (pimlyProduct) {
             const isMatch = productComparison.product_id === pimlyProduct.ProductCode || 
-                           productComparison.product_id === searchSku ||
-                           productComparison.sku === searchSku;
+                           productComparison.product_id === skuToSearch ||
+                           productComparison.sku === skuToSearch;
             
             if (isMatch && productComparison.status !== 'missing_from_krowne') {
               krowneData = {
@@ -137,18 +152,20 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
       // Check if we found any data at all
       if (!pimlyProduct && !krowneData) {
         setError('Product not found in either Pimly or Krowne');
-        onSearch(searchSku);
+        if (onSearch) {
+          onSearch(skuToSearch);
+        }
         return;
       }
 
       // Structure the product data for the ProductCard
       const structuredProductData = {
-        sku: searchSku,
+        sku: skuToSearch,
         salesforce: pimlyProduct ? {
           // Core fields
           Id: pimlyProduct.Id,
           Name: pimlyProduct.Name,
-          ProductCode: pimlyProduct.ProductCode || searchSku,
+          ProductCode: pimlyProduct.ProductCode || skuToSearch,
           Description: pimlyProduct.Description,
           
           // Price fields
@@ -193,22 +210,31 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
 
       console.log('Structured product data:', structuredProductData);
       setProductData(structuredProductData);
-      onSearch(searchSku);
+      
+      // Call parent's onSearch callback if provided
+      if (onSearch) {
+        onSearch(skuToSearch);
+      }
 
     } catch (err) {
       console.error('Search error:', err);
       setError(err.message || 'Failed to fetch product data');
     } finally {
       setLoading(false);
+      isSearchingRef.current = false;
     }
-  }, [sku, salesforceAuth.authenticated, onSearch]);
+  };
 
+  // Only update from parent prop on initial mount or when explicitly changed by parent
   useEffect(() => {
-    if (searchedSKU && searchedSKU !== sku) {
+    // Only update if searchedSKU is provided and different from current
+    if (searchedSKU && searchedSKU !== lastSearchedSkuRef.current) {
+      console.log('Parent updated searchedSKU to:', searchedSKU);
       setSku(searchedSKU);
+      // Only auto-search if this is a new SKU from parent
       handleSearch(searchedSKU);
     }
-  }, [searchedSKU, sku, handleSearch]);
+  }, [searchedSKU]); // Remove handleSearch from dependencies
 
   const handleSync = async () => {
     if (!productData || productData.mismatches.length === 0) {
@@ -224,7 +250,7 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
       await api.syncProduct(productData.sku, productData.mismatches);
       
       // Refresh the product data after sync
-      await handleSearch();
+      await handleSearch(productData.sku);
       
       // Show success message
       setError(null);
@@ -242,6 +268,23 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
     setSku('');
     setProductData(null);
     setError(null);
+    lastSearchedSkuRef.current = '';
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !loading) {
+      e.preventDefault();
+      handleSearch();
+    }
+  };
+
+  const handleInputChange = (e) => {
+    // Just update the input, don't trigger search
+    setSku(e.target.value);
+  };
+
+  const handleSearchClick = () => {
+    handleSearch();
   };
 
   return (
@@ -252,8 +295,8 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
             type="text"
             placeholder="Enter SKU to search..."
             value={sku}
-            onChange={(e) => setSku(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            onChange={handleInputChange}
+            onKeyPress={handleKeyPress}
             className="sku-input"
             disabled={loading}
           />
@@ -269,7 +312,7 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
           )}
         </div>
         <button 
-          onClick={() => handleSearch()}
+          onClick={handleSearchClick}
           disabled={loading || !salesforceAuth.authenticated || !sku.trim()}
           className="search-btn"
         >

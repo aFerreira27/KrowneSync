@@ -11,6 +11,7 @@ from app.services.salesforce_client import SalesforceClient
 from app.services.pimly_client import PimlyClient
 from app.services.krowne_cms_service import KrowneCMSService
 from app.services.krowne_scraper import KrowneScraper
+from app.services.extract_skus import extract_known_ids_from_csv    
 
 main = Blueprint('main', __name__)
 
@@ -187,84 +188,91 @@ def salesforce_logout():
         session.pop('sf_tokens', None)
         return jsonify({'success': True, 'message': 'Logged out (with errors)'})
 
-### Pimly Product Routes ###
-
-@main.route("/api/products/skus", methods=["GET"])
+@main.route("/api/products/skus", methods=["GET", "OPTIONS"])
 def list_product_skus():
     if request.method == "OPTIONS":
-        # CORS preflight request, respond with 200 OK
         return '', 200
+    try:
+        # Load SKUs directly from CSV file
+        skus = extract_known_ids_from_csv()
+        return jsonify(skus)
+    except Exception as e:
+        logger.error(f"Error loading SKUs: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+### Pimly Product Routes ###
+
+@main.route("/api/pimly/search", methods=["POST", "OPTIONS"])
+def search_pimly_products():
+    """Search for products in Pimly"""
+    if request.method == "OPTIONS":
+        return '', 200
+    
     try:
         sf_client = get_authenticated_sf_client()
         pimly_client = PimlyClient(sf_client)
-        skus = pimly_client.get_all_product_skus()
-        return jsonify(skus)
+        
+        data = request.get_json()
+        search_term = data.get('search', '')
+        limit = data.get('limit', 20)
+        
+        logger.info(f"Searching Pimly for: {search_term}")
+        
+        # Search for products
+        products = pimly_client.search_products(search_term, limit)
+        
+        return jsonify({
+            'products': products,
+            'count': len(products)
+        })
     except Exception as e:
+        logger.error(f"Error searching Pimly: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
-@main.route("/api/products/<sku>", methods=["GET"])
+@main.route("/api/pimly/products", methods=["GET", "OPTIONS"])
+def get_pimly_products():
+    """Get all products from Pimly"""
+    if request.method == "OPTIONS":
+        return '', 200
+    
+    try:
+        sf_client = get_authenticated_sf_client()
+        pimly_client = PimlyClient(sf_client)
+        
+        # Get query parameters
+        limit = request.args.get('limit', 100, type=int)
+        offset = request.args.get('offset', 0, type=int)
+        
+        # For now, get products using known SKUs from CSV
+        known_skus = load_skus_from_csv()
+        
+        # Get a subset based on pagination
+        paginated_skus = known_skus[offset:offset + limit]
+        
+        if paginated_skus:
+            products = pimly_client.get_products_by_ids(paginated_skus)
+        else:
+            products = []
+        
+        return jsonify({
+            'products': products,
+            'total': len(known_skus),
+            'limit': limit,
+            'offset': offset
+        })
+    except Exception as e:
+        logger.error(f"Error getting Pimly products: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@main.route("/api/products/<sku>", methods=["GET", "OPTIONS"])
 def get_product_by_sku(sku):
     if request.method == "OPTIONS":
-        # CORS preflight request, respond with 200 OK
         return '', 200
     try:
         sf_client = get_authenticated_sf_client()
         pimly_client = PimlyClient(sf_client)
         product = pimly_client.get_product_by_sku(sku)
         return jsonify(product)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@main.route("/api/products/sync", methods=["POST"])
-def trigger_product_sync():
-    if request.method == "OPTIONS":
-        # CORS preflight request, respond with 200 OK
-        return '', 200
-    try:
-        sf_client = get_authenticated_sf_client()
-        pimly_client = PimlyClient(sf_client)
-        result = pimly_client.sync_products()
-        return jsonify({"success": True, "details": result})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@main.route("/api/products/sync/status", methods=["GET"])
-def get_sync_status():
-    if request.method == "OPTIONS":
-        # CORS preflight request, respond with 200 OK
-        return '', 200
-    try:
-        sf_client = get_authenticated_sf_client()
-        pimly_client = PimlyClient(sf_client)
-        status = pimly_client.get_sync_status()
-        return jsonify(status)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@main.route("/api/products/upload", methods=["POST"])
-def upload_product_csv():
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part in the request"}), 400
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
-    if file:
-        filename = secure_filename(file.filename)
-        try:
-            sf_client = get_authenticated_sf_client()
-            pimly_client = PimlyClient(sf_client)
-            result = pimly_client.process_csv_upload(file)
-            return jsonify({"success": True, "result": result})
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
-
-@main.route("/api/products/<sku>", methods=["DELETE"])
-def delete_product(sku):
-    try:
-        sf_client = get_authenticated_sf_client()
-        pimly_client = PimlyClient(sf_client)
-        result = pimly_client.delete_product(sku)
-        return jsonify({"success": True, "details": result})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
