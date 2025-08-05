@@ -1622,3 +1622,1130 @@ Exception: Not authenticated with Salesforce. Please login first.
 2025-08-04 16:12:07,064 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
 2025-08-04 16:12:07,065 - werkzeug - INFO - 127.0.0.1 - - [04/Aug/2025 16:12:07] "GET /api/salesforce/user HTTP/1.1" 200 -
 2025-08-04 16:12:07,068 - werkzeug - INFO - 127.0.0.1 - - [04/Aug/2025 16:12:07] "[33mOPTIONS /api/krowne/status HTTP/1.1[0m" 404 -
+2025-08-05 07:56:42,297 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 07:56:42] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 07:56:42,298 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 07:56:42] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 07:56:42,841 - app.services.salesforce_client - ERROR - Error getting user info: 403 Client Error: Forbidden for url: https://krownemetalcorp.my.salesforce.com/services/oauth2/userinfo
+2025-08-05 07:56:43,351 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-05 07:56:43,602 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 07:56:43,604 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 07:56:43] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 07:57:09,369 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 07:57:09,369 - __main__ - INFO - Debug mode: True
+2025-08-05 07:57:10,687 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-08-05 07:57:10,688 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-05 07:57:10,690 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 07:57:11,611 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 07:57:11,611 - __main__ - INFO - Debug mode: True
+2025-08-05 07:57:11,625 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 07:57:11,631 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 07:57:28,536 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 07:57:28] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 07:57:28,538 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 07:57:28] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 07:57:29,065 - app.services.salesforce_client - ERROR - Error getting user info: 403 Client Error: Forbidden for url: https://krownemetalcorp.my.salesforce.com/services/oauth2/userinfo
+2025-08-05 07:57:29,655 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-05 07:57:29,960 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 07:57:29,962 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 07:57:29] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 07:57:29,969 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 07:57:29] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 07:57:30,211 - app.services.salesforce_client - ERROR - Error getting user info: 403 Client Error: Forbidden for url: https://krownemetalcorp.my.salesforce.com/services/oauth2/userinfo
+2025-08-05 07:57:30,486 - app.services.salesforce_client - ERROR - Error getting user info: 403 Client Error: Forbidden for url: https://krownemetalcorp.my.salesforce.com/services/oauth2/userinfo
+2025-08-05 07:57:30,488 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 07:57:30] "[35m[1mGET /api/salesforce/user HTTP/1.1[0m" 500 -
+2025-08-05 07:57:30,665 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-05 07:57:30,818 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 07:57:30,820 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 07:57:30] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 07:57:31,346 - app.services.salesforce_client - ERROR - Error getting user info: 403 Client Error: Forbidden for url: https://krownemetalcorp.my.salesforce.com/services/oauth2/userinfo
+2025-08-05 07:57:31,348 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 07:57:31] "[35m[1mGET /api/salesforce/user HTTP/1.1[0m" 500 -
+2025-08-05 08:00:04,160 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:00:04] "OPTIONS /api/salesforce/config HTTP/1.1" 200 -
+2025-08-05 08:00:04,161 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:00:04] "OPTIONS /api/salesforce/config HTTP/1.1" 200 -
+2025-08-05 08:00:04,472 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:00:04] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-08-05 08:00:04,735 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:00:04] "GET /api/salesforce/config HTTP/1.1" 200 -
+2025-08-05 08:00:09,478 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:00:09] "OPTIONS /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-05 08:00:09,481 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-08-05 08:00:09,484 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:00:09] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-05 08:03:54,225 - app.routes - INFO - === SALESFORCE OAUTH CALLBACK STARTED ===
+2025-08-05 08:03:54,226 - app.routes - INFO - Request URL: http://localhost:5000/api/auth/callback/salesforce?code=aPrxgWiFBAr4qtp34JqEomTF_wJNzIXdzEWmvQFoPzJ0H3W3a4MHFcuvD7TBRga6ZYQkOAQKUg%3D%3D&state=e7Vc2__R4WjqLjtI8XUKCPp1LFzjVLGwyuvZ4WiRSXM
+2025-08-05 08:03:54,227 - app.routes - INFO - Request args: {'code': 'aPrxgWiFBAr4qtp34JqEomTF_wJNzIXdzEWmvQFoPzJ0H3W3a4MHFcuvD7TBRga6ZYQkOAQKUg==', 'state': 'e7Vc2__R4WjqLjtI8XUKCPp1LFzjVLGwyuvZ4WiRSXM'}
+2025-08-05 08:03:54,227 - app.routes - INFO - Callback parameters:
+2025-08-05 08:03:54,252 - app.routes - INFO -   - Error: None
+2025-08-05 08:03:54,252 - app.routes - INFO - Session data check:
+2025-08-05 08:03:54,699 - app.services.salesforce_client - INFO - Successfully exchanged authorization code for tokens
+2025-08-05 08:03:54,957 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:03:54,969 - app.routes - INFO - === SALESFORCE OAUTH CALLBACK COMPLETED SUCCESSFULLY ===
+2025-08-05 08:03:54,971 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:03:54] "[32mGET /api/auth/callback/salesforce?code=aPrxgWiFBAr4qtp34JqEomTF_wJNzIXdzEWmvQFoPzJ0H3W3a4MHFcuvD7TBRga6ZYQkOAQKUg%3D%3D&state=e7Vc2__R4WjqLjtI8XUKCPp1LFzjVLGwyuvZ4WiRSXM HTTP/1.1[0m" 302 -
+2025-08-05 08:03:55,418 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:03:55] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:03:55,418 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:03:55] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:03:55,420 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:03:55] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:03:55,638 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:03:55,643 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:03:55] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:03:55,666 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:03:55] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:03:55,880 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:03:55,886 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:03:55] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:03:56,313 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:03:56,315 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:03:56] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:03:56,320 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:03:56] "[33mOPTIONS /api/krowne/status HTTP/1.1[0m" 404 -
+2025-08-05 08:03:56,410 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:03:56,412 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:03:56] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:03:56,895 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:03:56,898 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:03:56] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:03:57,224 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:03:57] "[33mOPTIONS /api/krowne/status HTTP/1.1[0m" 404 -
+2025-08-05 08:03:57,465 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:03:57,467 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:03:57] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:03:57,472 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:03:57] "[33mOPTIONS /api/krowne/status HTTP/1.1[0m" 404 -
+2025-08-05 08:04:39,953 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-05 08:04:40,043 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 08:04:40,811 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 08:04:40,812 - __main__ - INFO - Debug mode: True
+2025-08-05 08:04:40,827 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 08:04:40,831 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 08:19:00,578 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\pimly_client.py', reloading
+2025-08-05 08:19:00,652 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 08:19:01,543 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 08:19:01,545 - __main__ - INFO - Debug mode: True
+2025-08-05 08:19:01,563 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 08:19:01,567 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 08:31:38,605 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\salesforce_client.py', reloading
+2025-08-05 08:31:38,662 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 08:31:39,479 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 08:31:39,479 - __main__ - INFO - Debug mode: True
+2025-08-05 08:31:39,495 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 08:31:39,499 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 08:31:50,901 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\pimly_client.py', reloading
+2025-08-05 08:31:50,948 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 08:31:51,723 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 08:31:51,724 - __main__ - INFO - Debug mode: True
+2025-08-05 08:31:51,738 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 08:31:51,742 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 08:36:06,184 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\api\\products.py', reloading
+2025-08-05 08:36:06,239 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 08:36:07,013 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 08:36:07,014 - __main__ - INFO - Debug mode: True
+2025-08-05 08:36:07,028 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 08:36:07,032 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 08:38:41,758 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-05 08:38:41,809 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 08:38:42,613 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 08:38:42,613 - __main__ - INFO - Debug mode: True
+2025-08-05 08:38:42,627 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 08:38:42,632 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 08:39:39,559 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-05 08:39:39,620 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 08:39:40,846 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 08:39:40,846 - __main__ - INFO - Debug mode: True
+2025-08-05 08:39:40,863 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 08:39:40,867 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 08:42:13,995 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\pimly_client.py', reloading
+2025-08-05 08:42:14,067 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 08:42:14,989 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 08:42:14,990 - __main__ - INFO - Debug mode: True
+2025-08-05 08:42:15,006 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 08:42:15,011 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 08:43:30,510 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-05 08:43:30,560 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 08:43:31,444 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 08:43:31,444 - __main__ - INFO - Debug mode: True
+2025-08-05 08:43:31,459 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 08:43:31,463 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 08:44:03,191 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:44:03] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:44:03,192 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:44:03] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:44:03,781 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:44:03,783 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:44:03] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:44:03,787 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:44:03] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:44:04,015 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:44:04,016 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:44:04] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:44:04,341 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:44:04,344 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:44:04] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:44:04,652 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:44:04] "[33mOPTIONS /api/krowne/status HTTP/1.1[0m" 404 -
+2025-08-05 08:44:04,863 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:44:04,864 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:44:04] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:44:04,915 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:44:04] "[33mOPTIONS /api/krowne/status HTTP/1.1[0m" 404 -
+2025-08-05 08:55:50,849 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-05 08:55:50,907 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 08:55:51,785 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 08:55:51,786 - __main__ - INFO - Debug mode: True
+2025-08-05 08:55:51,802 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 08:55:51,806 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 08:56:43,860 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:56:43] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:56:43,861 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:56:43] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:56:44,452 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:56:44,461 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:56:44] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:56:44,480 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:56:44] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:56:44,680 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:56:44,686 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:56:44] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:56:45,021 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:56:45,024 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:56:45] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:56:45,560 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:56:45,562 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:56:45] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:57:02,324 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:57:02] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:57:02,325 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:57:02] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:57:02,586 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:57:02,588 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:57:02] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:57:02,591 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:57:02] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:57:03,112 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:57:03,114 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:57:03] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:57:03,153 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:57:03,155 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:57:03] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:57:03,366 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:57:03,368 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:57:03] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:57:15,691 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:57:15] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:57:15,695 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:57:15] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:57:16,288 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:57:16,294 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:57:16] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:57:16,301 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:57:16] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:57:16,550 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:57:16,552 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:57:16] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:57:16,829 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:57:16,831 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:57:16] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:57:17,363 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:57:17,364 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:57:17] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:59:46,963 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:59:46] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:59:46,980 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:59:46] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:59:47,521 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:59:47,524 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:59:47] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:59:47,527 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:59:47] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:59:47,789 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:59:47,791 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:59:47] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 08:59:48,038 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:59:48,040 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:59:48] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 08:59:48,357 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 08:59:48,360 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 08:59:48] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:00:15,864 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:00:15] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:00:16,430 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:00:16,431 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:00:16] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:00:16,435 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:00:16] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:00:16,697 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:00:16,698 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:00:16] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:03:02,491 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:03:02] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:03:02,492 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:03:02] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:03:02,876 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:03:02] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:03:03,187 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:03:03] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:03:04,475 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:03:04] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:03:04,475 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:03:04] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:03:05,869 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:03:05] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:03:06,171 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:03:06] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:06:41,888 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:06:41] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:06:41,891 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:06:41] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:06:42,574 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:06:42,575 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:06:42] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:06:42,579 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:06:42] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:06:42,844 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:06:42,845 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:06:42] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:06:43,109 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:06:43,111 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:06:43] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:06:43,628 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:06:43,630 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:06:43] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:07:33,896 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:07:33] "OPTIONS /api/salesforce/logout HTTP/1.1" 200 -
+2025-08-05 09:07:34,763 - app.services.salesforce_client - INFO - Successfully revoked tokens
+2025-08-05 09:07:34,766 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:07:34] "POST /api/salesforce/logout HTTP/1.1" 200 -
+2025-08-05 09:08:24,914 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:24] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:08:25,219 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:25] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:08:25,529 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:25] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 09:08:25,533 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:25] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 09:08:27,826 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:27] "OPTIONS /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-05 09:08:28,130 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:28] "POST /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-05 09:08:31,457 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:31] "OPTIONS /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-05 09:08:31,459 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-08-05 09:08:31,460 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:31] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-05 09:08:32,315 - app.routes - INFO - === SALESFORCE OAUTH CALLBACK STARTED ===
+2025-08-05 09:08:32,315 - app.routes - INFO - Request URL: http://localhost:5000/api/auth/callback/salesforce?code=aPrxgWiFBAr4qtp34JqEomTF_10wvVefFwv3FIS2btVopHc.hLqL1GIXj8nsYkgkHgrWovMQFw%3D%3D&state=bYyQFtvM_FqpTa69m1UIDSYATXAMCJyu5ms3reg9mFM
+2025-08-05 09:08:32,315 - app.routes - INFO - Request args: {'code': 'aPrxgWiFBAr4qtp34JqEomTF_10wvVefFwv3FIS2btVopHc.hLqL1GIXj8nsYkgkHgrWovMQFw==', 'state': 'bYyQFtvM_FqpTa69m1UIDSYATXAMCJyu5ms3reg9mFM'}
+2025-08-05 09:08:32,315 - app.routes - INFO - Callback parameters:
+2025-08-05 09:08:32,326 - app.routes - INFO -   - Error: None
+2025-08-05 09:08:32,326 - app.routes - INFO - Session data check:
+2025-08-05 09:08:32,933 - app.services.salesforce_client - INFO - Successfully exchanged authorization code for tokens
+2025-08-05 09:08:33,195 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:08:33,206 - app.routes - INFO - === SALESFORCE OAUTH CALLBACK COMPLETED SUCCESSFULLY ===
+2025-08-05 09:08:33,208 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:33] "[32mGET /api/auth/callback/salesforce?code=aPrxgWiFBAr4qtp34JqEomTF_10wvVefFwv3FIS2btVopHc.hLqL1GIXj8nsYkgkHgrWovMQFw%3D%3D&state=bYyQFtvM_FqpTa69m1UIDSYATXAMCJyu5ms3reg9mFM HTTP/1.1[0m" 302 -
+2025-08-05 09:08:33,430 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:33] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:08:33,642 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:08:33,644 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:33] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:08:33,742 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:33] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:08:33,857 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:08:33,859 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:33] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:08:33,956 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:33] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:08:34,175 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:34] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:08:34,384 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:08:34,386 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:34] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:08:34,505 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:08:34,507 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:34] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:08:34,754 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:08:34,756 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:34] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:08:34,827 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:34] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 09:08:35,061 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:35] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 09:08:35,139 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:35] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 09:08:35,278 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:08:35,281 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:35] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:08:35,324 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:35] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 09:08:35,450 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:35] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 09:08:39,420 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:39] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:08:39,736 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:39] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:08:47,347 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:47] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 09:08:57,797 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:57] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:08:58,108 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:58] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:08:59,076 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:59] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:08:59,078 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:08:59] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:00,700 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:00] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:01,011 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:01] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:02,007 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:02] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:02,008 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:02] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:02,658 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:02] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:02,967 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:02] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:04,257 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:04] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:04,257 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:04] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:05,635 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:05] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:05,949 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:05] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:07,081 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:07] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:07,466 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:07] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:08,137 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:08] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:08,642 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:08] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:16,293 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:16] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:16,939 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:16] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:17,729 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:17] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:18,153 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:18] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:18,949 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:18] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:19,363 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:19] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:20,240 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:20] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:21,402 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:21] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:22,226 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:22] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:09:35,194 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:35] "OPTIONS /api/auth/krowne/logout HTTP/1.1" 200 -
+2025-08-05 09:09:35,197 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:35] "POST /api/auth/krowne/logout HTTP/1.1" 200 -
+2025-08-05 09:09:37,525 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:37] "OPTIONS /api/salesforce/logout HTTP/1.1" 200 -
+2025-08-05 09:09:38,583 - app.services.salesforce_client - INFO - Successfully revoked tokens
+2025-08-05 09:09:38,586 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:38] "POST /api/salesforce/logout HTTP/1.1" 200 -
+2025-08-05 09:09:40,378 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:40] "OPTIONS /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-05 09:09:40,380 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-08-05 09:09:40,381 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:40] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-05 09:09:40,984 - app.routes - INFO - === SALESFORCE OAUTH CALLBACK STARTED ===
+2025-08-05 09:09:40,984 - app.routes - INFO - Request URL: http://localhost:5000/api/auth/callback/salesforce?code=aPrxgWiFBAr4qtp34JqEomTF_1A4U5i3kwIDge4lBbu1u2HxIUlKyt0JmbxI3vSITM7en3DaRQ%3D%3D&state=7abQQ0ipwCjAU-cLtCFuHn3JxXFVUmonu-X0J6hTUm8
+2025-08-05 09:09:40,984 - app.routes - INFO - Request args: {'code': 'aPrxgWiFBAr4qtp34JqEomTF_1A4U5i3kwIDge4lBbu1u2HxIUlKyt0JmbxI3vSITM7en3DaRQ==', 'state': '7abQQ0ipwCjAU-cLtCFuHn3JxXFVUmonu-X0J6hTUm8'}
+2025-08-05 09:09:40,984 - app.routes - INFO - Callback parameters:
+2025-08-05 09:09:40,990 - app.routes - INFO -   - Error: None
+2025-08-05 09:09:40,990 - app.routes - INFO - Session data check:
+2025-08-05 09:09:41,488 - app.services.salesforce_client - INFO - Successfully exchanged authorization code for tokens
+2025-08-05 09:09:41,763 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:09:41,774 - app.routes - INFO - === SALESFORCE OAUTH CALLBACK COMPLETED SUCCESSFULLY ===
+2025-08-05 09:09:41,776 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:41] "[32mGET /api/auth/callback/salesforce?code=aPrxgWiFBAr4qtp34JqEomTF_1A4U5i3kwIDge4lBbu1u2HxIUlKyt0JmbxI3vSITM7en3DaRQ%3D%3D&state=7abQQ0ipwCjAU-cLtCFuHn3JxXFVUmonu-X0J6hTUm8 HTTP/1.1[0m" 302 -
+2025-08-05 09:09:42,285 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:42] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:09:42,286 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:42] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:09:42,286 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:42] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:09:42,533 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:09:42,535 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:42] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:09:42,540 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:42] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:09:42,776 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:09:42,778 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:42] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:09:43,106 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:09:43,107 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:43] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:09:43,388 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:09:43,390 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:43] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:09:43,418 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:43] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 09:09:43,686 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:09:43,687 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:43] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:09:43,728 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:43] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 09:09:44,037 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:44] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 09:09:44,248 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:09:44,250 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:44] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:09:44,562 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:44] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 09:09:45,939 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:45] "OPTIONS /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-05 09:09:45,941 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:09:45] "POST /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-05 09:13:50,986 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\krowne_cms_service.py', reloading
+2025-08-05 09:13:51,055 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 09:13:51,915 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 09:13:51,916 - __main__ - INFO - Debug mode: True
+2025-08-05 09:13:51,932 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 09:13:51,936 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 09:14:33,317 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\krowne_cms_service.py', reloading
+2025-08-05 09:14:33,377 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 09:14:34,214 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 09:14:34,216 - __main__ - INFO - Debug mode: True
+2025-08-05 09:14:34,232 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 09:14:34,236 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 09:15:47,987 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-05 09:15:48,034 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 09:15:48,808 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 09:15:48,809 - __main__ - INFO - Debug mode: True
+2025-08-05 09:15:48,823 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 09:15:48,827 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 09:15:49,924 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-05 09:15:49,978 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 09:15:50,714 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 09:15:50,715 - __main__ - INFO - Debug mode: True
+2025-08-05 09:15:50,729 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 09:15:50,733 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 09:19:07,393 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-05 09:19:07,446 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 09:19:08,215 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 09:19:08,215 - __main__ - INFO - Debug mode: True
+2025-08-05 09:19:08,231 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 09:19:08,235 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 09:19:10,368 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-05 09:19:10,538 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 09:19:11,316 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 09:19:11,317 - __main__ - INFO - Debug mode: True
+2025-08-05 09:19:11,333 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 09:19:11,337 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 09:23:31,417 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-05 09:23:31,463 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 09:23:32,409 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 09:23:32,409 - __main__ - INFO - Debug mode: True
+2025-08-05 09:23:32,424 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 09:23:32,434 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 09:26:03,647 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\test_krowne_auth.py', reloading
+2025-08-05 09:26:03,696 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 09:26:04,508 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 09:26:04,508 - __main__ - INFO - Debug mode: True
+2025-08-05 09:26:04,523 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 09:26:04,527 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 09:26:57,904 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:26:57] "GET /api/krowne/test-connection HTTP/1.1" 200 -
+2025-08-05 09:26:59,942 - app.services.krowne_cms_service - INFO - Attempting Krowne CMS authentication for user: lmahler
+2025-08-05 09:27:00,403 - app.services.krowne_cms_service - WARNING - Authentication failed - found error indicators
+2025-08-05 09:27:00,405 - app.routes - WARNING - Krowne login failed for user: lmahler - Invalid username or password
+2025-08-05 09:27:00,406 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:27:00] "[31m[1mPOST /api/auth/krowne/login HTTP/1.1[0m" 401 -
+2025-08-05 09:27:33,031 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:27:33] "GET /api/krowne/test-connection HTTP/1.1" 200 -
+2025-08-05 09:27:35,073 - app.services.krowne_cms_service - INFO - Attempting Krowne CMS authentication for user: lmaher
+2025-08-05 09:27:37,998 - app.services.krowne_cms_service - WARNING - Authentication failed - found error indicators
+2025-08-05 09:27:37,999 - app.routes - WARNING - Krowne login failed for user: lmaher - Invalid username or password
+2025-08-05 09:27:38,000 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:27:38] "[31m[1mPOST /api/auth/krowne/login HTTP/1.1[0m" 401 -
+2025-08-05 09:31:10,780 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\krowne_cms_service.py', reloading
+2025-08-05 09:31:10,832 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 09:31:11,633 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 09:31:11,634 - __main__ - INFO - Debug mode: True
+2025-08-05 09:31:11,649 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 09:31:11,653 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 09:31:40,641 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\test_krowne_auth.py', reloading
+2025-08-05 09:31:40,709 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 09:31:41,717 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 09:31:41,718 - __main__ - INFO - Debug mode: True
+2025-08-05 09:31:41,733 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 09:31:41,738 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 09:32:36,343 - app.services.krowne_cms_service - INFO - Attempting Krowne CMS authentication for user: lmaher
+2025-08-05 09:32:38,414 - app.services.krowne_cms_service - WARNING - Authentication failed - login form still present
+2025-08-05 09:32:38,415 - app.routes - WARNING - Krowne login failed for user: lmaher - Authentication failed - please check your credentials
+2025-08-05 09:32:38,416 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:32:38] "[31m[1mPOST /api/auth/krowne/login HTTP/1.1[0m" 401 -
+2025-08-05 09:35:52,235 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\verify_service_update.py', reloading
+2025-08-05 09:35:52,286 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 09:35:53,103 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 09:35:53,104 - __main__ - INFO - Debug mode: True
+2025-08-05 09:35:53,119 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 09:35:53,122 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 09:36:32,658 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\detailed_debug_script.py', reloading
+2025-08-05 09:36:32,714 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 09:36:33,474 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 09:36:33,474 - __main__ - INFO - Debug mode: True
+2025-08-05 09:36:33,489 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 09:36:33,493 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 09:37:05,856 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:37:05] "GET /api/krowne/test-connection HTTP/1.1" 200 -
+2025-08-05 09:41:27,840 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\browser_like_krowne_auth.py', reloading
+2025-08-05 09:41:27,901 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 09:41:28,718 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 09:41:28,719 - __main__ - INFO - Debug mode: True
+2025-08-05 09:41:28,734 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 09:41:28,738 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 09:47:24,862 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\enhanced_krowne_login.py', reloading
+2025-08-05 09:47:24,913 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 09:47:25,687 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 09:47:25,688 - __main__ - INFO - Debug mode: True
+2025-08-05 09:47:25,703 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 09:47:25,707 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 09:49:42,298 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:49:42] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:49:42,299 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:49:42] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:53:28,486 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:53:28] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:53:28,487 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:53:28] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:53:31,125 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:53:31] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:53:31,432 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:53:31] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:53:33,658 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:53:33] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:53:33,659 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:53:33] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:53:35,996 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:53:35] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:53:36,303 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:53:36] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 09:53:58,166 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 09:53:58,166 - __main__ - INFO - Debug mode: True
+2025-08-05 09:53:59,486 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-08-05 09:53:59,488 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-05 09:53:59,495 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 09:54:00,410 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 09:54:00,410 - __main__ - INFO - Debug mode: True
+2025-08-05 09:54:00,426 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 09:54:00,429 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 09:54:05,189 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:54:05] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:54:05,190 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:54:05] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:54:05,753 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:54:05,757 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:54:05] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:54:05,765 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:54:05] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:54:06,047 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:54:06,051 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:54:06] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 09:54:06,303 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:54:06,307 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:54:06] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:54:06,629 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:54:06] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 09:54:06,880 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 09:54:06,880 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:54:06] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 09:54:06,882 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:54:06] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 09:54:06,940 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:54:06] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 09:54:13,738 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:54:13] "OPTIONS /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-05 09:54:13,742 - app.services.krowne_cms_service - INFO - Attempting Krowne CMS authentication for user: lmahler
+2025-08-05 09:54:14,140 - app.services.krowne_cms_service - INFO - Authentication likely successful - large response content
+2025-08-05 09:54:14,200 - app.services.krowne_cms_service - WARNING - Could not extract detailed user info: 'str' object has no attribute 'keys'
+2025-08-05 09:54:14,200 - app.services.krowne_cms_service - INFO - Krowne CMS authentication successful for user: lmahler
+2025-08-05 09:54:14,203 - app.routes - INFO - Krowne login successful for user: lmahler
+2025-08-05 09:54:14,204 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:54:14] "POST /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-05 09:54:23,897 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 09:54:23] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:00:52,264 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\pimly_client.py', reloading
+2025-08-05 10:00:52,355 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 10:00:53,069 - __main__ - ERROR - Failed to start application: unindent does not match any outer indentation level (pimly_client.py, line 24)
+2025-08-05 10:13:11,623 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 10:13:11,625 - __main__ - INFO - Debug mode: True
+2025-08-05 10:13:12,965 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-08-05 10:13:12,966 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-05 10:13:12,969 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 10:13:14,070 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 10:13:14,070 - __main__ - INFO - Debug mode: True
+2025-08-05 10:13:14,086 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 10:13:14,090 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 10:13:17,520 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:17] "OPTIONS /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-05 10:13:17,832 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-08-05 10:13:17,833 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:17] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-05 10:13:18,331 - app.routes - INFO - === SALESFORCE OAUTH CALLBACK STARTED ===
+2025-08-05 10:13:18,334 - app.routes - INFO - Request URL: http://localhost:5000/api/auth/callback/salesforce?code=aPrxgWiFBAr4qtp34JqEomTF_1wBKWBnDYlx3.F2nQ8GFBb6cSw.0FCHPRSWoDCf0xTQpVO9Fw%3D%3D&state=SCtX6qfoZkCS8kgaGzXz-xsFGDG7EvhnpYAMoPckpds
+2025-08-05 10:13:18,335 - app.routes - INFO - Request args: {'code': 'aPrxgWiFBAr4qtp34JqEomTF_1wBKWBnDYlx3.F2nQ8GFBb6cSw.0FCHPRSWoDCf0xTQpVO9Fw==', 'state': 'SCtX6qfoZkCS8kgaGzXz-xsFGDG7EvhnpYAMoPckpds'}
+2025-08-05 10:13:18,335 - app.routes - INFO - Callback parameters:
+2025-08-05 10:13:18,359 - app.routes - INFO -   - Error: None
+2025-08-05 10:13:18,360 - app.routes - INFO - Session data check:
+2025-08-05 10:13:18,869 - app.services.salesforce_client - INFO - Successfully exchanged authorization code for tokens
+2025-08-05 10:13:19,158 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 10:13:19,169 - app.routes - INFO - === SALESFORCE OAUTH CALLBACK COMPLETED SUCCESSFULLY ===
+2025-08-05 10:13:19,171 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:19] "[32mGET /api/auth/callback/salesforce?code=aPrxgWiFBAr4qtp34JqEomTF_1wBKWBnDYlx3.F2nQ8GFBb6cSw.0FCHPRSWoDCf0xTQpVO9Fw%3D%3D&state=SCtX6qfoZkCS8kgaGzXz-xsFGDG7EvhnpYAMoPckpds HTTP/1.1[0m" 302 -
+2025-08-05 10:13:19,299 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:19] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 10:13:19,513 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 10:13:19,515 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:19] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 10:13:19,612 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:19] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 10:13:19,832 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:19] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 10:13:20,071 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 10:13:20,073 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:20] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 10:13:20,321 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 10:13:20,323 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:20] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 10:13:20,436 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 10:13:20,438 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:20] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 10:13:20,618 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 10:13:20,621 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:20] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 10:13:20,639 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:20] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 10:13:20,893 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 10:13:20,895 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:20] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 10:13:20,898 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:20] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 10:13:20,936 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:20] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 10:13:20,950 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:20] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 10:13:21,246 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:21] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 10:13:29,399 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:29] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:13:30,548 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:30] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:13:30,781 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:30] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:13:30,968 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:30] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:13:31,482 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:31] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:13:31,682 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:31] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:13:31,739 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:31] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:13:31,883 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:31] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:13:32,070 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:32] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:13:32,273 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:32] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:13:32,444 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:32] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:13:32,600 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:13:32] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:14:26,912 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:14:26] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 10:14:27,228 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:14:27] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 10:14:30,951 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:14:30] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 10:14:30,952 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:14:30] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 10:14:37,017 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:14:37] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:15:52,029 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 10:15:52,030 - __main__ - INFO - Debug mode: True
+2025-08-05 10:15:53,343 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-08-05 10:15:53,344 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-05 10:15:53,346 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 10:15:54,224 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 10:15:54,225 - __main__ - INFO - Debug mode: True
+2025-08-05 10:15:54,239 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 10:15:54,244 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 10:17:34,773 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:17:34] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 10:17:34,774 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:17:34] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 10:17:35,372 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 10:17:35,374 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:17:35] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 10:17:35,378 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:17:35] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 10:17:35,844 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 10:17:35,845 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:17:35] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 10:17:35,921 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 10:17:35,923 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:17:35] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 10:17:36,231 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:17:36] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 10:17:36,443 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 10:17:36,445 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:17:36] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 10:17:36,496 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:17:36] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 10:17:36,541 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:17:36] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 10:17:45,798 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:17:45] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:22:37,263 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\krowne_cms_service.py', reloading
+2025-08-05 10:22:37,319 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 10:22:38,175 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 10:22:38,175 - __main__ - INFO - Debug mode: True
+2025-08-05 10:22:38,190 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 10:22:38,194 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 10:22:42,623 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:22:42] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:22:43,197 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:22:43] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:22:43,696 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:22:43] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:22:44,037 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:22:44] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:23:52,399 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:23:52] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 10:23:52,400 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:23:52] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 10:23:54,415 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:23:54] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 10:23:54,727 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:23:54] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 10:23:57,877 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:23:57] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 10:23:57,878 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:23:57] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 10:24:01,631 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:24:01] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 10:24:01,936 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:24:01] "[33mOPTIONS /api/compare HTTP/1.1[0m" 404 -
+2025-08-05 10:34:38,722 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\pimly_client.py', reloading
+2025-08-05 10:34:38,773 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 10:34:39,556 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 10:34:39,556 - __main__ - INFO - Debug mode: True
+2025-08-05 10:34:39,571 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 10:34:39,574 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 10:37:53,208 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:37:53] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 10:37:54,152 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:37:54] "[33mGET /api/products/skus HTTP/1.1[0m" 404 -
+2025-08-05 10:37:54,472 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 10:37:54] "[33mGET /api/products/skus HTTP/1.1[0m" 404 -
+2025-08-05 10:38:16,074 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\__init__.py', reloading
+2025-08-05 10:38:16,129 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 10:38:16,923 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 10:38:16,923 - __main__ - INFO - Debug mode: True
+2025-08-05 10:38:16,938 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 10:38:16,942 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 10:38:25,323 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-05 10:38:25,393 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 10:38:26,245 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 10:38:26,246 - __main__ - INFO - Debug mode: True
+2025-08-05 10:38:26,262 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 10:38:26,266 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 10:38:28,390 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-05 10:38:28,441 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 10:38:29,231 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 10:38:29,231 - __main__ - INFO - Debug mode: True
+2025-08-05 10:38:29,246 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 10:38:29,250 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 10:40:01,198 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-05 10:40:01,398 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 10:40:02,230 - __main__ - ERROR - Failed to start application: Working outside of request context.
+
+This typically means that you attempted to use functionality that needed
+an active HTTP request. Consult the documentation on testing for
+information about how to avoid this problem.
+2025-08-05 10:40:07,470 - __main__ - ERROR - Failed to start application: Working outside of request context.
+
+This typically means that you attempted to use functionality that needed
+an active HTTP request. Consult the documentation on testing for
+information about how to avoid this problem.
+2025-08-05 10:41:20,987 - __main__ - ERROR - Failed to start application: SalesforceClient.__init__() missing 1 required positional argument: 'config'
+2025-08-05 10:42:30,277 - __main__ - ERROR - Failed to start application: SalesforceClient.__init__() missing 1 required positional argument: 'config'
+2025-08-05 10:43:04,742 - __main__ - ERROR - Failed to start application: SalesforceClient.__init__() missing 1 required positional argument: 'config'
+2025-08-05 10:57:39,013 - __main__ - ERROR - Failed to start application: 'function' object has no attribute 'is_authenticated'
+2025-08-05 10:59:24,837 - __main__ - ERROR - Failed to start application: Working outside of request context.
+
+This typically means that you attempted to use functionality that needed
+an active HTTP request. Consult the documentation on testing for
+information about how to avoid this problem.
+2025-08-05 11:02:12,837 - __main__ - ERROR - Failed to start application: No module named 'debug'
+2025-08-05 11:02:44,779 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:02:44,780 - __main__ - INFO - Debug mode: True
+2025-08-05 11:02:46,122 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-08-05 11:02:46,123 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-05 11:02:46,125 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:02:47,108 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:02:47,109 - __main__ - INFO - Debug mode: True
+2025-08-05 11:02:47,123 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:02:47,127 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:02:54,119 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:02:54] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:02:54,120 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:02:54] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:02:54,680 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:02:54,682 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:02:54] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:02:54,687 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:02:54] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:02:54,941 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:02:54,943 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:02:54] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:02:55,210 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:02:55,212 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:02:55] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:02:55,521 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:02:55] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:02:55,785 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:02:55] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:02:55,808 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:02:55,810 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:02:55] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:02:55,831 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:02:55] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:03:00,046 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:03:00] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 11:03:01,685 - app.services.pimly_client - INFO - Sending PQL query to Pimly
+2025-08-05 11:03:01,899 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:03:01] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-05 11:03:01,906 - app.services.pimly_client - INFO - Sending PQL query to Pimly
+2025-08-05 11:03:02,108 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:03:02] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-05 11:03:51,745 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:03:51] "[33mGET /debug/salesforce/tokens HTTP/1.1[0m" 404 -
+2025-08-05 11:04:30,815 - app.debug - ERROR - Error fetching Salesforce user info: Not authenticated with Salesforce. Please login first.
+2025-08-05 11:04:30,816 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:04:30] "[35m[1mGET /debug/salesforce/userinfo HTTP/1.1[0m" 500 -
+2025-08-05 11:08:00,667 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:08:00,668 - __main__ - INFO - Debug mode: True
+2025-08-05 11:08:01,955 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-08-05 11:08:01,956 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-05 11:08:01,958 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:08:02,921 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:08:02,921 - __main__ - INFO - Debug mode: True
+2025-08-05 11:08:02,942 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:08:02,946 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:08:05,259 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:08:05] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:08:05,260 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:08:05] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:08:05,834 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:08:05,837 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:08:05] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:08:05,844 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:08:05] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:08:06,116 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:08:06,117 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:08:06] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:08:06,384 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:08:06,387 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:08:06] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:08:06,700 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:08:06] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:08:06,944 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:08:06,945 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:08:06] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:08:06,967 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:08:06] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:08:07,013 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:08:07] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:08:25,906 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\debug.py', reloading
+2025-08-05 11:08:25,958 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:08:26,726 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:08:26,726 - __main__ - INFO - Debug mode: True
+2025-08-05 11:08:26,740 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:08:26,744 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:08:35,100 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:08:35] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 11:09:39,374 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\debug.py', reloading
+2025-08-05 11:09:39,423 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:09:40,198 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:09:40,198 - __main__ - INFO - Debug mode: True
+2025-08-05 11:09:40,212 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:09:40,217 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:10:15,474 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\venv\\Lib\\site-packages\\markupsafe\\_speedups.cp311-win_amd64.pyd', reloading
+2025-08-05 11:10:15,531 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:10:16,328 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:10:16,329 - __main__ - INFO - Debug mode: True
+2025-08-05 11:10:16,344 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:10:16,348 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:10:18,469 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\venv\\Lib\\site-packages\\werkzeug\\sansio\\__init__.py', reloading
+2025-08-05 11:10:18,535 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:10:19,896 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:10:19,896 - __main__ - INFO - Debug mode: True
+2025-08-05 11:10:19,960 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:10:19,965 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:11:48,119 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\debug.py', reloading
+2025-08-05 11:11:48,165 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:11:48,934 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:11:48,934 - __main__ - INFO - Debug mode: True
+2025-08-05 11:11:48,958 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:11:48,962 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:12:06,622 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\debug.py', reloading
+2025-08-05 11:12:06,690 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:12:07,519 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:12:07,519 - __main__ - INFO - Debug mode: True
+2025-08-05 11:12:07,543 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:12:07,546 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:12:10,720 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\__init__.py', reloading
+2025-08-05 11:12:10,772 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:12:11,496 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:12:11,496 - __main__ - INFO - Debug mode: True
+2025-08-05 11:12:11,518 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:12:11,522 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:15:37,430 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\__init__.py', reloading
+2025-08-05 11:15:37,483 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:15:38,577 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:15:38,580 - __main__ - INFO - Debug mode: True
+2025-08-05 11:15:38,606 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:15:38,610 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:15:51,119 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\__init__.py', reloading
+2025-08-05 11:15:51,178 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:15:52,238 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:15:52,238 - __main__ - INFO - Debug mode: True
+2025-08-05 11:15:52,263 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:15:52,267 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:16:13,740 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:13] "[33mGET /main.c887d7aca853ecae8e36.hot-update.json HTTP/1.1[0m" 404 -
+2025-08-05 11:16:14,472 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:14] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:16:14,474 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:14] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:16:14,788 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:14] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:16:14,793 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:14] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:16:15,053 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:15] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:16:15,098 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:15] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:16:15,101 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:15] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:16:16,005 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:16] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:16:16,259 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:16] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:16:16,322 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:16] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:16:16,359 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:16] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:16:16,763 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:16] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:16:17,058 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:17] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:16:17,085 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:17] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:16:17,098 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:17] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:16:22,288 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:22] "OPTIONS /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-05 11:16:22,597 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-08-05 11:16:22,604 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:16:22] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-05 11:18:11,654 - app.routes - INFO - === SALESFORCE OAUTH CALLBACK STARTED ===
+2025-08-05 11:18:12,227 - app.services.salesforce_client - INFO - Successfully exchanged authorization code for tokens
+2025-08-05 11:18:12,484 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:18:12,485 - app.routes - INFO - User info: Unknown
+2025-08-05 11:18:12,485 - app.routes - INFO - === SALESFORCE OAUTH CALLBACK COMPLETED SUCCESSFULLY ===
+2025-08-05 11:18:12,491 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:12] "[32mGET /api/auth/callback/salesforce?code=aPrxgWiFBAr4qtp34JqEomTF_wzIrdsAEmf1pBCr882mD.SD2MNtyblhDkk0a5CkHkpTTHPEiA%3D%3D&state=nIzyqUtYMiQ8TpsI6-6qkxqj48_wZPHz-5HRBTGHP8s HTTP/1.1[0m" 302 -
+2025-08-05 11:18:13,001 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:13] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:18:13,002 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:13] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:18:13,003 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:13] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:18:13,299 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:18:13,304 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:13] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:18:13,308 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:13] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:18:13,519 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:18:13,525 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:13] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:18:13,848 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:18:13,853 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:13] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:18:14,091 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:18:14,097 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:14] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:18:14,169 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:14] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:18:14,395 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:18:14,400 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:14] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:18:14,484 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:14] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:18:14,794 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:14] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:18:14,936 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:18:14,940 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:14] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:18:15,261 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:15] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:18:18,980 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:18] "OPTIONS /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-05 11:18:18,983 - app.services.krowne_cms_service - INFO - Attempting Krowne CMS authentication for user: lmahler
+2025-08-05 11:18:19,846 - app.services.krowne_cms_service - INFO - Authentication likely successful - large response content
+2025-08-05 11:18:19,893 - app.services.krowne_cms_service - WARNING - Could not extract detailed user info: 'str' object has no attribute 'keys'
+2025-08-05 11:18:19,893 - app.services.krowne_cms_service - INFO - Krowne CMS authentication successful for user: lmahler
+2025-08-05 11:18:19,895 - app.routes - INFO - Krowne login successful for user: lmahler
+2025-08-05 11:18:19,900 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:19] "POST /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-05 11:18:24,636 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:24] "OPTIONS /api/auth/krowne/logout HTTP/1.1" 200 -
+2025-08-05 11:18:24,947 - app.routes - INFO - Krowne logout successful
+2025-08-05 11:18:24,950 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:24] "POST /api/auth/krowne/logout HTTP/1.1" 200 -
+2025-08-05 11:18:28,660 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:28] "OPTIONS /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-05 11:18:28,662 - app.services.krowne_cms_service - INFO - Attempting Krowne CMS authentication for user: lmahle
+2025-08-05 11:18:31,473 - app.services.krowne_cms_service - WARNING - Authentication failed - login form still present
+2025-08-05 11:18:31,474 - app.routes - WARNING - Krowne login failed for user: lmahle - Authentication failed - please check your credentials
+2025-08-05 11:18:31,478 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:31] "[31m[1mPOST /api/auth/krowne/login HTTP/1.1[0m" 401 -
+2025-08-05 11:18:38,090 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:38] "OPTIONS /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-05 11:18:38,411 - app.services.krowne_cms_service - INFO - Attempting Krowne CMS authentication for user: lmahler
+2025-08-05 11:18:40,768 - app.services.krowne_cms_service - WARNING - Authentication failed - login form still present
+2025-08-05 11:18:40,769 - app.routes - WARNING - Krowne login failed for user: lmahler - Authentication failed - please check your credentials
+2025-08-05 11:18:40,773 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:40] "[31m[1mPOST /api/auth/krowne/login HTTP/1.1[0m" 401 -
+2025-08-05 11:18:43,116 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:43] "OPTIONS /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-05 11:18:43,119 - app.services.krowne_cms_service - INFO - Attempting Krowne CMS authentication for user: lmahler
+2025-08-05 11:18:43,569 - app.services.krowne_cms_service - INFO - Authentication likely successful - large response content
+2025-08-05 11:18:43,617 - app.services.krowne_cms_service - WARNING - Could not extract detailed user info: 'str' object has no attribute 'keys'
+2025-08-05 11:18:43,617 - app.services.krowne_cms_service - INFO - Krowne CMS authentication successful for user: lmahler
+2025-08-05 11:18:43,618 - app.routes - INFO - Krowne login successful for user: lmahler
+2025-08-05 11:18:43,623 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:43] "POST /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-05 11:18:51,522 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:18:51] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 11:21:21,293 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:21:21] "[33mGET /debug/salesforce/tokens HTTP/1.1[0m" 404 -
+2025-08-05 11:21:23,723 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:21:23] "[33mGET /debug/salesforce/tokens HTTP/1.1[0m" 404 -
+2025-08-05 11:21:38,661 - app.debug - ERROR - Error fetching Salesforce user info: Not authenticated with Salesforce. Please login first.
+2025-08-05 11:21:38,661 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:21:38] "[35m[1mGET /debug/salesforce/userinfo HTTP/1.1[0m" 500 -
+2025-08-05 11:22:10,263 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:10] "GET /debug/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:22:23,596 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:23] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:22:23,597 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:23] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:22:24,342 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:22:24,347 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:24] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:22:24,353 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:24] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:22:24,653 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:22:24,657 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:24] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:22:24,876 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:22:24,881 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:24] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:22:25,199 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:25] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:22:25,439 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:22:25,445 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:25] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:22:25,466 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:25] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:22:25,512 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:25] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:22:31,744 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:31] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:22:32,048 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:32] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:22:32,085 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:22:32,090 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:32] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:22:32,404 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:32] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:22:32,709 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:22:32,714 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:32] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:22:32,995 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:22:33,001 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:33] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:22:33,005 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:33] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:22:33,220 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:22:33,225 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:33] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:22:33,322 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:33] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:22:33,633 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:22:33] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:24:09,794 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:24:09] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:24:09,798 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:24:09] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:24:10,364 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:24:10,371 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:24:10] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:24:10,378 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:24:10] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:24:10,612 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:24:10,620 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:24:10] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:24:10,914 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:24:10,918 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:24:10] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:24:11,235 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:24:11] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:24:11,447 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:24:11,453 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:24:11] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:24:11,485 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:24:11] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:24:11,548 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:24:11] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:24:25,275 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:24:25] "GET /api/krowne/test-connection HTTP/1.1" 200 -
+2025-08-05 11:24:56,613 - app.services.pimly_client - INFO - Sending PQL query to Pimly
+2025-08-05 11:24:57,000 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:24:57] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-05 11:30:18,847 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\pimly_client.py', reloading
+2025-08-05 11:30:18,909 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:30:20,008 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:30:20,009 - __main__ - INFO - Debug mode: True
+2025-08-05 11:30:20,036 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:30:20,040 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:32:20,934 - app.services.pimly_client - INFO - Sending PQL query to Pimly
+2025-08-05 11:32:21,176 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:32:21] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-05 11:33:06,280 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-05 11:33:06,344 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:33:07,451 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:33:07,451 - __main__ - INFO - Debug mode: True
+2025-08-05 11:33:07,477 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:33:07,481 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:41:29,659 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\pimly_client.py', reloading
+2025-08-05 11:41:29,718 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:41:30,806 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:41:30,807 - __main__ - INFO - Debug mode: True
+2025-08-05 11:41:30,838 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:41:30,842 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:44:47,141 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\pimly_client.py', reloading
+2025-08-05 11:44:47,224 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:44:48,476 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:44:48,477 - __main__ - INFO - Debug mode: True
+2025-08-05 11:44:48,501 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:44:48,505 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:44:50,656 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\pimly_client.py', reloading
+2025-08-05 11:44:50,720 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:44:51,740 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:44:51,740 - __main__ - INFO - Debug mode: True
+2025-08-05 11:44:51,762 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:44:51,766 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:44:51,837 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\pimly_client.py', reloading
+2025-08-05 11:44:51,891 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:44:52,982 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:44:52,983 - __main__ - INFO - Debug mode: True
+2025-08-05 11:44:53,007 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:44:53,011 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:44:58,206 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:44:58] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:44:58,207 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:44:58] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:44:59,032 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:44:59,036 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:44:59] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:44:59,046 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:44:59] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:44:59,305 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:44:59,311 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:44:59] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:44:59,573 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:44:59,578 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:44:59] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:44:59,891 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:44:59] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:45:00,109 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 11:45:00,116 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:45:00] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 11:45:00,168 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:45:00] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:45:00,203 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:45:00] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:45:01,782 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly: {'ids': '002_IVPOhw,002_BLPOml30', 'properties': 'SKU'}
+2025-08-05 11:45:02,148 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:45:02] "GET /api/products/skus HTTP/1.1" 200 -
+2025-08-05 11:45:02,156 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly: {'ids': '002_IVPOhw,002_BLPOml30', 'properties': 'SKU'}
+2025-08-05 11:45:02,488 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:45:02] "GET /api/products/skus HTTP/1.1" 200 -
+2025-08-05 11:45:08,020 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:45:08] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 11:45:09,576 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly: {'ids': '002_IVPOhw,002_BLPOml30', 'properties': 'SKU'}
+2025-08-05 11:45:09,930 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:45:09] "GET /api/products/skus HTTP/1.1" 200 -
+2025-08-05 11:45:10,241 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly: {'ids': '002_IVPOhw,002_BLPOml30', 'properties': 'SKU'}
+2025-08-05 11:45:10,546 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:45:10] "GET /api/products/skus HTTP/1.1" 200 -
+2025-08-05 11:45:51,293 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:45:51] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:45:51,294 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:45:51] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:45:51,297 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:45:51] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:45:51,557 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:45:51] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:45:51,605 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:45:51] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 11:45:51,866 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:45:51] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:45:51,868 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:45:51] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 11:46:03,853 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:46:03] "OPTIONS /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-05 11:46:04,157 - app.services.krowne_cms_service - INFO - Attempting Krowne CMS authentication for user: lmahler
+2025-08-05 11:46:04,612 - app.services.krowne_cms_service - INFO - Authentication likely successful - large response content
+2025-08-05 11:46:04,661 - app.services.krowne_cms_service - WARNING - Could not extract detailed user info: 'str' object has no attribute 'keys'
+2025-08-05 11:46:04,662 - app.services.krowne_cms_service - INFO - Krowne CMS authentication successful for user: lmahler
+2025-08-05 11:46:04,663 - app.routes - INFO - Krowne login successful for user: lmahler
+2025-08-05 11:46:04,672 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:46:04] "POST /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-05 11:46:24,953 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:46:24] "OPTIONS /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-05 11:46:24,956 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-08-05 11:46:24,960 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 11:46:24] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-05 11:58:18,637 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\extract_skus.py', reloading
+2025-08-05 11:58:18,693 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:58:19,729 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:58:19,729 - __main__ - INFO - Debug mode: True
+2025-08-05 11:58:19,755 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:58:19,759 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:58:36,589 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\extract_skus.py', reloading
+2025-08-05 11:58:36,648 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:58:37,970 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:58:37,972 - __main__ - INFO - Debug mode: True
+2025-08-05 11:58:37,997 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:58:38,003 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:58:45,332 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\pimly_client.py', reloading
+2025-08-05 11:58:45,392 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:58:46,371 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:58:46,371 - __main__ - INFO - Debug mode: True
+2025-08-05 11:58:46,394 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:58:46,398 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 11:58:52,688 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\pimly_client.py', reloading
+2025-08-05 11:58:52,743 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:58:53,551 - __main__ - ERROR - Failed to start application: No module named 'backend'
+2025-08-05 11:59:15,061 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:59:15,061 - __main__ - INFO - Debug mode: True
+2025-08-05 11:59:16,402 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-08-05 11:59:16,403 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-05 11:59:16,406 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 11:59:17,822 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 11:59:17,822 - __main__ - INFO - Debug mode: True
+2025-08-05 11:59:17,844 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 11:59:17,847 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 12:00:45,151 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\pimly_client.py', reloading
+2025-08-05 12:03:14,762 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 12:03:16,382 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 12:03:16,383 - __main__ - INFO - Debug mode: True
+2025-08-05 12:03:16,406 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 12:03:16,410 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 12:03:22,835 - app.routes - INFO - === SALESFORCE OAUTH CALLBACK STARTED ===
+2025-08-05 12:03:22,835 - app.routes - ERROR - No authorization code received from Salesforce
+2025-08-05 12:03:22,841 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:03:22] "[32mGET /api/auth/callback/salesforce HTTP/1.1[0m" 302 -
+2025-08-05 12:03:23,589 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:03:23] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:03:23,590 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:03:23] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:03:23,597 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:03:23] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:03:23,606 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:03:23] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:03:23,851 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:03:23] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 12:03:23,913 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:03:23] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 12:03:24,163 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:03:24] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 12:03:24,428 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:03:24] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 12:03:29,695 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:03:29] "OPTIONS /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-05 12:03:29,698 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-08-05 12:03:29,703 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:03:29] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-05 12:04:43,485 - app.routes - INFO - === SALESFORCE OAUTH CALLBACK STARTED ===
+2025-08-05 12:04:44,015 - app.services.salesforce_client - INFO - Successfully exchanged authorization code for tokens
+2025-08-05 12:04:44,262 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:04:44,262 - app.routes - INFO - User info: Unknown
+2025-08-05 12:04:44,263 - app.routes - INFO - === SALESFORCE OAUTH CALLBACK COMPLETED SUCCESSFULLY ===
+2025-08-05 12:04:44,272 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:44] "[32mGET /api/auth/callback/salesforce?code=aPrxgWiFBAr4qtp34JqEomTF_21Cytv1Gruz.JgWvXsSvSXxb6ikd6D0c_SguA7fNr9gO5aW2g%3D%3D&state=MIIaPs8Ay8rEULolSomlWYpr_xDF3vRd8-4Co0Ne6Ng HTTP/1.1[0m" 302 -
+2025-08-05 12:04:45,072 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:45] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:04:45,073 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:45] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:04:45,074 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:45] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:04:45,302 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:04:45,307 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:45] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:04:45,334 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:45] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 12:04:45,510 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:04:45,515 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:45] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:04:45,876 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:04:45,884 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:45] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 12:04:45,889 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:45] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 12:04:46,044 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:04:46,049 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:46] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:04:46,210 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:46] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 12:04:46,409 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:04:46,414 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:46] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 12:04:46,727 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:46] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 12:04:46,940 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:04:46,944 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:46] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 12:04:46,989 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:46] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 12:04:48,460 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:48] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-05 12:04:48,473 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:48] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-05 12:04:50,836 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:50] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-05 12:04:51,102 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:04:51] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-05 12:05:00,659 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:05:00] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 12:08:48,432 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\__init__.py', reloading
+2025-08-05 12:08:48,527 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 12:08:50,471 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 12:08:50,472 - __main__ - INFO - Debug mode: True
+2025-08-05 12:08:50,496 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 12:08:50,499 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 12:09:41,435 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\__init__.py', reloading
+2025-08-05 12:09:41,535 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 12:09:43,246 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 12:09:43,246 - __main__ - INFO - Debug mode: True
+2025-08-05 12:09:43,276 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 12:09:43,281 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 12:09:46,409 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:09:46] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 12:09:46,878 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:09:46] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 12:09:47,743 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:09:47] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-05 12:09:48,008 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:09:48] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-05 12:09:48,791 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:09:48] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-05 12:09:49,115 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:09:49] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-05 12:10:07,784 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:10:07] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 12:10:59,400 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\__init__.py', reloading
+2025-08-05 12:10:59,500 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 12:11:01,403 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 12:11:01,404 - __main__ - INFO - Debug mode: True
+2025-08-05 12:11:01,426 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 12:11:01,430 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 12:11:22,493 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:22] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:11:22,494 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:22] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:11:22,756 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:22] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:11:22,756 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:22] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:11:23,108 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:11:23,113 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:23] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:11:23,118 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:23] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 12:11:23,344 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:11:23,349 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:23] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:11:23,683 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:11:23,687 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:23] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 12:11:23,890 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:11:23,895 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:23] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:11:23,995 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:23] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 12:11:24,215 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:11:24,221 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:24] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 12:11:24,413 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:11:24,418 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:24] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:11:24,572 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:11:24,576 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:24] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 12:11:24,803 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:11:24,808 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:24] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 12:11:24,901 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:24] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 12:11:25,213 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:25] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 12:11:26,521 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:26] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-05 12:11:26,538 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:26] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-05 12:11:29,894 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:29] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-05 12:11:30,211 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:30] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-05 12:11:48,145 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:11:48] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 12:12:32,463 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\__init__.py', reloading
+2025-08-05 12:12:32,579 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 12:12:34,258 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 12:12:34,258 - __main__ - INFO - Debug mode: True
+2025-08-05 12:12:34,281 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 12:12:34,285 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 12:15:10,030 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-05 12:15:10,127 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 12:15:11,757 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 12:15:11,757 - __main__ - INFO - Debug mode: True
+2025-08-05 12:15:11,780 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 12:15:11,784 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 12:15:17,414 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-05 12:15:17,533 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 12:15:19,007 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 12:15:19,007 - __main__ - INFO - Debug mode: True
+2025-08-05 12:15:19,028 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 12:15:19,032 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 12:15:41,404 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 12:15:41,405 - __main__ - INFO - Debug mode: True
+2025-08-05 12:15:42,737 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-08-05 12:15:42,737 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-05 12:15:42,739 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 12:15:44,482 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 12:15:44,483 - __main__ - INFO - Debug mode: True
+2025-08-05 12:15:44,505 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 12:15:44,509 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-05 12:15:47,101 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:15:47] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:15:47,102 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:15:47] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:15:47,739 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:15:47,744 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:15:47] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:15:47,751 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:15:47] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 12:15:47,994 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:15:47,999 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:15:47] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-05 12:15:48,286 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:15:48,291 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:15:48] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 12:15:48,610 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:15:48] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 12:15:48,808 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-05 12:15:48,813 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:15:48] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-05 12:15:48,875 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:15:48] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 12:15:48,929 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:15:48] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-05 12:15:56,768 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:15:56] "[33mOPTIONS /api/pimly/search HTTP/1.1[0m" 404 -
+2025-08-05 12:17:13,485 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:17:13] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-05 12:17:13,752 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 12:17:13] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -

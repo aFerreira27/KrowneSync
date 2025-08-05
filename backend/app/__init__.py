@@ -1,7 +1,8 @@
 from flask import Flask
 from flask_cors import CORS
-import os
+from flask_session import Session
 
+import os
 # Create logs directory
 os.makedirs('logs', exist_ok=True)
 
@@ -26,9 +27,11 @@ def create_app():
     load_env_file()
     
     app = Flask(__name__)
-    
+
     # Configure Flask with environment variables
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
+    app.config['SESSION_TYPE'] = 'filesystem'
+
     app.config['UPLOAD_FOLDER'] = os.environ.get('UPLOAD_FOLDER', 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
     
@@ -38,9 +41,8 @@ def create_app():
     app.config['SALESFORCE_REDIRECT_URI'] = os.environ.get('SALESFORCE_REDIRECT_URI', 'http://localhost:5000/api/auth/callback/salesforce')
     app.config['SALESFORCE_SANDBOX'] = os.environ.get('SALESFORCE_SANDBOX', 'false').lower() == 'true'
     
-    # Enable CORS for React frontend
-    CORS(app, origins=["http://localhost:3000", "http://frontend:3000"], supports_credentials=True)
-    
+
+
     # Ensure upload directory exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
@@ -52,11 +54,20 @@ def create_app():
     # Register blueprints
     from app.routes import main
     app.register_blueprint(main)
+
+    # Enable CORS for React frontend
+    CORS(app,
+     resources={r"/api/*": {"origins": ["http://localhost:3000"]}},
+     supports_credentials=True,
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
     
     # Check environment configuration on startup
     with app.app_context():
         check_environment_config()
     
+    Session(app)
+
     return app
 
 def check_environment_config():

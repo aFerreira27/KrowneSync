@@ -2,21 +2,29 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import ConnectionStatus from './components/ConnectionStatus';
 import AuthModal from './components/AuthModal';
+import KrowneLoginModal from './components/KrowneLoginModal';
 import SKUSearch from './components/SKUSearch';
 import SyncTable from './components/SyncTable';
 import api from './services/api';
-import * as krowneApi from './services/krowneApi';
+import krowneAuthService from './services/krowneAuthService';
 
 function App() {
   const [salesforceAuth, setSalesforceAuth] = useState({
     authenticated: false,
-    userInfo: null
+    userInfo: null,
+    loading: false,
+    error: null
   });
+  
   const [krowneAuth, setKrowneAuth] = useState({
     authenticated: false,
-    userInfo: null
+    userInfo: null,
+    loading: false,
+    error: null
   });
-  const [showAuthModal, setShowAuthModal] = useState(null); // 'salesforce' or 'krowne'
+  
+  const [showAuthModal, setShowAuthModal] = useState(null); // 'salesforce' or null
+  const [showKrowneLogin, setShowKrowneLogin] = useState(false);
   const [viewMode, setViewMode] = useState('search'); // 'search' or 'sync'
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -47,72 +55,171 @@ function App() {
   const checkAuthStatus = async () => {
     try {
       // Check Salesforce
-      const sfStatus = await api.getSalesforceStatus();
-      if (sfStatus.authenticated) {
-        const userInfo = await api.getSalesforceUser();
-        setSalesforceAuth({ authenticated: true, userInfo });
+      setSalesforceAuth(prev => ({ ...prev, loading: true }));
+      try {
+        const sfStatus = await api.getSalesforceStatus();
+        if (sfStatus.authenticated) {
+          const userInfo = await api.getSalesforceUser();
+          setSalesforceAuth({ 
+            authenticated: true, 
+            userInfo, 
+            loading: false, 
+            error: null 
+          });
+        } else {
+          setSalesforceAuth({ 
+            authenticated: false, 
+            userInfo: null, 
+            loading: false, 
+            error: null 
+          });
+        }
+      } catch (sfError) {
+        setSalesforceAuth({ 
+          authenticated: false, 
+          userInfo: null, 
+          loading: false, 
+          error: sfError.message 
+        });
       }
 
       // Check Krowne
-      const krowneStatus = await krowneApi.checkAuthStatus();
-      if (krowneStatus.authenticated) {
-        setKrowneAuth({ authenticated: true, userInfo: krowneStatus.userInfo });
+      setKrowneAuth(prev => ({ ...prev, loading: true }));
+      try {
+        const krowneStatus = await krowneAuthService.checkAuthStatus();
+        if (krowneStatus.authenticated) {
+          setKrowneAuth({ 
+            authenticated: true, 
+            userInfo: krowneStatus.userInfo, 
+            loading: false, 
+            error: null 
+          });
+        } else {
+          setKrowneAuth({ 
+            authenticated: false, 
+            userInfo: null, 
+            loading: false, 
+            error: null 
+          });
+        }
+      } catch (krowneError) {
+        setKrowneAuth({ 
+          authenticated: false, 
+          userInfo: null, 
+          loading: false, 
+          error: krowneError.message 
+        });
       }
     } catch (err) {
       console.error('Auth check failed:', err);
+      setError('Failed to check authentication status');
     }
   };
 
-  const handleSalesforceAuth = async () => {
-    setLoading(true);
+  const handleSalesforceConnect = async () => {
+    setSalesforceAuth(prev => ({ ...prev, loading: true, error: null }));
     setError(null);
+    
     try {
       const response = await api.initiateSalesforceAuth();
       if (response.auth_url) {
-        // For OAuth flow, we'll handle the callback differently
-        // In a real implementation, this would open in an iframe or popup
+        // Redirect to Salesforce OAuth
         window.location.href = response.auth_url;
       }
     } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      setSalesforceAuth(prev => ({ 
+        ...prev, 
+        loading: false, 
+        error: err.message 
+      }));
+      setError(`Salesforce connection failed: ${err.message}`);
     }
   };
 
-  const handleKrowneAuth = async (credentials) => {
-    setLoading(true);
-    setError(null);
+  const handleSalesforceDisconnect = async () => {
     try {
-      await krowneApi.loginToKrowne(credentials);
-      const userInfo = await krowneApi.getKrowneUserInfo();
-      setKrowneAuth({ authenticated: true, userInfo });
-      setShowAuthModal(null);
+      await api.salesforceLogout();
+      setSalesforceAuth({ 
+        authenticated: false, 
+        userInfo: null, 
+        loading: false, 
+        error: null 
+      });
     } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      setError(`Salesforce disconnect failed: ${err.message}`);
     }
   };
 
-  const handleLogout = async (service) => {
+  const handleKrowneConnect = () => {
+    setShowKrowneLogin(true);
+  };
+
+  const handleKrowneLogin = async (credentials) => {
+    setKrowneAuth(prev => ({ ...prev, loading: true, error: null }));
+    
     try {
-      if (service === 'salesforce') {
-        await api.salesforceLogout();
-        setSalesforceAuth({ authenticated: false, userInfo: null });
-      } else if (service === 'krowne') {
-        await krowneApi.logoutFromKrowne();
-        setKrowneAuth({ authenticated: false, userInfo: null });
+      const result = await krowneAuthService.login(credentials);
+      
+      if (result.success) {
+        setKrowneAuth({
+          authenticated: true,
+          userInfo: result.userInfo,
+          loading: false,
+          error: null
+        });
+        setShowKrowneLogin(false);
+        return { success: true };
+      } else {
+        setKrowneAuth(prev => ({
+          ...prev,
+          loading: false,
+          error: result.error
+        }));
+        return { success: false, error: result.error };
       }
     } catch (err) {
-      setError(err.message);
+      const errorMessage = err.message || 'Login failed';
+      setKrowneAuth(prev => ({
+        ...prev,
+        loading: false,
+        error: errorMessage
+      }));
+      return { success: false, error: errorMessage };
     }
+  };
+
+  const handleKrowneDisconnect = async () => {
+    try {
+      await krowneAuthService.logout();
+      setKrowneAuth({ 
+        authenticated: false, 
+        userInfo: null, 
+        loading: false, 
+        error: null 
+      });
+    } catch (err) {
+      setError(`Krowne disconnect failed: ${err.message}`);
+      // Still clear the auth state
+      setKrowneAuth({ 
+        authenticated: false, 
+        userInfo: null, 
+        loading: false, 
+        error: null 
+      });
+    }
+  };
+
+  const closeKrowneLogin = () => {
+    setShowKrowneLogin(false);
   };
 
   const handleSKUSearch = (sku) => {
     setSearchedSKU(sku);
     setViewMode('search');
   };
+
+  // Check if both services are connected
+  const bothServicesConnected = salesforceAuth.authenticated && krowneAuth.authenticated;
 
   return (
     <div className="app">
@@ -126,61 +233,147 @@ function App() {
       <ConnectionStatus
         salesforceAuth={salesforceAuth}
         krowneAuth={krowneAuth}
-        onConnect={(service) => setShowAuthModal(service)}
-        onDisconnect={handleLogout}
+        onSalesforceConnect={handleSalesforceConnect}
+        onSalesforceDisconnect={handleSalesforceDisconnect}
+        onKrowneConnect={handleKrowneConnect}
+        onKrowneDisconnect={handleKrowneDisconnect}
       />
 
       <main className="main-content">
-        <div className="view-toggle-wrapper">
-          <div className="view-toggle">
-            <label className={viewMode === 'search' ? 'active' : ''}>Search SKU</label>
-            <div className="toggle-switch">
-              <input
-                type="checkbox"
-                id="viewModeToggle"
-                checked={viewMode === 'sync'}
-                onChange={() => {
-                  const newMode = viewMode === 'search' ? 'sync' : 'search';
-                  setViewMode(newMode);
-                }}
-                disabled={!salesforceAuth.authenticated || !krowneAuth.authenticated}
-              />
-              <label htmlFor="viewModeToggle"></label>
+        {bothServicesConnected ? (
+          <>
+            <div className="view-toggle-wrapper">
+              <div className="view-toggle">
+                <label className={viewMode === 'search' ? 'active' : ''}>Search SKU</label>
+                <div className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    id="viewModeToggle"
+                    checked={viewMode === 'sync'}
+                    onChange={() => {
+                      const newMode = viewMode === 'search' ? 'sync' : 'search';
+                      setViewMode(newMode);
+                    }}
+                  />
+                  <label htmlFor="viewModeToggle"></label>
+                </div>
+                <label className={viewMode === 'sync' ? 'active' : ''}>Check Sync</label>
+              </div>
             </div>
-            <label className={viewMode === 'sync' ? 'active' : ''}>Check Sync</label>
-          </div>
-        </div>
 
-        {error && (
-          <div className="error-banner">
-            <span>{error}</span>
-            <button onClick={() => setError(null)}>×</button>
-          </div>
-        )}
+            {error && (
+              <div className="error-banner">
+                <span>{error}</span>
+                <button onClick={() => setError(null)}>×</button>
+              </div>
+            )}
 
-        {viewMode === 'search' ? (
-          <SKUSearch
-            onSearch={handleSKUSearch}
-            searchedSKU={searchedSKU}
-            salesforceAuth={salesforceAuth}
-            krowneAuth={krowneAuth}
-          />
+            {viewMode === 'search' ? (
+              <SKUSearch
+                onSearch={handleSKUSearch}
+                searchedSKU={searchedSKU}
+                salesforceAuth={salesforceAuth}
+                krowneAuth={krowneAuth}
+              />
+            ) : (
+              <SyncTable
+                salesforceAuth={salesforceAuth}
+                krowneAuth={krowneAuth}
+                onSelectSKU={handleSKUSearch}
+              />
+            )}
+          </>
         ) : (
-          <SyncTable
-            salesforceAuth={salesforceAuth}
-            krowneAuth={krowneAuth}
-            onSelectSKU={handleSKUSearch}
-          />
+          <div className="connection-required">
+            <div className="connection-status-card">
+              <h2>Please connect to both services to continue</h2>
+              <p>Both connections are required to synchronize product data.</p>
+              
+              <div className="connection-checklist">
+                <div className={`connection-check ${salesforceAuth.authenticated ? 'connected' : 'disconnected'}`}>
+                  <span className="check-icon">
+                    {salesforceAuth.authenticated ? '✅' : '❌'}
+                  </span>
+                  <div className="check-details">
+                    <strong>Salesforce/Pimly Connection</strong>
+                    <p>
+                      {salesforceAuth.authenticated 
+                        ? `Connected as ${salesforceAuth.userInfo?.display_name || salesforceAuth.userInfo?.name || 'User'}`
+                        : salesforceAuth.loading 
+                          ? 'Connecting...'
+                          : 'Not connected'
+                      }
+                    </p>
+                    {salesforceAuth.error && (
+                      <p className="error-text">Error: {salesforceAuth.error}</p>
+                    )}
+                  </div>
+                </div>
+                
+                <div className={`connection-check ${krowneAuth.authenticated ? 'connected' : 'disconnected'}`}>
+                  <span className="check-icon">
+                    {krowneAuth.authenticated ? '✅' : '❌'}
+                  </span>
+                  <div className="check-details">
+                    <strong>Krowne CMS Admin Access</strong>
+                    <p>
+                      {krowneAuth.authenticated 
+                        ? `Connected as ${krowneAuth.userInfo?.username || krowneAuth.userInfo?.email || 'Admin'}`
+                        : krowneAuth.loading 
+                          ? 'Signing in...'
+                          : 'Not connected'
+                      }
+                    </p>
+                    {krowneAuth.error && (
+                      <p className="error-text">Error: {krowneAuth.error}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="connection-actions">
+                {!salesforceAuth.authenticated && (
+                  <button 
+                    className="connect-btn primary"
+                    onClick={handleSalesforceConnect}
+                    disabled={salesforceAuth.loading}
+                  >
+                    {salesforceAuth.loading ? 'Connecting...' : 'Connect Salesforce'}
+                  </button>
+                )}
+                
+                {!krowneAuth.authenticated && (
+                  <button 
+                    className="connect-btn primary"
+                    onClick={handleKrowneConnect}
+                    disabled={krowneAuth.loading}
+                  >
+                    {krowneAuth.loading ? 'Signing in...' : 'Sign in to Krowne CMS'}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         )}
       </main>
 
-      {showAuthModal && (
+      {/* Krowne Login Modal */}
+      <KrowneLoginModal
+        isOpen={showKrowneLogin}
+        onClose={closeKrowneLogin}
+        onLogin={handleKrowneLogin}
+        loading={krowneAuth.loading}
+        error={krowneAuth.error}
+      />
+
+      {/* Legacy Salesforce Auth Modal (if needed for other auth methods) */}
+      {showAuthModal === 'salesforce' && (
         <AuthModal
-          service={showAuthModal}
+          service="salesforce"
           onClose={() => setShowAuthModal(null)}
-          onAuth={showAuthModal === 'salesforce' ? handleSalesforceAuth : handleKrowneAuth}
-          loading={loading}
-          error={error}
+          onAuth={handleSalesforceConnect}
+          loading={salesforceAuth.loading}
+          error={salesforceAuth.error}
         />
       )}
     </div>
