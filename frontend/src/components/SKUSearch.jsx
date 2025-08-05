@@ -61,18 +61,8 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
         
         if (pimlyProduct) {
           // If we have a Pimly product, use it for comparison
-          comparisonResult = await api.compareProducts({
-            source_type: 'pimly',
-            limit: 1,
-            search: skuToSearch
-          });
-        } else {
-          // If no Pimly product, search Krowne directly
-          comparisonResult = await api.compareProducts({
-            source_type: 'krowne',
-            limit: 1,
-            search: skuToSearch
-          });
+          comparisonResult = await api.compareProducts([skuToSearch]);
+
         }
 
         console.log('Comparison results:', comparisonResult);

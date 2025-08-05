@@ -244,7 +244,7 @@ def get_pimly_products():
         offset = request.args.get('offset', 0, type=int)
         
         # For now, get products using known SKUs from CSV
-        known_skus = load_skus_from_csv()
+        known_skus = extract_known_ids_from_csv()
         
         # Get a subset based on pagination
         paginated_skus = known_skus[offset:offset + limit]
@@ -361,6 +361,121 @@ def test_krowne_connection():
     except Exception as e:
         logger.error(f"Krowne connection test failed: {str(e)}")
         return jsonify({'success': False, 'error': str(e), 'accessible': False}), 500
+
+### Krowne Scraper Routes ###
+@main.route('/api/krowne/scrape-product/<sku>', methods=['GET'])
+def scrape_krowne_product(sku):
+    try:
+        scraper = KrowneScraper()
+        product_data = scraper.scrape_product(sku)
+        if product_data:
+            return jsonify({'success': True, 'product': product_data})
+        else:
+            return jsonify({'success': False, 'error': 'Product not found'}), 404
+    except Exception as e:
+        logger.error(f"Krowne scraping error for SKU {sku}: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+### Compare and Sync Endpoints ###
+@main.route('/api/compare', methods=['POST'])
+def compare_products():
+    try:
+        data = request.get_json()
+        skus = data.get('skus')
+
+        if not isinstance(skus, list) or not skus:
+            return jsonify({'error': 'SKUs must be provided as a non-empty list'}), 400
+
+        sf_client = get_authenticated_sf_client()
+        pimly_client = PimlyClient(sf_client)
+        scraper = KrowneScraper()
+
+        results = []
+
+        for sku in skus:
+            pimly_product = {}
+            krowne_product = {}
+            comparison = {}
+
+            try:
+                pimly_product = pimly_client.get_product_by_sku(sku) or {}
+            except Exception as e:
+                logger.warning(f"Failed to fetch Pimly product for SKU {sku}: {e}")
+
+            try:
+                krowne_product = scraper.scrape_product(sku) or {}
+            except Exception as e:
+                logger.warning(f"Failed to scrape Krowne product for SKU {sku}: {e}")
+
+            # Compare common fields (customize this list as needed)
+            fields_to_compare = ['name', 'description', 'price', 'image_url', 'category']
+            for field in fields_to_compare:
+                pimly_val = pimly_product.get(field)
+                krowne_val = krowne_product.get(field)
+
+                comparison[field] = {
+                    'pimly': pimly_val,
+                    'krowne': krowne_val,
+                    'match': pimly_val == krowne_val
+                }
+
+            results.append({
+                'sku': sku,
+                'comparison': comparison,
+                'pimly': pimly_product,
+                'krowne': krowne_product
+            })
+
+        return jsonify({'results': results, 'count': len(results)})
+
+    except Exception as e:
+        logger.error(f"Error during product comparison: {str(e)}", exc_info=True)
+        return jsonify({'error': 'Internal server error'}), 500
+
+@main.route('/api/compare/<sku>', methods=['POST'])
+def compare_single_product(sku):
+    try:
+        sf_client = get_authenticated_sf_client()
+        pimly_client = PimlyClient(sf_client)
+        scraper = KrowneScraper()
+
+        # Fetch product data
+        try:
+            pimly_product = pimly_client.get_product_by_sku(sku) or {}
+        except Exception as e:
+            logger.warning(f"Failed to fetch Pimly product for SKU {sku}: {e}")
+            pimly_product = {}
+
+        try:
+            krowne_product = scraper.scrape_product(sku) or {}
+        except Exception as e:
+            logger.warning(f"Failed to scrape Krowne product for SKU {sku}: {e}")
+            krowne_product = {}
+
+        # Define fields to compare (adjust these based on actual structure)
+        fields_to_compare = ['name', 'description', 'price', 'image_url', 'category']
+
+        comparison = {}
+        for field in fields_to_compare:
+            pimly_val = pimly_product.get(field)
+            krowne_val = krowne_product.get(field)
+
+            comparison[field] = {
+                'pimly': pimly_val,
+                'krowne': krowne_val,
+                'match': pimly_val == krowne_val
+            }
+
+        return jsonify({
+            'sku': sku,
+            'comparison': comparison,
+            'pimly': pimly_product,
+            'krowne': krowne_product
+        })
+
+    except Exception as e:
+        logger.error(f"Error comparing product for SKU {sku}: {str(e)}", exc_info=True)
+        return jsonify({'error': 'Internal server error'}), 500
 
 ### Misc and Utility Endpoints ###
 

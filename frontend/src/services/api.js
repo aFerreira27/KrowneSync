@@ -79,14 +79,35 @@ class APIService {
     throw new Error('Product not found');
   }
 
+  // Krowne Product Scraping
+  async scrapeKrowneProduct(sku) {
+    if (!sku) {
+      throw new Error('SKU is required to scrape Krowne product.');
+    }
+
+    return this.request(`/krowne/scrape-product/${encodeURIComponent(sku)}`, {
+      method: 'GET',
+    });
+  }
+
   // Product Comparison
-  async compareProducts(options = {}) {
-    // Default to Pimly as source
-    const requestData = {
-      source_type: 'pimly',
-      limit: 1000,
-      ...options
-    };
+  async compareSingleProduct(sku) {
+    if (!sku) {
+      throw new Error('SKU is required for comparison.');
+    }
+
+    return this.request(`/compare/${encodeURIComponent(sku)}`, {
+      method: 'POST',
+    });
+  }
+
+  async compareProducts(skus = []) {
+    if (!Array.isArray(skus) || skus.length === 0) {
+      throw new Error('You must provide a non-empty array of SKUs to compare.');
+    }
+
+    const requestData = { skus };
+
     return this.request('/compare', {
       method: 'POST',
       body: JSON.stringify(requestData),
