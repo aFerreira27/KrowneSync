@@ -192,7 +192,7 @@ class PimlyClient:
         products = self.get_products_by_ids([sku])
         return products[0] if products else {}
 
-    def get_all_product_skus(self, limit: int = 1000) -> List[str]:
+    def get_all_product_skus(self, limit: int = 3500) -> List[str]:
         """Get all product SKUs from Pimly"""
         try:
             # Use SOQL query to get all SKUs
@@ -211,21 +211,3 @@ class PimlyClient:
         except Exception as e:
             logger.error(f"Error getting all SKUs: {str(e)}")
             return []
-
-    def sync_products(self) -> Dict[str, Any]:
-        """Sync products (placeholder for actual sync logic)"""
-        # This would contain the actual sync logic to Krowne CMS
-        return {"message": "Sync functionality to be implemented"}
-
-    def get_sync_status(self) -> Dict[str, Any]:
-        """Get sync status (placeholder)"""
-        return {"status": "Not implemented"}
-
-    def process_csv_upload(self, file) -> Dict[str, Any]:
-        """Process uploaded CSV file"""
-        # This would process the CSV and update products
-        return {"message": "CSV upload processing to be implemented"}
-
-    def delete_product(self, sku: str) -> Dict[str, Any]:
-        """Delete a product (placeholder)"""
-        return {"message": f"Delete functionality for {sku} to be implemented"}

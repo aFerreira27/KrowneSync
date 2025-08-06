@@ -3115,3 +3115,145 @@ information about how to avoid this problem.
 2025-08-05 17:11:26,998 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-1000
 2025-08-05 17:11:26,998 - app.routes - WARNING - Failed to scrape Krowne product for SKU kr-1000: 'KrowneScraper' object has no attribute 'scrape_product'
 2025-08-05 17:11:27,003 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 17:11:27] "POST /api/compare HTTP/1.1" 200 -
+2025-08-05 17:18:09,301 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 17:18:09] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-05 17:18:09,610 - app.routes - INFO - Searching Pimly for: BC-800
+2025-08-05 17:18:09,611 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-05 17:18:10,698 - app.services.pimly_client - INFO - Found product by exact SKU match: BC-800
+2025-08-05 17:18:10,704 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 17:18:10] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-05 17:18:10,710 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 17:18:10] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-05 17:18:10,713 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-05 17:18:11,711 - app.services.pimly_client - INFO - Found product by exact SKU match: BC-800
+2025-08-05 17:18:11,711 - app.routes - WARNING - Failed to scrape Krowne product for SKU BC-800: 'KrowneScraper' object has no attribute 'scrape_product'
+2025-08-05 17:18:11,717 - werkzeug - INFO - 127.0.0.1 - - [05/Aug/2025 17:18:11] "POST /api/compare HTTP/1.1" 200 -
+2025-08-05 17:19:14,208 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\krowne_scraper.py', reloading
+2025-08-05 17:19:14,266 - werkzeug - INFO -  * Restarting with stat
+2025-08-05 17:19:15,446 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-05 17:19:15,446 - __main__ - INFO - Debug mode: True
+2025-08-05 17:19:15,473 - werkzeug - WARNING -  * Debugger is active!
+2025-08-05 17:19:15,477 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 08:10:08,785 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 08:10:08,787 - __main__ - INFO - Debug mode: True
+2025-08-06 08:10:10,133 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-08-06 08:10:10,133 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-06 08:10:10,136 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 08:10:11,485 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 08:10:11,486 - __main__ - INFO - Debug mode: True
+2025-08-06 08:10:11,518 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 08:10:11,528 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 08:11:02,387 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:11:02] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-08-06 08:11:02,666 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:11:02] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 08:11:02,667 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:11:02] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 08:11:03,255 - app.services.salesforce_client - ERROR - Error getting user info: 403 Client Error: Forbidden for url: https://krownemetalcorp.my.salesforce.com/services/oauth2/userinfo
+2025-08-06 08:11:03,696 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-06 08:11:03,966 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 08:11:03,971 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:11:03] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 08:11:03,977 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:11:03] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 08:11:04,254 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 08:11:04,265 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:11:04] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 08:11:04,491 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 08:11:04,496 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:11:04] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 08:11:04,816 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:11:04] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 08:11:05,065 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 08:11:05,071 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:11:05] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 08:11:05,073 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:11:05] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 08:11:05,131 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:11:05] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 08:12:46,325 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:12:46] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 08:12:46,632 - app.routes - INFO - Searching Pimly for: 12-801L
+2025-08-06 08:12:46,633 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 08:12:48,122 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 08:12:48,140 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:12:48] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 08:12:48,147 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:12:48] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 08:12:48,150 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 08:12:49,167 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 08:12:49,167 - app.routes - WARNING - Failed to scrape Krowne product for SKU 12-801L: 'KrowneScraper' object has no attribute 'scrape_product'
+2025-08-06 08:12:49,174 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:12:49] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 08:13:54,774 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 08:13:54,829 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 08:13:55,974 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 08:13:55,975 - __main__ - INFO - Debug mode: True
+2025-08-06 08:13:55,999 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 08:13:56,003 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 08:14:18,915 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 08:14:18,968 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 08:14:20,018 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 08:14:20,019 - __main__ - INFO - Debug mode: True
+2025-08-06 08:14:20,045 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 08:14:20,049 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 08:14:30,180 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 08:14:30,181 - __main__ - INFO - Debug mode: True
+2025-08-06 08:14:31,502 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-08-06 08:14:31,503 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-06 08:14:31,505 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 08:14:32,506 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 08:14:32,507 - __main__ - INFO - Debug mode: True
+2025-08-06 08:14:32,529 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 08:14:32,534 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 08:14:35,474 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:14:35] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 08:14:35,475 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:14:35] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 08:14:36,030 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 08:14:36,036 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:14:36] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 08:14:36,041 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:14:36] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 08:14:36,335 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 08:14:36,340 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:14:36] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 08:14:36,577 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 08:14:36,582 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:14:36] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 08:14:36,902 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:14:36] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 08:14:37,154 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:14:37] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 08:14:37,176 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 08:14:37,182 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:14:37] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 08:14:37,217 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:14:37] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 08:14:38,881 - app.routes - ERROR - Error loading SKUs: extract_known_ids_from_csv() missing 1 required positional argument: 'csv_path'
+2025-08-06 08:14:38,885 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:14:38] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-06 08:14:38,891 - app.routes - ERROR - Error loading SKUs: extract_known_ids_from_csv() missing 1 required positional argument: 'csv_path'
+2025-08-06 08:14:38,897 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:14:38] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-06 08:14:44,905 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:14:44] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 08:14:44,909 - app.routes - INFO - Searching Pimly for: kr-2000
+2025-08-06 08:14:44,909 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 08:14:45,903 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 08:14:45,909 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:14:45] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 08:14:46,226 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:14:46] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 08:14:46,537 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 08:14:47,375 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 08:14:48,480 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:14:48] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 08:21:05,947 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 08:21:06,005 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 08:21:07,078 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 08:21:07,079 - __main__ - INFO - Debug mode: True
+2025-08-06 08:21:07,105 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 08:21:07,109 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 08:21:22,874 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:21:22] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 08:21:23,187 - app.routes - INFO - Searching Pimly for: kr-1000
+2025-08-06 08:21:23,187 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 08:21:24,406 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-1000
+2025-08-06 08:21:24,411 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:21:24] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 08:21:24,417 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:21:24] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 08:21:24,420 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 08:21:25,287 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-1000
+2025-08-06 08:21:26,536 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:21:26] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 08:21:44,515 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 08:21:44,579 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 08:21:45,670 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 08:21:45,671 - __main__ - INFO - Debug mode: True
+2025-08-06 08:21:45,696 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 08:21:45,700 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 08:21:53,785 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:21:53] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 08:21:54,095 - app.routes - INFO - Searching Pimly for: kr-2000
+2025-08-06 08:21:54,096 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 08:21:55,045 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 08:21:55,050 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:21:55] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 08:21:55,056 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:21:55] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 08:21:55,058 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 08:21:55,990 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 08:21:57,276 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 08:21:57] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 08:23:47,283 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\pimly_client.py', reloading
+2025-08-06 08:23:47,338 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 08:23:48,398 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 08:23:48,398 - __main__ - INFO - Debug mode: True
+2025-08-06 08:23:48,424 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 08:23:48,428 - werkzeug - INFO -  * Debugger PIN: 117-175-968

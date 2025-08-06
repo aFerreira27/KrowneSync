@@ -19,7 +19,7 @@ class KrowneScraper:
         return prodName
 
     @staticmethod
-    def scrapeSite(BASEURL, sku):
+    def scrapeSite(sku):
         """
         Scrapes all product information from Krowne website to match ProductCard component fields
         """
@@ -227,14 +227,3 @@ class KrowneScraper:
         }
         
         return formatted_data
-
-# Example usage:
-if __name__ == "__main__":
-    sku = "21-420l"
-    scraped_data = KrowneScraper.scrapeSite(BASEURL, sku)
-    formatted_data = KrowneScraper.format_for_product_card(scraped_data)
-    
-    print("Raw scraped data:")
-    print(scraped_data)
-    print("\nFormatted for ProductCard:")
-    print(formatted_data)

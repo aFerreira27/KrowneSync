@@ -367,10 +367,12 @@ def test_krowne_connection():
 def scrape_krowne_product(sku):
     try:
         scraper = KrowneScraper()
-        product_data = scraper.scrape_product(sku)
+        product_data = scraper.scrapeSite(sku)
+        logger.info(f"Krowne product scraped successfully for SKU: {sku}")
         if product_data:
             return jsonify({'success': True, 'product': product_data})
         else:
+            logger.warning(f"Krowne product not found for SKU: {sku}")
             return jsonify({'success': False, 'error': 'Product not found'}), 404
     except Exception as e:
         logger.error(f"Krowne scraping error for SKU {sku}: {str(e)}")
@@ -403,7 +405,7 @@ def compare_products():
                 logger.warning(f"Failed to fetch Pimly product for SKU {sku}: {e}")
 
             try:
-                krowne_product = scraper.scrape_product(sku) or {}
+                krowne_product = scraper.scrapeSite(sku) or {}
             except Exception as e:
                 logger.warning(f"Failed to scrape Krowne product for SKU {sku}: {e}")
 
@@ -447,7 +449,7 @@ def compare_single_product(sku):
             pimly_product = {}
 
         try:
-            krowne_product = scraper.scrape_product(sku) or {}
+            krowne_product = scraper.scrapeSite(sku) or {}
         except Exception as e:
             logger.warning(f"Failed to scrape Krowne product for SKU {sku}: {e}")
             krowne_product = {}
