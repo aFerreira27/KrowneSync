@@ -11,7 +11,9 @@ from app.services.salesforce_client import SalesforceClient
 from app.services.pimly_client import PimlyClient
 from app.services.krowne_cms_service import KrowneCMSService
 from app.services.krowne_scraper import KrowneScraper
-from app.services.extract_skus import extract_known_ids_from_csv    
+from app.services.extract_skus import extract_known_ids_from_csv
+from app.services.product_mapper import ProductMapper
+
 
 main = Blueprint('main', __name__)
 
@@ -35,32 +37,6 @@ def get_authenticated_sf_client():
     return sf_client
 
 krowne_cms_service = KrowneCMSService()
-
-
-# def load_skus_from_csv():
-#     """Load known SKUs from the Initial_Import.csv file"""
-#     import csv
-#     import os
-    
-#     csv_path = os.path.join(os.path.dirname(__file__), '..', 'uploads', 'Initial_Import.csv')
-#     skus = []
-    
-#     try:
-#         if os.path.exists(csv_path):
-#             with open(csv_path, 'r', encoding='utf-8') as file:
-#                 reader = csv.reader(file)
-#                 next(reader, None)  # Skip header row
-#                 for row in reader:
-#                     if row and len(row) > 0:
-#                         sku = row[0].strip()
-#                         if sku:
-#                             skus.append(sku)
-#         logger.info(f"Loaded {len(skus)} SKUs from CSV")
-#     except Exception as e:
-#         logger.error(f"Error loading SKUs from CSV: {str(e)}")
-    
-#     return skus
-
 
 ### Salesforce OAuth Routes ###
 
@@ -406,11 +382,11 @@ def scrape_krowne_product(sku):
         logger.error(f"Krowne scraping error for SKU {sku}: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+### CORRECTED COMPARE ROUTE USING PRODUCTMAPPER ###
 
-### Product Comparison Routes ###
 @main.route("/api/compare", methods=["POST", "OPTIONS"])
 def compare_products():
-    """Compare product data between Pimly/Salesforce and Krowne website"""
+    """Compare product data between Pimly/Salesforce and Krowne website using ProductMapper"""
     if request.method == "OPTIONS":
         return '', 200
     
@@ -423,255 +399,265 @@ def compare_products():
         skus = data.get('skus', [])
         search_term = data.get('search')
         
-        # Determine target SKU
-        target_sku = None
+        # Determine target SKU(s)
+        target_skus = []
         if sku:
-            target_sku = sku
+            target_skus = [sku]
         elif search_term:
-            target_sku = search_term
+            target_skus = [search_term]
         elif skus and len(skus) > 0:
-            target_sku = skus[0]
+            target_skus = skus
         
-        if not target_sku:
+        if not target_skus:
             return jsonify({"error": "SKU, search term, or skus required"}), 400
         
-        logger.info(f"Processing comparison for SKU: {target_sku}")
+        logger.info(f"Processing comparison for SKUs: {target_skus}")
         
-        # Get Salesforce/Pimly data
+        # Initialize the ProductMapper
+        mapper = ProductMapper()
+        
+        results = []
+        
+        # Process each SKU
+        for target_sku in target_skus:
+            logger.info(f"🔍 Processing SKU: {target_sku}")
+            
+            # Get Salesforce/Pimly data
+            salesforce_data = None
+            try:
+                sf_client = get_authenticated_sf_client()
+                pimly_client = PimlyClient(sf_client)
+                salesforce_data = pimly_client.get_product_by_sku(target_sku)
+                logger.info(f"✅ Salesforce data retrieved for {target_sku}")
+                if salesforce_data:
+                    logger.info(f"   Salesforce fields: {list(salesforce_data.keys())}")
+            except Exception as e:
+                logger.warning(f"❌ Could not fetch Salesforce data for {target_sku}: {str(e)}")
+            
+            # Get Krowne website data using the scraper
+            krowne_data = None
+            try:
+                logger.info(f"🔍 Starting Krowne scraping for SKU: {target_sku}")
+                krowne_scraper = KrowneScraper()
+                
+                # Get the product data - this should return the formatted data structure
+                krowne_data = asyncio.run(krowne_scraper.get_product_by_sku(target_sku))
+                
+                if krowne_data:
+                    logger.info(f"✅ Krowne data retrieved for {target_sku}")
+                    logger.info(f"   Krowne fields: {list(krowne_data.keys())}")
+                else:
+                    logger.warning(f"❌ No Krowne data returned for {target_sku}")
+            except Exception as e:
+                logger.error(f"❌ Krowne scraping failed for {target_sku}: {str(e)}")
+            
+            # Use ProductMapper for comprehensive comparison
+            comparison_results = []
+            if salesforce_data or krowne_data:
+                comparison_results = mapper.compare_products(
+                    salesforce_data or {},
+                    krowne_data or {}
+                )
+                logger.info(f"📊 ProductMapper found {len(comparison_results)} field comparisons for {target_sku}")
+                
+                # Log detailed comparison results
+                for result in comparison_results:
+                    if result.is_mismatch:
+                        logger.info(f"   MISMATCH - {result.field_name}: SF='{result.salesforce_value}' vs Krowne='{result.krowne_value}'")
+                    elif result.has_partial_data:
+                        logger.info(f"   PARTIAL - {result.field_name}: SF='{result.salesforce_value}' vs Krowne='{result.krowne_value}'")
+            
+            # Convert comparison results to the format expected by frontend
+            mismatches = []
+            matches = []
+            partial_data = []
+            
+            for result in comparison_results:
+                comparison_item = {
+                    'field': result.field_name.replace('_', ' ').title(),
+                    'canonical_name': result.field_name,
+                    'salesforce': result.salesforce_value,
+                    'krowne': result.krowne_value,
+                    'notes': result.notes,
+                    'description': mapper.get_field_description(result.field_name)
+                }
+                
+                if result.is_mismatch:
+                    mismatches.append(comparison_item)
+                elif result.has_partial_data:
+                    partial_data.append(comparison_item)
+                elif result.is_match:
+                    matches.append(comparison_item)
+            
+            # Create result item with comprehensive data
+            result_item = {
+                'sku': target_sku,
+                'product_id': target_sku,
+                'salesforce': salesforce_data,
+                'krowne': krowne_data,
+                'comparison': {
+                    'mismatches': mismatches,
+                    'matches': matches,
+                    'partial_data': partial_data,
+                    'total_fields_compared': len(comparison_results),
+                    'mismatch_count': len(mismatches),
+                    'match_count': len(matches),
+                    'partial_data_count': len(partial_data)
+                },
+                'mismatches': mismatches,  # For backward compatibility
+                'timestamp': datetime.utcnow().isoformat(),
+                'status': determine_product_status(salesforce_data, krowne_data)
+            }
+            
+            # Add frontend-compatible fields
+            if krowne_data:
+                result_item.update({
+                    'krowne_name': krowne_data.get('name'),
+                    'krowne_price': krowne_data.get('price') or krowne_data.get('listPrice'),
+                    'krowne_description': krowne_data.get('description'),
+                    'krowne_url': f"https://www.krowne.com/{target_sku}",
+                    'krowne_image': krowne_data.get('mainImageUrl'),
+                    'name': krowne_data.get('name')
+                })
+            
+            if salesforce_data:
+                result_item.update({
+                    'salesforce_name': salesforce_data.get('name'),
+                    'salesforce_price': mapper.extract_salesforce_value(salesforce_data, 'list_price'),
+                    'salesforce_description': (
+                        mapper.extract_salesforce_value(salesforce_data, 'description') or
+                        salesforce_data.get('description')
+                    )
+                })
+            
+            results.append(result_item)
+        
+        # Return results in consistent format
+        response_data = {
+            'results': results,
+            'total': len(results),
+            'timestamp': datetime.utcnow().isoformat(),
+            'success': True,
+            'mapper_info': {
+                'total_mapped_fields': len(mapper.get_all_canonical_fields()),
+                'mapped_fields': mapper.get_all_canonical_fields()
+            }
+        }
+        
+        logger.info(f"📤 Returning {len(results)} comparison results using ProductMapper")
+        return jsonify(response_data)
+        
+    except Exception as e:
+        logger.error(f"💥 Error in compare_products: {str(e)}", exc_info=True)
+        return jsonify({
+            "error": str(e),
+            "success": False,
+            "timestamp": datetime.utcnow().isoformat()
+        }), 500
+
+def determine_product_status(salesforce_data, krowne_data):
+    """Determine the status of a product based on available data"""
+    if salesforce_data and krowne_data:
+        return 'found_both'
+    elif salesforce_data and not krowne_data:
+        return 'missing_from_krowne'
+    elif not salesforce_data and krowne_data:
+        return 'missing_from_salesforce'
+    else:
+        return 'not_found'
+
+### Additional ProductMapper Utility Routes ###
+
+@main.route('/api/mapper/fields', methods=['GET'])
+def get_mapped_fields():
+    """Get all available mapped fields from ProductMapper"""
+    try:
+        mapper = ProductMapper()
+        fields_info = []
+        
+        for field_name in mapper.get_all_canonical_fields():
+            mapping = mapper.field_mappings[field_name]
+            fields_info.append({
+                'canonical_name': field_name,
+                'display_name': field_name.replace('_', ' ').title(),
+                'description': mapping.description,
+                'field_type': mapping.field_type,
+                'salesforce_names': mapping.salesforce_names,
+                'krowne_names': mapping.krowne_names
+            })
+        
+        return jsonify({
+            'fields': fields_info,
+            'total_fields': len(fields_info)
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting mapped fields: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@main.route('/api/mapper/compare-detailed/<sku>', methods=['GET'])
+def get_detailed_comparison(sku):
+    """Get detailed field-by-field comparison for a single SKU"""
+    try:
+        # Get both data sources
         salesforce_data = None
         try:
             sf_client = get_authenticated_sf_client()
             pimly_client = PimlyClient(sf_client)
-            salesforce_data = pimly_client.get_product_by_sku(target_sku)
-            logger.info(f"✅ Salesforce data retrieved for {target_sku}")
+            salesforce_data = pimly_client.get_product_by_sku(sku)
         except Exception as e:
-            logger.warning(f"❌ Could not fetch Salesforce data for {target_sku}: {str(e)}")
+            logger.warning(f"Could not fetch Salesforce data: {str(e)}")
         
-        # Get Krowne website data
         krowne_data = None
         try:
-            logger.info(f"🔍 Starting Krowne scraping for SKU: {target_sku}")
             krowne_scraper = KrowneScraper()
-            krowne_data = asyncio.run(krowne_scraper.get_product_by_sku(target_sku))
-            
-            if krowne_data:
-                logger.info(f"✅ Krowne data retrieved for {target_sku}: {list(krowne_data.keys())}")
-            else:
-                logger.warning(f"❌ No Krowne data returned for {target_sku}")
+            krowne_data = asyncio.run(krowne_scraper.get_product_by_sku(sku))
         except Exception as e:
-            logger.error(f"❌ Krowne scraping failed for {target_sku}: {str(e)}")
+            logger.warning(f"Could not fetch Krowne data: {str(e)}")
         
-        # Calculate mismatches
-        mismatches = []
-        if salesforce_data and krowne_data:
-            mismatches = calculate_product_mismatches(salesforce_data, krowne_data)
-            logger.info(f"📊 Calculated {len(mismatches)} mismatches for {target_sku}")
+        # Use ProductMapper for detailed comparison
+        mapper = ProductMapper()
+        comparison_results = mapper.compare_products(
+            salesforce_data or {},
+            krowne_data or {}
+        )
         
-        # Create result in the format the frontend expects
-        result_item = {
-            'sku': target_sku,
-            'product_id': target_sku,
-            'salesforce': salesforce_data,
-            'krowne': krowne_data,
-            'mismatches': mismatches,
-            'timestamp': datetime.utcnow().isoformat(),
-            'status': 'found' if (salesforce_data or krowne_data) else 'not_found'
+        # Organize results by category
+        detailed_results = {
+            'sku': sku,
+            'salesforce_available': salesforce_data is not None,
+            'krowne_available': krowne_data is not None,
+            'comparison_summary': {
+                'total_fields': len(comparison_results),
+                'matches': len([r for r in comparison_results if r.is_match]),
+                'mismatches': len([r for r in comparison_results if r.is_mismatch]),
+                'partial_data': len([r for r in comparison_results if r.has_partial_data]),
+                'no_data': len([r for r in comparison_results if not r.salesforce_value and not r.krowne_value])
+            },
+            'field_comparisons': []
         }
         
-        # Add the fields the frontend specifically looks for
-        if krowne_data:
-            result_item.update({
-                'krowne_name': krowne_data.get('name'),
-                'krowne_price': krowne_data.get('price'),
-                'krowne_description': krowne_data.get('description'),
-                'krowne_url': f"https://www.krowne.com/{target_sku}",
-                'krowne_image': krowne_data.get('mainImageUrl'),
-                'name': krowne_data.get('name')  # Some frontend code looks for just 'name'
+        for result in comparison_results:
+            detailed_results['field_comparisons'].append({
+                'field_name': result.field_name,
+                'display_name': result.field_name.replace('_', ' ').title(),
+                'description': mapper.get_field_description(result.field_name),
+                'field_type': mapper.field_mappings[result.field_name].field_type,
+                'salesforce_value': result.salesforce_value,
+                'krowne_value': result.krowne_value,
+                'normalized_sf': mapper.normalize_value(result.salesforce_value, mapper.field_mappings[result.field_name].field_type),
+                'normalized_krowne': mapper.normalize_value(result.krowne_value, mapper.field_mappings[result.field_name].field_type),
+                'is_match': result.is_match,
+                'is_mismatch': result.is_mismatch,
+                'has_partial_data': result.has_partial_data,
+                'notes': result.notes
             })
         
-        # Check if this is a batch request (skus array) or single request
-        if isinstance(skus, list) and len(skus) > 1:
-            # Handle multiple SKUs (batch processing)
-            logger.info(f"Batch processing {len(skus)} SKUs")
-            results = [result_item]  # Start with first SKU
-            
-            # Process remaining SKUs
-            for remaining_sku in skus[1:]:
-                # Process each remaining SKU... (similar logic)
-                pass
-            
-            return jsonify({
-                'results': results,
-                'total': len(results),
-                'timestamp': datetime.utcnow().isoformat()
-            })
-        else:
-            # Single SKU request - return in results array format
-            logger.info(f"📤 Returning single result for {target_sku}")
-            return jsonify({
-                'results': [result_item],
-                'total': 1,
-                'timestamp': datetime.utcnow().isoformat()
-            })
+        return jsonify(detailed_results)
         
     except Exception as e:
-        logger.error(f"💥 Error in compare_products: {str(e)}", exc_info=True)
-        return jsonify({"error": str(e)}), 500
-    
-def calculate_product_mismatches(salesforce_data, krowne_data):
-    """Calculate mismatches between Salesforce and Krowne data - ENHANCED"""
-    mismatches = []
-    
-    try:
-        # Helper function to get property value from Salesforce data
-        def get_sf_property(properties, prop_name):
-            if not properties or not isinstance(properties, list):
-                return None
-            for prop in properties:
-                if prop.get('propertyAdminName') == prop_name or prop.get('propertyName') == prop_name:
-                    return prop.get('value')
-            return None
-        
-        # Enhanced price cleaning function
-        def clean_price(price):
-            if not price:
-                return None
-            if isinstance(price, (int, float)):
-                return float(price)
-            if isinstance(price, str):
-                # Remove currency symbols and whitespace
-                clean = price.replace('$', '').replace(',', '').strip()
-                try:
-                    return float(clean)
-                except ValueError:
-                    return None
-            return None
-        
-        # Enhanced text comparison function
-        def normalize_text(text):
-            if not text:
-                return ""
-            return str(text).lower().strip()
-        
-        # Compare names
-        sf_name = salesforce_data.get('name')
-        krowne_name = krowne_data.get('name')
-        if sf_name and krowne_name:
-            # Remove SKU prefix from Salesforce name for comparison
-            sf_name_clean = sf_name
-            if ' - ' in sf_name:
-                sf_name_clean = sf_name.split(' - ', 1)[1]  # Remove "16-281 - " prefix
-            
-            if normalize_text(sf_name_clean) != normalize_text(krowne_name):
-                mismatches.append({
-                    'field': 'Name',
-                    'salesforce': sf_name,
-                    'krowne': krowne_name
-                })
-        
-        # Enhanced price comparison
-        sf_price = get_sf_property(salesforce_data.get('properties', []), 'List_Price')
-        krowne_price = krowne_data.get('price')
-        
-        if sf_price is not None and krowne_price is not None:
-            sf_price_clean = clean_price(sf_price)
-            krowne_price_clean = clean_price(krowne_price)
-            
-            if (sf_price_clean is not None and krowne_price_clean is not None and 
-                abs(sf_price_clean - krowne_price_clean) > 0.01):
-                mismatches.append({
-                    'field': 'List Price',
-                    'salesforce': sf_price,
-                    'krowne': krowne_price
-                })
-        
-        # Compare series
-        sf_series = get_sf_property(salesforce_data.get('properties', []), 'Series') or salesforce_data.get('series')
-        krowne_series = krowne_data.get('series')
-        if (sf_series and krowne_series and 
-            normalize_text(sf_series) != normalize_text(krowne_series)):
-            mismatches.append({
-                'field': 'Series',
-                'salesforce': sf_series,
-                'krowne': krowne_series
-            })
-        
-        # Compare warranty
-        sf_warranty = get_sf_property(salesforce_data.get('properties', []), 'Warranty') or salesforce_data.get('warranty')
-        krowne_warranty = krowne_data.get('warranty')
-        if (sf_warranty and krowne_warranty and 
-            normalize_text(sf_warranty) != normalize_text(krowne_warranty)):
-            mismatches.append({
-                'field': 'Warranty',
-                'salesforce': sf_warranty,
-                'krowne': krowne_warranty
-            })
-        
-        # Enhanced description comparison
-        sf_description = (get_sf_property(salesforce_data.get('properties', []), 'Description') or 
-                         get_sf_property(salesforce_data.get('properties', []), 'Product_Description') or
-                         salesforce_data.get('description'))
-        krowne_description = krowne_data.get('description')
-        
-        if sf_description and krowne_description:
-            sf_desc_clean = normalize_text(sf_description)
-            krowne_desc_clean = normalize_text(krowne_description)
-            
-            # Only flag as mismatch if they're significantly different
-            # (allows for minor variations in formatting)
-            if sf_desc_clean != krowne_desc_clean and len(sf_desc_clean) > 10:
-                mismatches.append({
-                    'field': 'Description',
-                    'salesforce': sf_description,
-                    'krowne': krowne_description
-                })
-        
-        # Compare specifications that exist in both systems
-        if salesforce_data.get('properties') and krowne_data.get('properties'):
-            sf_props = salesforce_data['properties']
-            krowne_props = krowne_data['properties']
-            
-            # Create lookup for Krowne properties
-            krowne_lookup = {}
-            for prop in krowne_props:
-                admin_name = prop.get('propertyAdminName', '')
-                prop_name = prop.get('propertyName', '')
-                krowne_lookup[admin_name] = prop.get('value')
-                krowne_lookup[prop_name] = prop.get('value')
-                # Also add variations
-                krowne_lookup[admin_name.replace('_', ' ')] = prop.get('value')
-                krowne_lookup[prop_name.replace(' ', '_')] = prop.get('value')
-            
-            # Compare Salesforce properties against Krowne
-            for sf_prop in sf_props:
-                sf_admin_name = sf_prop.get('propertyAdminName', '')
-                sf_prop_name = sf_prop.get('propertyName', '')
-                sf_value = sf_prop.get('value')
-                
-                # Skip certain fields to avoid duplicates
-                skip_fields = ['SKU', 'sku', 'Name', 'Price', 'List_Price', 'Description', 'Product_Description']
-                if sf_admin_name in skip_fields or sf_prop_name in skip_fields:
-                    continue
-                
-                # Look for matching Krowne property
-                krowne_value = (krowne_lookup.get(sf_admin_name) or 
-                               krowne_lookup.get(sf_prop_name) or
-                               krowne_lookup.get(sf_admin_name.replace('_', ' ')) or
-                               krowne_lookup.get(sf_prop_name.replace(' ', '_')))
-                
-                if sf_value and krowne_value and normalize_text(sf_value) != normalize_text(krowne_value):
-                    mismatches.append({
-                        'field': sf_prop_name or sf_admin_name,
-                        'salesforce': sf_value,
-                        'krowne': krowne_value
-                    })
-        
-        return mismatches
-        
-    except Exception as e:
-        logger.error(f"Error calculating mismatches: {str(e)}")
-        return []
-
+        logger.error(f"Error in detailed comparison: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 ### Misc and Utility Endpoints ###
 
 @main.route('/api/test-proxy', methods=['GET'])
@@ -773,7 +759,13 @@ def compare_debug():
         logger.error(f"Debug compare error: {e}")
         return jsonify({"error": str(e)}), 500
 
-# Also add this to see the current /api/compare response format
+# Add this fix to the top of your routes.py file, right after the existing imports:
+
+# Fix the import for calculate_product_mismatches
+from app.services.product_mapper import ProductMapper, calculate_product_mismatches
+
+# Then update the compareRaw function to use the correct import:
+
 @main.route("/api/compare-raw/<sku>", methods=["GET"])
 def compare_raw(sku):
     """See what the current compare endpoint returns for a single SKU"""
@@ -800,7 +792,7 @@ def compare_raw(sku):
         except Exception as e:
             logger.warning(f"Could not fetch Krowne data for {sku}: {str(e)}")
         
-        # Calculate mismatches
+        # Calculate mismatches using the correct function
         mismatches = []
         if salesforce_data and krowne_data:
             mismatches = calculate_product_mismatches(salesforce_data, krowne_data)
@@ -826,6 +818,4 @@ def compare_raw(sku):
         
     except Exception as e:
         logger.error(f"Raw compare error: {e}")
-        return jsonify({"error": str(e)}), 500
-        logger.error(f"Debug compare error: {e}")
         return jsonify({"error": str(e)}), 500

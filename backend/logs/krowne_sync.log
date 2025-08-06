@@ -3464,3 +3464,927 @@ information about how to avoid this problem.
 2025-08-06 09:23:23,344 - __main__ - INFO - Debug mode: True
 2025-08-06 09:23:23,369 - werkzeug - WARNING -  * Debugger is active!
 2025-08-06 09:23:23,374 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 09:31:10,271 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 09:31:10,326 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 09:31:11,418 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 09:31:11,418 - __main__ - INFO - Debug mode: True
+2025-08-06 09:31:11,444 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 09:31:11,448 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 09:31:28,235 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:31:28] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 09:31:28,237 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:31:28] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 09:31:28,816 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 09:31:28,821 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:31:28] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 09:31:28,827 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:31:28] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 09:31:29,068 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 09:31:29,073 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:31:29] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 09:31:29,728 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 09:31:29,735 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:31:29] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 09:31:30,059 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:31:30] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 09:31:30,279 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 09:31:30,284 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:31:30] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 09:31:30,326 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:31:30] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 09:31:30,373 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:31:30] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 09:31:41,704 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:31:41] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 09:31:41,708 - app.routes - INFO - Searching Pimly for: SJ-TC
+2025-08-06 09:31:41,708 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 09:31:42,814 - app.services.pimly_client - INFO - Found product by exact SKU match: SJ-TC
+2025-08-06 09:31:42,820 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:31:42] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 09:31:43,139 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:31:43] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 09:31:43,454 - app.routes - INFO - Compare request data: {'skus': ['SJ-TC']}
+2025-08-06 09:31:43,454 - app.routes - INFO - Processing comparison for SKUs: ['SJ-TC']
+2025-08-06 09:31:43,462 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 09:31:44,455 - app.services.pimly_client - INFO - Found product by exact SKU match: SJ-TC
+2025-08-06 09:31:45,571 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:31:45] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 09:36:44,318 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 09:36:44,384 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 09:36:45,571 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 09:36:45,572 - __main__ - INFO - Debug mode: True
+2025-08-06 09:36:45,597 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 09:36:45,601 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 09:36:48,592 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:36:48] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 09:36:48,593 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:36:48] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 09:36:49,172 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 09:36:49,177 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:36:49] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 09:36:49,181 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:36:49] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 09:36:49,428 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 09:36:49,434 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:36:49] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 09:36:49,711 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 09:36:49,717 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:36:49] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 09:36:50,034 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:36:50] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 09:36:50,275 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 09:36:50,280 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:36:50] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 09:36:50,289 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:36:50] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 09:36:50,348 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:36:50] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 09:36:53,918 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:36:53] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 09:36:53,922 - app.routes - INFO - Searching Pimly for: 12-801L
+2025-08-06 09:36:53,922 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 09:36:54,909 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 09:36:54,915 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:36:54] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 09:36:55,228 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:36:55] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 09:36:55,537 - app.routes - INFO - Compare request data: {'skus': ['12-801L']}
+2025-08-06 09:36:55,537 - app.routes - INFO - Processing comparison for SKUs: ['12-801L']
+2025-08-06 09:36:55,546 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 09:36:56,178 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 09:36:57,399 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:36:57] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 09:37:24,368 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 09:37:24,489 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 09:37:25,704 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 09:37:25,704 - __main__ - INFO - Debug mode: True
+2025-08-06 09:37:25,731 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 09:37:25,734 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 09:37:30,360 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 09:37:30,361 - __main__ - INFO - Debug mode: True
+2025-08-06 09:37:31,697 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-08-06 09:37:31,697 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-06 09:37:31,699 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 09:37:32,727 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 09:37:32,727 - __main__ - INFO - Debug mode: True
+2025-08-06 09:37:32,752 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 09:37:32,756 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 09:37:39,141 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:37:39] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 09:37:39,456 - app.routes - INFO - Searching Pimly for: 12-802L
+2025-08-06 09:37:39,456 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 09:37:40,578 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-802L
+2025-08-06 09:37:40,584 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:37:40] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 09:37:40,590 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:37:40] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 09:37:40,593 - app.routes - INFO - Compare request data: {'skus': ['12-802L']}
+2025-08-06 09:37:40,593 - app.routes - INFO - Processing comparison for SKUs: ['12-802L']
+2025-08-06 09:37:40,602 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 09:37:41,748 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-802L
+2025-08-06 09:37:43,429 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:37:43] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 09:40:10,346 - app.routes - INFO - Testing scraper for SKU: 16-281
+2025-08-06 09:40:11,568 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 09:40:11] "GET /api/test-scraper/16-281 HTTP/1.1" 200 -
+2025-08-06 09:46:30,326 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 09:46:30,396 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 09:46:31,035 - __main__ - ERROR - Failed to start application: unterminated string literal (detected at line 579) (routes.py, line 579)
+2025-08-06 09:49:32,998 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 09:49:32,998 - __main__ - INFO - Debug mode: True
+2025-08-06 09:49:34,319 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-08-06 09:49:34,319 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-06 09:49:34,321 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 09:49:35,581 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 09:49:35,581 - __main__ - INFO - Debug mode: True
+2025-08-06 09:49:35,604 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 09:49:35,608 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 09:50:19,336 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 09:50:19,407 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 09:50:20,521 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 09:50:20,522 - __main__ - INFO - Debug mode: True
+2025-08-06 09:50:20,548 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 09:50:20,551 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 10:12:51,497 - app.routes - INFO - Testing scraper for SKU: 12-802L
+2025-08-06 10:12:52,721 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:12:52] "GET /api/test-scraper/12-802L HTTP/1.1" 200 -
+2025-08-06 10:24:46,739 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:46] "[33mGET /main.248bdd85b3bbee04329e.hot-update.json HTTP/1.1[0m" 404 -
+2025-08-06 10:24:47,330 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:47] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:24:47,331 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:47] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:24:47,373 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:47] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:24:47,374 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:47] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:24:47,915 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:24:47,920 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:47] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:24:47,925 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:47] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:24:48,166 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:24:48,171 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:48] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:24:48,461 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:24:48,466 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:48] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:24:48,724 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:24:48,729 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:48] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:24:48,774 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:48] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:24:49,014 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:24:49,020 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:49] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:24:49,086 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:49] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:24:49,231 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:24:49,236 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:49] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:24:49,414 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:49] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:24:49,556 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:24:49,569 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:49] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:24:49,887 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:49] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:24:50,089 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:24:50,093 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:50] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:24:50,149 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:50] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:24:53,823 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:53] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 10:24:53,827 - app.routes - INFO - Searching Pimly for: 12-801L
+2025-08-06 10:24:53,828 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 10:24:55,240 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 10:24:55,245 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:55] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 10:24:55,561 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:55] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 10:24:55,874 - app.routes - INFO - Compare request data: {'skus': ['12-801L']}
+2025-08-06 10:24:55,875 - app.routes - INFO - Processing comparison for SKUs: ['12-801L']
+2025-08-06 10:24:55,889 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 10:24:56,972 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 10:24:56,977 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 10:24:58,259 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 10:24:58,259 - app.routes - INFO -    Krowne properties count: 18
+2025-08-06 10:24:58,271 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:24:58] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 10:28:00,055 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:28:00] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:28:00,056 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:28:00] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:28:00,651 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:28:00,657 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:28:00] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:28:00,662 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:28:00] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:28:00,909 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:28:00,913 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:28:00] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:28:01,250 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:28:01,254 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:28:01] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:28:01,575 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:28:01] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:28:01,826 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:28:01] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:28:02,210 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:28:02,216 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:28:02] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:28:02,224 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:28:02] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:28:05,388 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:28:05] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 10:28:05,696 - app.routes - INFO - Searching Pimly for: kr-2000
+2025-08-06 10:28:05,696 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 10:28:06,718 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 10:28:06,729 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:28:06] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 10:28:07,043 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:28:07] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 10:28:07,045 - app.routes - INFO - Compare request data: {'skus': ['kr-2000']}
+2025-08-06 10:28:07,045 - app.routes - INFO - Processing comparison for SKUs: ['kr-2000']
+2025-08-06 10:28:07,049 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 10:28:08,182 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 10:28:08,187 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 10:28:09,241 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 10:28:09,241 - app.routes - INFO -    Krowne properties count: 3
+2025-08-06 10:28:09,253 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:28:09] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 10:28:29,887 - app.routes - INFO - Testing scraper for SKU: kr-2000
+2025-08-06 10:28:30,972 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:28:30] "GET /api/test-scraper/kr-2000 HTTP/1.1" 200 -
+2025-08-06 10:31:40,826 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:31:40] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:31:40,827 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:31:40] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:31:41,392 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:31:41,397 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:31:41] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:31:41,403 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:31:41] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:31:41,618 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:31:41,623 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:31:41] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:31:41,924 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:31:41,929 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:31:41] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:31:42,244 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:31:42] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:31:42,479 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:31:42,484 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:31:42] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:31:42,513 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:31:42] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:31:42,559 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:31:42] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:31:48,090 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:31:48] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 10:31:48,094 - app.routes - INFO - Searching Pimly for: kr-2000
+2025-08-06 10:31:48,095 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 10:31:49,037 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 10:31:49,041 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:31:49] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 10:31:49,358 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:31:49] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 10:31:49,670 - app.routes - INFO - Compare request data: {'skus': ['kr-2000']}
+2025-08-06 10:31:49,670 - app.routes - INFO - Processing comparison for SKUs: ['kr-2000']
+2025-08-06 10:31:49,675 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 10:31:50,636 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 10:31:50,640 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 10:31:51,854 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 10:31:51,854 - app.routes - INFO -    Krowne properties count: 3
+2025-08-06 10:31:51,871 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:31:51] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 10:39:33,506 - app.routes - ERROR - Error loading SKUs: extract_known_ids_from_csv() missing 1 required positional argument: 'csv_path'
+2025-08-06 10:39:33,512 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:39:33] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-06 10:39:33,776 - app.routes - ERROR - Error loading SKUs: extract_known_ids_from_csv() missing 1 required positional argument: 'csv_path'
+2025-08-06 10:39:33,793 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:39:33] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-06 10:39:34,675 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:39:34] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 10:39:34,991 - app.routes - INFO - Searching Pimly for: kr-2000
+2025-08-06 10:39:34,992 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 10:39:36,332 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 10:39:36,337 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:39:36] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 10:39:36,342 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:39:36] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 10:39:36,345 - app.routes - INFO - Compare request data: {'skus': ['kr-2000']}
+2025-08-06 10:39:36,345 - app.routes - INFO - Processing comparison for SKUs: ['kr-2000']
+2025-08-06 10:39:36,350 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 10:39:37,405 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 10:39:37,410 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 10:39:38,556 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 10:39:38,557 - app.routes - INFO -    Krowne properties count: 3
+2025-08-06 10:39:38,573 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:39:38] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 10:39:39,671 - app.routes - ERROR - Error loading SKUs: extract_known_ids_from_csv() missing 1 required positional argument: 'csv_path'
+2025-08-06 10:39:39,676 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:39:39] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-06 10:39:39,988 - app.routes - ERROR - Error loading SKUs: extract_known_ids_from_csv() missing 1 required positional argument: 'csv_path'
+2025-08-06 10:39:39,992 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:39:39] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-06 10:40:12,852 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:40:12] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 10:40:13,163 - app.routes - INFO - Searching Pimly for: kr-2000
+2025-08-06 10:40:13,164 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 10:40:14,158 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 10:40:14,163 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:40:14] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 10:40:14,168 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:40:14] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 10:40:14,171 - app.routes - INFO - Compare request data: {'skus': ['kr-2000']}
+2025-08-06 10:40:14,171 - app.routes - INFO - Processing comparison for SKUs: ['kr-2000']
+2025-08-06 10:40:14,176 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 10:40:15,234 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 10:40:15,238 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 10:40:16,532 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 10:40:16,533 - app.routes - INFO -    Krowne properties count: 3
+2025-08-06 10:40:16,546 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:40:16] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 10:43:25,977 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:43:25] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:43:25,978 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:43:25] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:43:26,568 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:43:26,573 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:43:26] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:43:26,579 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:43:26] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:43:26,793 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:43:26,797 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:43:26] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:43:27,090 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:43:27,095 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:43:27] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:43:27,413 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:43:27] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:43:27,616 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:43:27,621 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:43:27] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:43:27,682 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:43:27] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:43:27,727 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:43:27] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:43:32,945 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:43:32] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 10:43:32,949 - app.routes - INFO - Searching Pimly for: kr-2000
+2025-08-06 10:43:32,949 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 10:43:34,065 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 10:43:34,070 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:43:34] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 10:43:34,395 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:43:34] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 10:43:34,727 - app.routes - INFO - Compare request data: {'skus': ['kr-2000']}
+2025-08-06 10:43:34,727 - app.routes - INFO - Processing comparison for SKUs: ['kr-2000']
+2025-08-06 10:43:34,733 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 10:43:35,688 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 10:43:35,692 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 10:43:36,777 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 10:43:36,777 - app.routes - INFO -    Krowne properties count: 3
+2025-08-06 10:43:36,791 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:43:36] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 10:43:50,054 - app.routes - INFO - Testing scraper for SKU: kr-2000
+2025-08-06 10:43:51,216 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:43:51] "GET /api/test-scraper/kr-2000 HTTP/1.1" 200 -
+2025-08-06 10:46:29,367 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 10:46:29,456 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 10:46:30,084 - __main__ - ERROR - Failed to start application: unterminated string literal (detected at line 585) (routes.py, line 585)
+2025-08-06 10:48:06,102 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 10:48:06,103 - __main__ - INFO - Debug mode: True
+2025-08-06 10:48:07,436 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-08-06 10:48:07,437 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-06 10:48:07,439 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 10:48:08,676 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 10:48:08,677 - __main__ - INFO - Debug mode: True
+2025-08-06 10:48:08,700 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 10:48:08,705 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 10:48:14,110 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:48:14] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:48:14,111 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:48:14] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:48:14,708 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:48:14,713 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:48:14] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:48:14,720 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:48:14] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:48:14,977 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:48:14,982 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:48:14] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:48:15,293 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:48:15,298 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:48:15] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:48:15,616 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:48:15] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:48:15,870 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:48:15] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:48:16,276 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:48:16,284 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:48:16] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:48:16,294 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:48:16] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:48:23,647 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:48:23] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 10:48:23,954 - app.routes - INFO - Searching Pimly for: 12-801L
+2025-08-06 10:48:23,954 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 10:48:25,074 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 10:48:25,080 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:48:25] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 10:48:25,400 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:48:25] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 10:48:25,403 - app.routes - INFO - Compare request data: {'skus': ['12-801L']}
+2025-08-06 10:48:25,404 - app.routes - INFO - Processing comparison for SKUs: ['12-801L']
+2025-08-06 10:48:25,414 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 10:48:26,502 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 10:48:26,505 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 10:48:27,656 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'features', 'specifications', 'certifications', 'warranty', 'series', 'relatedProducts', 'categories', 'downloads', 'breadcrumb', 'productCode', 'listPrice', 'specSheetUrl', 'warrantyInfo', 'detailedFeatures', 'localImagePath']
+2025-08-06 10:48:27,656 - app.routes - INFO -    Series value: Silver Series
+2025-08-06 10:48:27,656 - app.routes - INFO -    Warranty value: 1 year
+2025-08-06 10:48:27,656 - app.routes - INFO -    ProductCode value: 12-801L
+2025-08-06 10:48:27,670 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:48:27] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 10:48:44,000 - app.routes - INFO - Testing scraper for SKU: 12-801L
+2025-08-06 10:48:45,246 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:48:45] "GET /api/test-scraper/12-801L HTTP/1.1" 200 -
+2025-08-06 10:49:57,160 - app.routes - INFO - Testing scraper for SKU: 12-801L
+2025-08-06 10:49:58,360 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:49:58] "GET /api/test-scraper/12-801L HTTP/1.1" 200 -
+2025-08-06 10:58:01,624 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:58:01] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:58:01,625 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:58:01] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:58:02,150 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:58:02,156 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:58:02] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:58:02,160 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:58:02] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:58:02,410 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:58:02,420 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:58:02] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 10:58:02,692 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:58:02,697 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:58:02] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:58:02,913 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 10:58:02,918 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:58:02] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 10:58:03,014 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:58:03] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:58:03,230 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:58:03] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:58:03,327 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:58:03] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:58:03,592 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:58:03] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 10:58:11,081 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:58:11] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 10:58:11,085 - app.routes - INFO - Searching Pimly for: kr-2000
+2025-08-06 10:58:11,086 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 10:58:12,942 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 10:58:12,947 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:58:12] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 10:58:13,259 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:58:13] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 10:58:13,570 - app.routes - INFO - Compare request data: {'skus': ['kr-2000']}
+2025-08-06 10:58:13,570 - app.routes - INFO - Processing comparison for SKUs: ['kr-2000']
+2025-08-06 10:58:13,575 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 10:58:14,688 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 10:58:14,692 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 10:58:15,861 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'features', 'specifications', 'certifications', 'warranty', 'series', 'relatedProducts', 'categories', 'downloads', 'breadcrumb', 'productCode', 'listPrice', 'specSheetUrl', 'warrantyInfo', 'detailedFeatures', 'localImagePath']
+2025-08-06 10:58:15,861 - app.routes - INFO -    Series value: MasterTap
+2025-08-06 10:58:15,861 - app.routes - INFO -    Warranty value: None
+2025-08-06 10:58:15,861 - app.routes - INFO -    ProductCode value: KR-2000
+2025-08-06 10:58:15,875 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 10:58:15] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 11:03:14,597 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\product_mapper.py', reloading
+2025-08-06 11:03:14,675 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 11:03:15,790 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 11:03:15,790 - __main__ - INFO - Debug mode: True
+2025-08-06 11:03:15,816 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 11:03:15,820 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 11:03:31,572 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 11:03:31,634 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 11:03:32,736 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 11:03:32,736 - __main__ - INFO - Debug mode: True
+2025-08-06 11:03:32,760 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 11:03:32,764 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 11:04:59,664 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 11:04:59,724 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 11:05:00,815 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 11:05:00,815 - __main__ - INFO - Debug mode: True
+2025-08-06 11:05:00,841 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 11:05:00,845 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 11:05:06,357 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:05:06] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:05:06,358 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:05:06] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:05:06,980 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:05:06,985 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:05:06] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:05:06,992 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:05:06] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:05:07,219 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:05:07,224 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:05:07] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:05:07,518 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:05:07,523 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:05:07] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:05:07,846 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:05:07] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:05:08,072 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:05:08,078 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:05:08] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:05:08,089 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:05:08] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:05:08,161 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:05:08] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:05:11,924 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:05:11] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 11:05:11,928 - app.routes - INFO - Searching Pimly for: kr-2000
+2025-08-06 11:05:11,929 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 11:05:12,935 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 11:05:12,940 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:05:12] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 11:05:13,255 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:05:13] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 11:05:13,566 - app.routes - INFO - Compare request data: {'skus': ['kr-2000']}
+2025-08-06 11:05:13,567 - app.routes - INFO - Processing comparison for SKUs: ['kr-2000']
+2025-08-06 11:05:13,575 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 11:05:14,461 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 11:05:14,465 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 11:05:15,531 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'features', 'specifications', 'certifications', 'warranty', 'series', 'relatedProducts', 'categories', 'downloads', 'breadcrumb', 'productCode', 'listPrice', 'specSheetUrl', 'warrantyInfo', 'detailedFeatures', 'localImagePath']
+2025-08-06 11:05:15,532 - app.routes - INFO -    Series value: MasterTap
+2025-08-06 11:05:15,532 - app.routes - INFO -    Warranty value: None
+2025-08-06 11:05:15,532 - app.routes - INFO -    ProductCode value: KR-2000
+2025-08-06 11:05:15,544 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:05:15] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 11:06:43,113 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 11:06:43,175 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 11:06:44,278 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 11:06:44,278 - __main__ - INFO - Debug mode: True
+2025-08-06 11:06:44,303 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 11:06:44,308 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 11:13:18,503 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 11:13:18,563 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 11:13:19,648 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 11:13:19,649 - __main__ - INFO - Debug mode: True
+2025-08-06 11:13:19,673 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 11:13:19,677 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 11:13:30,163 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 11:13:30,224 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 11:13:31,326 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 11:13:31,327 - __main__ - INFO - Debug mode: True
+2025-08-06 11:13:31,352 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 11:13:31,356 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 11:13:57,615 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 11:13:57,680 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 11:13:58,801 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 11:13:58,802 - __main__ - INFO - Debug mode: True
+2025-08-06 11:13:58,826 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 11:13:58,831 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 11:14:36,371 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 11:14:36,430 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 11:14:37,536 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 11:14:37,536 - __main__ - INFO - Debug mode: True
+2025-08-06 11:14:37,561 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 11:14:37,566 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 11:14:44,925 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 11:14:44,979 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 11:14:46,003 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 11:14:46,003 - __main__ - INFO - Debug mode: True
+2025-08-06 11:14:46,027 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 11:14:46,031 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 11:14:49,750 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:14:49] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:14:49,751 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:14:49] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:14:50,328 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:14:50,333 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:14:50] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:14:50,338 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:14:50] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:14:50,575 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:14:50,579 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:14:50] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:14:50,881 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:14:50,885 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:14:50] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:14:51,196 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:14:51] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:14:51,426 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:14:51,431 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:14:51] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:14:51,464 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:14:51] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:14:51,513 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:14:51] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:14:55,024 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:14:55] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 11:14:55,028 - app.routes - INFO - Searching Pimly for: kr-1000
+2025-08-06 11:14:55,029 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 11:14:56,063 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-1000
+2025-08-06 11:14:56,069 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:14:56] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 11:14:56,376 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:14:56] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 11:14:56,688 - app.routes - INFO - Compare request data: {'skus': ['kr-1000']}
+2025-08-06 11:14:56,689 - app.routes - INFO - Processing comparison for SKUs: ['kr-1000']
+2025-08-06 11:14:56,697 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 11:14:57,793 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-1000
+2025-08-06 11:14:57,798 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 11:14:58,881 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 11:14:58,885 - app.routes - INFO -    MISMATCH - description: SF='MasterTap Keg Spacer' vs Krowne='Transport heavy kegs with ease | Spacers available to stack and move 2 kegs on one dolly | Heavy duty plastic construction to withstand cold temperatures'
+2025-08-06 11:14:58,885 - app.routes - INFO -    PARTIAL - warranty: SF='1 year' vs Krowne='None'
+2025-08-06 11:14:58,885 - app.routes - INFO -    PARTIAL - weight: SF='3.6' vs Krowne='None'
+2025-08-06 11:14:58,885 - app.routes - INFO -    PARTIAL - nsf_certification: SF='N/A' vs Krowne='None'
+2025-08-06 11:14:58,885 - app.routes - INFO -    PARTIAL - csa_certification: SF='N/A' vs Krowne='None'
+2025-08-06 11:14:58,885 - app.routes - INFO -    PARTIAL - cec_certification: SF='False' vs Krowne='None'
+2025-08-06 11:14:58,886 - app.routes - INFO -    PARTIAL - case_quantity: SF='6' vs Krowne='None'
+2025-08-06 11:14:58,886 - app.routes - INFO -    PARTIAL - shipping_weight: SF='3.6' vs Krowne='None'
+2025-08-06 11:14:58,886 - app.routes - INFO -    PARTIAL - upc: SF='822196100018' vs Krowne='None'
+2025-08-06 11:14:58,894 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:14:58] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 11:29:12,050 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:29:12] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:29:12,052 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:29:12] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:29:12,657 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:29:12,663 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:29:12] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:29:12,668 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:29:12] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:29:12,902 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:29:12,907 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:29:12] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:29:13,190 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:29:13,197 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:29:13] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:29:13,503 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:29:13] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:29:13,728 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:29:13,733 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:29:13] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:29:13,770 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:29:13] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:29:13,816 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:29:13] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:35:36,683 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\product_mapper.py', reloading
+2025-08-06 11:35:36,755 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 11:35:37,913 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 11:35:37,913 - __main__ - INFO - Debug mode: True
+2025-08-06 11:35:37,939 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 11:35:37,945 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 11:35:48,246 - app.routes - INFO - Testing scraper for SKU: kr-2000
+2025-08-06 11:35:49,519 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:35:49] "GET /api/test-scraper/kr-2000 HTTP/1.1" 200 -
+2025-08-06 11:35:59,597 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:35:59] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 11:35:59,600 - app.routes - INFO - Searching Pimly for: kr-2000
+2025-08-06 11:35:59,601 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 11:36:00,708 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 11:36:00,713 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:36:00] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 11:36:00,719 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:36:00] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 11:36:00,722 - app.routes - INFO - Compare request data: {'skus': ['kr-2000']}
+2025-08-06 11:36:00,723 - app.routes - INFO - Processing comparison for SKUs: ['kr-2000']
+2025-08-06 11:36:00,732 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 11:36:01,651 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 11:36:01,656 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 11:36:02,972 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 11:36:02,977 - app.routes - INFO -    MISMATCH - product_name: SF='KR-2000 - MasterTap Storage Keg Stacker' vs Krowne='MasterTap Keg Stacker'
+2025-08-06 11:36:02,977 - app.routes - INFO -    MISMATCH - description: SF='MasterTap Storage Keg Stacker' vs Krowne='Transport heavy kegs with ease | Spacers available to stack and move 2 kegs on one dolly | Heavy duty plastic construction to withstand cold temperatures'
+2025-08-06 11:36:02,977 - app.routes - INFO -    PARTIAL - warranty: SF='1 year' vs Krowne='None'
+2025-08-06 11:36:02,977 - app.routes - INFO -    PARTIAL - weight: SF='1.3' vs Krowne='None'
+2025-08-06 11:36:02,978 - app.routes - INFO -    PARTIAL - nsf_certification: SF='N/A' vs Krowne='None'
+2025-08-06 11:36:02,978 - app.routes - INFO -    PARTIAL - csa_certification: SF='N/A' vs Krowne='None'
+2025-08-06 11:36:02,978 - app.routes - INFO -    PARTIAL - cec_certification: SF='False' vs Krowne='None'
+2025-08-06 11:36:02,978 - app.routes - INFO -    PARTIAL - case_quantity: SF='10' vs Krowne='None'
+2025-08-06 11:36:02,979 - app.routes - INFO -    PARTIAL - shipping_weight: SF='1.3' vs Krowne='None'
+2025-08-06 11:36:02,979 - app.routes - INFO -    PARTIAL - upc: SF='822196112233' vs Krowne='None'
+2025-08-06 11:36:02,979 - app.routes - INFO -    PARTIAL - main_image_url: SF='None' vs Krowne='https://www.krowne.com/files/kr-2000.jpg'
+2025-08-06 11:36:02,979 - app.routes - INFO -    PARTIAL - downloads: SF='None' vs Krowne='[{'name': 'DOWNLOAD', 'url': 'https://www.krowne.com/files/8-7-keg-dollies_001.pdf'}]'
+2025-08-06 11:36:02,979 - app.routes - INFO -    PARTIAL - breadcrumb: SF='None' vs Krowne='[{'name': 'Beverage Dispensing Systems', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment'}, {'name': 'Parts & Accessories', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment/parts-and-accessories'}]'
+2025-08-06 11:36:02,980 - app.routes - INFO -    PARTIAL - categories: SF='None' vs Krowne='[{'name': 'Beverage Dispensing Systems', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment'}, {'name': 'Parts & Accessories', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment/parts-and-accessories'}]'
+2025-08-06 11:36:02,980 - app.routes - INFO -    PARTIAL - related_products: SF='None' vs Krowne='[]'
+2025-08-06 11:36:02,980 - app.routes - INFO -    PARTIAL - warranty_info: SF='None' vs Krowne='https://www.krowne.com/warranty-terms/'
+2025-08-06 11:36:02,980 - app.routes - INFO -    PARTIAL - properties: SF='None' vs Krowne='[{'propertyName': 'Series', 'propertyAdminName': 'Series', 'value': 'MasterTap'}, {'propertyName': 'List Price', 'propertyAdminName': 'List_Price', 'value': '$75.00'}, {'propertyName': 'Product Code', 'propertyAdminName': 'Product_Code', 'value': 'KR-2000'}]'
+2025-08-06 11:36:02,990 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:36:02] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 11:36:15,549 - app.routes - INFO - Testing scraper for SKU: kr-2000
+2025-08-06 11:36:16,596 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:36:16] "GET /api/test-scraper/kr-2000 HTTP/1.1" 200 -
+2025-08-06 11:49:43,798 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:49:43] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 11:49:43,809 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:49:43] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 11:49:55,753 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:49:55] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:49:55,754 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:49:55] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:49:56,432 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:49:56,437 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:49:56] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:49:56,442 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:49:56] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:49:56,690 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:49:56,695 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:49:56] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:49:57,002 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:49:57,007 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:49:57] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:49:57,321 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:49:57] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:49:57,519 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:49:57,534 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:49:57] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:49:57,567 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:49:57] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:49:57,633 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:49:57] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:50:01,604 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:50:01] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 11:50:01,608 - app.routes - INFO - Searching Pimly for: 12-801L
+2025-08-06 11:50:01,608 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 11:50:02,708 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 11:50:02,715 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:50:02] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 11:50:03,025 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:50:03] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 11:50:03,338 - app.routes - INFO - Compare request data: {'skus': ['12-801L']}
+2025-08-06 11:50:03,338 - app.routes - INFO - Processing comparison for SKUs: ['12-801L']
+2025-08-06 11:50:03,343 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 11:50:04,351 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 11:50:04,356 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 11:50:05,581 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 11:50:05,585 - app.routes - INFO -    MISMATCH - description: SF='Silver Series 8" Center Wall Mount Faucet with 6" Wide Gooseneck Spout' vs Krowne='Silver Series 8" center wall mount faucet | 1/4 turn ceramic valves | 1/2" NPT female inlets'
+2025-08-06 11:50:05,585 - app.routes - INFO -    PARTIAL - weight: SF='3.49' vs Krowne='None'
+2025-08-06 11:50:05,585 - app.routes - INFO -    PARTIAL - length: SF='12.375' vs Krowne='None'
+2025-08-06 11:50:05,586 - app.routes - INFO -    PARTIAL - height: SF='9.5' vs Krowne='None'
+2025-08-06 11:50:05,586 - app.routes - INFO -    PARTIAL - depth: SF='6' vs Krowne='None'
+2025-08-06 11:50:05,586 - app.routes - INFO -    PARTIAL - mounting_style: SF='Wall Mount' vs Krowne='None'
+2025-08-06 11:50:05,586 - app.routes - INFO -    PARTIAL - spout_style: SF='Gooseneck' vs Krowne='None'
+2025-08-06 11:50:05,586 - app.routes - INFO -    PARTIAL - spout_size: SF='6' vs Krowne='None'
+2025-08-06 11:50:05,587 - app.routes - INFO -    PARTIAL - handle_type: SF='Lever' vs Krowne='None'
+2025-08-06 11:50:05,587 - app.routes - INFO -    PARTIAL - valve_type: SF='1/4 turn ceramic valve' vs Krowne='None'
+2025-08-06 11:50:05,587 - app.routes - INFO -    PARTIAL - flow_rate: SF='1.8' vs Krowne='None'
+2025-08-06 11:50:05,587 - app.routes - INFO -    PARTIAL - inlet: SF='1/2" NPT Female Inlets' vs Krowne='None'
+2025-08-06 11:50:05,587 - app.routes - INFO -    PARTIAL - nsf_certification: SF='['NSF/ANSI/CAN 61: Q<1', 'NSF-61 & NSF/ANSI 372']' vs Krowne='None'
+2025-08-06 11:50:05,587 - app.routes - INFO -    PARTIAL - csa_certification: SF='ASME A112.18.1-2012/CSA B125.1-12' vs Krowne='None'
+2025-08-06 11:50:05,587 - app.routes - INFO -    PARTIAL - cec_certification: SF='True' vs Krowne='None'
+2025-08-06 11:50:05,587 - app.routes - INFO -    PARTIAL - case_quantity: SF='12' vs Krowne='None'
+2025-08-06 11:50:05,587 - app.routes - INFO -    PARTIAL - case_weight: SF='41.89' vs Krowne='None'
+2025-08-06 11:50:05,588 - app.routes - INFO -    PARTIAL - shipping_weight: SF='3.68' vs Krowne='None'
+2025-08-06 11:50:05,588 - app.routes - INFO -    PARTIAL - upc: SF='822196428013' vs Krowne='None'
+2025-08-06 11:50:05,588 - app.routes - INFO -    PARTIAL - hts_code: SF='7324.90.0000' vs Krowne='None'
+2025-08-06 11:50:05,588 - app.routes - INFO -    PARTIAL - temperature_range: SF='40°F - 180°F' vs Krowne='None'
+2025-08-06 11:50:05,588 - app.routes - INFO -    PARTIAL - main_image_url: SF='None' vs Krowne='https://www.krowne.com/files/12-801l.jpg'
+2025-08-06 11:50:05,588 - app.routes - INFO -    PARTIAL - downloads: SF='None' vs Krowne='[{'name': 'DOWNLOAD', 'url': 'https://www.krowne.com/files/12-801l-spec-sheet.pdf'}, {'name': 'DOWNLOAD', 'url': 'https://www.krowne.com/files/12-8-installation-manual.pdf'}]'
+2025-08-06 11:50:05,588 - app.routes - INFO -    MISMATCH - features: SF='Durable full range spout with double o-ring construction' vs Krowne='['Silver Series 8" center wall mount faucet', '1/4 turn ceramic valves', '1/2" NPT female inlets', 'Durable full range swing spout with double o-ring construction', 'Lever handles', 'Chrome plated finish']'
+2025-08-06 11:50:05,589 - app.routes - INFO -    PARTIAL - breadcrumb: SF='None' vs Krowne='[{'name': 'Plumbing', 'url': 'https://www.krowne.com/product-showcase/plumbing'}, {'name': 'Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets'}, {'name': 'Manual Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets'}, {'name': 'Kitchen and Pantry Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets/kitchen-and-pantry-faucets'}]'
+2025-08-06 11:50:05,589 - app.routes - INFO -    PARTIAL - categories: SF='None' vs Krowne='[{'name': 'Plumbing', 'url': 'https://www.krowne.com/product-showcase/plumbing'}, {'name': 'Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets'}, {'name': 'Manual Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets'}, {'name': 'Kitchen and Pantry Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets/kitchen-and-pantry-faucets'}]'
+2025-08-06 11:50:05,589 - app.routes - INFO -    PARTIAL - related_products: SF='None' vs Krowne='[{'sku': '12-802l', 'name': '12-802L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 8-1/2" Wide Gooseneck Spout', 'url': 'https://www.krowne.com/12-802l/', 'imageUrl': 'https://www.krowne.com/files/12-802l.jpg'}, {'sku': '12-824l', 'name': '12-824L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 24" Jointed Spout', 'url': 'https://www.krowne.com/12-824l/', 'imageUrl': 'https://www.krowne.com/files/12-824l.jpg'}, {'sku': '12-818l', 'name': '12-818L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 18" Jointed Spout', 'url': 'https://www.krowne.com/12-818l/', 'imageUrl': 'https://www.krowne.com/files/12-818l.jpg'}, {'sku': '12-816l', 'name': '12-816L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 16" Spout', 'url': 'https://www.krowne.com/12-816l/', 'imageUrl': 'https://www.krowne.com/files/12-816l_1.jpg'}, {'sku': '12-814l', 'name': '12-814L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 14" Spout', 'url': 'https://www.krowne.com/12-814l/', 'imageUrl': 'https://www.krowne.com/files/12-814l_1.jpg'}, {'sku': '12-812l', 'name': '12-812L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 12" Spout', 'url': 'https://www.krowne.com/12-812l/', 'imageUrl': 'https://www.krowne.com/files/12-812l_1.jpg'}, {'sku': '12-810l', 'name': '12-810L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 10" Spout', 'url': 'https://www.krowne.com/12-810l/', 'imageUrl': 'https://www.krowne.com/files/12-810l_1.jpg'}, {'sku': '12-808l', 'name': '12-808L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 8" Spout', 'url': 'https://www.krowne.com/12-808l/', 'imageUrl': 'https://www.krowne.com/files/12-808l_1.jpg'}, {'sku': '12-806l', 'name': '12-806L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 6" Spout', 'url': 'https://www.krowne.com/12-806l/', 'imageUrl': 'https://www.krowne.com/files/12-806l_1.jpg'}, {'sku': '12-8xxl', 'name': '12-8XXL', 'description': 'Silver Series 8" Center Wall Mount Faucet Body, No Spout', 'url': 'https://www.krowne.com/12-8xxl/', 'imageUrl': 'https://www.krowne.com/files/12-8xxl.jpg'}]'
+2025-08-06 11:50:05,589 - app.routes - INFO -    PARTIAL - warranty_info: SF='None' vs Krowne='https://www.krowne.com/warranty-terms/'
+2025-08-06 11:50:05,590 - app.routes - INFO -    PARTIAL - properties: SF='None' vs Krowne='[{'propertyName': 'Series', 'propertyAdminName': 'Series', 'value': 'Silver Series'}, {'propertyName': 'Mounting Style', 'propertyAdminName': 'Mounting_Style', 'value': 'Wall Mount'}, {'propertyName': 'Centers', 'propertyAdminName': 'Centers', 'value': '8"'}, {'propertyName': 'Spout Style', 'propertyAdminName': 'Spout_Style', 'value': 'Gooseneck'}, {'propertyName': 'Spout Size', 'propertyAdminName': 'Spout_Size', 'value': '6"'}, {'propertyName': 'Outlet Type', 'propertyAdminName': 'Outlet_Type', 'value': 'Aerator'}, {'propertyName': 'Flow Rate', 'propertyAdminName': 'Flow_Rate', 'value': '1.8 GPM'}, {'propertyName': 'Handles', 'propertyAdminName': 'Handles', 'value': 'Lever'}, {'propertyName': 'Inlet', 'propertyAdminName': 'Inlet', 'value': '1/2" NPT Female'}, {'propertyName': 'Valves', 'propertyAdminName': 'Valves', 'value': '1/4 turn ceramic valves'}, {'propertyName': 'Finish', 'propertyAdminName': 'Finish', 'value': 'Chrome plated finish'}, {'propertyName': 'NSF Certification', 'propertyAdminName': 'NSF_Certification', 'value': 'NSF-61 & NSF/ANSI 372'}, {'propertyName': 'NSF Q Certification', 'propertyAdminName': 'NSF_Q_Certification', 'value': 'NSF/ANSI/CAN 61: Q < 1'}, {'propertyName': 'CSA Certification', 'propertyAdminName': 'CSA_Certification', 'value': 'ASME A112.18.1-2012/CSA B125.1-12 & NSF/ANSI 372'}, {'propertyName': 'Massachusetts Listed Certification', 'propertyAdminName': 'Massachusetts_Listed_Certification', 'value': 'TRUE'}, {'propertyName': 'CEC Certification', 'propertyAdminName': 'CEC_Certification', 'value': 'TRUE'}, {'propertyName': 'List Price', 'propertyAdminName': 'List_Price', 'value': '$161.00'}, {'propertyName': 'Product Code', 'propertyAdminName': 'Product_Code', 'value': '12-801L'}]'
+2025-08-06 11:50:05,601 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:50:05] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 11:50:05,619 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:50:05] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 11:50:05,634 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:50:05] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 11:52:46,652 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 11:52:46,727 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 11:52:47,871 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 11:52:47,872 - __main__ - INFO - Debug mode: True
+2025-08-06 11:52:47,899 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 11:52:47,903 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 11:53:01,774 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:53:01] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:53:02,371 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:53:02,376 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:53:02] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:53:02,380 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:53:02] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:53:02,658 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:53:02,662 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:53:02] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:53:02,985 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:53:02] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:53:03,716 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:53:03,723 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:53:03] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:53:04,250 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:53:04,255 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:53:04] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:53:04,309 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:53:04] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:53:04,359 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:53:04,364 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:53:04] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:53:04,845 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:53:04,850 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:53:04] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:53:04,859 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:53:04] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:54:57,095 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:54:57] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:54:57,693 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:54:57,701 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:54:57] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:54:57,707 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:54:57] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:54:57,941 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:54:57,948 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:54:57] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:54:58,261 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:54:58] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:54:58,575 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:54:58] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:55:02,102 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:55:02] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:55:02,334 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:55:02,339 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:55:02] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:55:02,416 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:55:02] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:55:02,899 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:55:02,904 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:55:02] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:55:02,916 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:55:02] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:55:02,971 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:55:02,976 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:55:02] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 11:55:03,288 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:55:03] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:55:03,847 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 11:55:03,853 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:55:03] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 11:55:03,859 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:55:03] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:55:03,867 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:55:03] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 11:55:10,082 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:55:10] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 11:55:10,391 - app.routes - INFO - Searching Pimly for: 12-801L
+2025-08-06 11:55:10,392 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 11:55:11,559 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 11:55:11,565 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:55:11] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 11:55:11,571 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:55:11] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 11:55:11,574 - app.routes - INFO - Compare request data: {'skus': ['12-801L']}
+2025-08-06 11:55:11,574 - app.routes - INFO - Processing comparison for SKUs: ['12-801L']
+2025-08-06 11:55:11,582 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 11:55:12,745 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 11:55:12,749 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 11:55:14,036 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 11:55:14,042 - app.routes - INFO -    MISMATCH - description: SF='Silver Series 8" Center Wall Mount Faucet with 6" Wide Gooseneck Spout' vs Krowne='Silver Series 8" center wall mount faucet | 1/4 turn ceramic valves | 1/2" NPT female inlets'
+2025-08-06 11:55:14,042 - app.routes - INFO -    PARTIAL - weight: SF='3.49' vs Krowne='None'
+2025-08-06 11:55:14,042 - app.routes - INFO -    PARTIAL - length: SF='12.375' vs Krowne='None'
+2025-08-06 11:55:14,042 - app.routes - INFO -    PARTIAL - height: SF='9.5' vs Krowne='None'
+2025-08-06 11:55:14,043 - app.routes - INFO -    PARTIAL - depth: SF='6' vs Krowne='None'
+2025-08-06 11:55:14,043 - app.routes - INFO -    PARTIAL - mounting_style: SF='Wall Mount' vs Krowne='None'
+2025-08-06 11:55:14,043 - app.routes - INFO -    PARTIAL - spout_style: SF='Gooseneck' vs Krowne='None'
+2025-08-06 11:55:14,043 - app.routes - INFO -    PARTIAL - spout_size: SF='6' vs Krowne='None'
+2025-08-06 11:55:14,043 - app.routes - INFO -    PARTIAL - handle_type: SF='Lever' vs Krowne='None'
+2025-08-06 11:55:14,044 - app.routes - INFO -    PARTIAL - valve_type: SF='1/4 turn ceramic valve' vs Krowne='None'
+2025-08-06 11:55:14,044 - app.routes - INFO -    PARTIAL - flow_rate: SF='1.8' vs Krowne='None'
+2025-08-06 11:55:14,044 - app.routes - INFO -    PARTIAL - inlet: SF='1/2" NPT Female Inlets' vs Krowne='None'
+2025-08-06 11:55:14,044 - app.routes - INFO -    PARTIAL - nsf_certification: SF='['NSF/ANSI/CAN 61: Q<1', 'NSF-61 & NSF/ANSI 372']' vs Krowne='None'
+2025-08-06 11:55:14,045 - app.routes - INFO -    PARTIAL - csa_certification: SF='ASME A112.18.1-2012/CSA B125.1-12' vs Krowne='None'
+2025-08-06 11:55:14,045 - app.routes - INFO -    PARTIAL - cec_certification: SF='True' vs Krowne='None'
+2025-08-06 11:55:14,045 - app.routes - INFO -    PARTIAL - case_quantity: SF='12' vs Krowne='None'
+2025-08-06 11:55:14,045 - app.routes - INFO -    PARTIAL - case_weight: SF='41.89' vs Krowne='None'
+2025-08-06 11:55:14,045 - app.routes - INFO -    PARTIAL - shipping_weight: SF='3.68' vs Krowne='None'
+2025-08-06 11:55:14,045 - app.routes - INFO -    PARTIAL - upc: SF='822196428013' vs Krowne='None'
+2025-08-06 11:55:14,046 - app.routes - INFO -    PARTIAL - hts_code: SF='7324.90.0000' vs Krowne='None'
+2025-08-06 11:55:14,046 - app.routes - INFO -    PARTIAL - temperature_range: SF='40°F - 180°F' vs Krowne='None'
+2025-08-06 11:55:14,046 - app.routes - INFO -    PARTIAL - main_image_url: SF='None' vs Krowne='https://www.krowne.com/files/12-801l.jpg'
+2025-08-06 11:55:14,046 - app.routes - INFO -    PARTIAL - downloads: SF='None' vs Krowne='[{'name': 'DOWNLOAD', 'url': 'https://www.krowne.com/files/12-801l-spec-sheet.pdf'}, {'name': 'DOWNLOAD', 'url': 'https://www.krowne.com/files/12-8-installation-manual.pdf'}]'
+2025-08-06 11:55:14,047 - app.routes - INFO -    MISMATCH - features: SF='Durable full range spout with double o-ring construction' vs Krowne='['Silver Series 8" center wall mount faucet', '1/4 turn ceramic valves', '1/2" NPT female inlets', 'Durable full range swing spout with double o-ring construction', 'Lever handles', 'Chrome plated finish']'
+2025-08-06 11:55:14,047 - app.routes - INFO -    PARTIAL - breadcrumb: SF='None' vs Krowne='[{'name': 'Plumbing', 'url': 'https://www.krowne.com/product-showcase/plumbing'}, {'name': 'Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets'}, {'name': 'Manual Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets'}, {'name': 'Kitchen and Pantry Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets/kitchen-and-pantry-faucets'}]'
+2025-08-06 11:55:14,048 - app.routes - INFO -    PARTIAL - categories: SF='None' vs Krowne='[{'name': 'Plumbing', 'url': 'https://www.krowne.com/product-showcase/plumbing'}, {'name': 'Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets'}, {'name': 'Manual Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets'}, {'name': 'Kitchen and Pantry Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets/kitchen-and-pantry-faucets'}]'
+2025-08-06 11:55:14,048 - app.routes - INFO -    PARTIAL - related_products: SF='None' vs Krowne='[{'sku': '12-802l', 'name': '12-802L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 8-1/2" Wide Gooseneck Spout', 'url': 'https://www.krowne.com/12-802l/', 'imageUrl': 'https://www.krowne.com/files/12-802l.jpg'}, {'sku': '12-824l', 'name': '12-824L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 24" Jointed Spout', 'url': 'https://www.krowne.com/12-824l/', 'imageUrl': 'https://www.krowne.com/files/12-824l.jpg'}, {'sku': '12-818l', 'name': '12-818L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 18" Jointed Spout', 'url': 'https://www.krowne.com/12-818l/', 'imageUrl': 'https://www.krowne.com/files/12-818l.jpg'}, {'sku': '12-816l', 'name': '12-816L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 16" Spout', 'url': 'https://www.krowne.com/12-816l/', 'imageUrl': 'https://www.krowne.com/files/12-816l_1.jpg'}, {'sku': '12-814l', 'name': '12-814L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 14" Spout', 'url': 'https://www.krowne.com/12-814l/', 'imageUrl': 'https://www.krowne.com/files/12-814l_1.jpg'}, {'sku': '12-812l', 'name': '12-812L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 12" Spout', 'url': 'https://www.krowne.com/12-812l/', 'imageUrl': 'https://www.krowne.com/files/12-812l_1.jpg'}, {'sku': '12-810l', 'name': '12-810L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 10" Spout', 'url': 'https://www.krowne.com/12-810l/', 'imageUrl': 'https://www.krowne.com/files/12-810l_1.jpg'}, {'sku': '12-808l', 'name': '12-808L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 8" Spout', 'url': 'https://www.krowne.com/12-808l/', 'imageUrl': 'https://www.krowne.com/files/12-808l_1.jpg'}, {'sku': '12-806l', 'name': '12-806L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 6" Spout', 'url': 'https://www.krowne.com/12-806l/', 'imageUrl': 'https://www.krowne.com/files/12-806l_1.jpg'}, {'sku': '12-8xxl', 'name': '12-8XXL', 'description': 'Silver Series 8" Center Wall Mount Faucet Body, No Spout', 'url': 'https://www.krowne.com/12-8xxl/', 'imageUrl': 'https://www.krowne.com/files/12-8xxl.jpg'}]'
+2025-08-06 11:55:14,048 - app.routes - INFO -    PARTIAL - warranty_info: SF='None' vs Krowne='https://www.krowne.com/warranty-terms/'
+2025-08-06 11:55:14,048 - app.routes - INFO -    PARTIAL - properties: SF='None' vs Krowne='[{'propertyName': 'Series', 'propertyAdminName': 'Series', 'value': 'Silver Series'}, {'propertyName': 'Mounting Style', 'propertyAdminName': 'Mounting_Style', 'value': 'Wall Mount'}, {'propertyName': 'Centers', 'propertyAdminName': 'Centers', 'value': '8"'}, {'propertyName': 'Spout Style', 'propertyAdminName': 'Spout_Style', 'value': 'Gooseneck'}, {'propertyName': 'Spout Size', 'propertyAdminName': 'Spout_Size', 'value': '6"'}, {'propertyName': 'Outlet Type', 'propertyAdminName': 'Outlet_Type', 'value': 'Aerator'}, {'propertyName': 'Flow Rate', 'propertyAdminName': 'Flow_Rate', 'value': '1.8 GPM'}, {'propertyName': 'Handles', 'propertyAdminName': 'Handles', 'value': 'Lever'}, {'propertyName': 'Inlet', 'propertyAdminName': 'Inlet', 'value': '1/2" NPT Female'}, {'propertyName': 'Valves', 'propertyAdminName': 'Valves', 'value': '1/4 turn ceramic valves'}, {'propertyName': 'Finish', 'propertyAdminName': 'Finish', 'value': 'Chrome plated finish'}, {'propertyName': 'NSF Certification', 'propertyAdminName': 'NSF_Certification', 'value': 'NSF-61 & NSF/ANSI 372'}, {'propertyName': 'NSF Q Certification', 'propertyAdminName': 'NSF_Q_Certification', 'value': 'NSF/ANSI/CAN 61: Q < 1'}, {'propertyName': 'CSA Certification', 'propertyAdminName': 'CSA_Certification', 'value': 'ASME A112.18.1-2012/CSA B125.1-12 & NSF/ANSI 372'}, {'propertyName': 'Massachusetts Listed Certification', 'propertyAdminName': 'Massachusetts_Listed_Certification', 'value': 'TRUE'}, {'propertyName': 'CEC Certification', 'propertyAdminName': 'CEC_Certification', 'value': 'TRUE'}, {'propertyName': 'List Price', 'propertyAdminName': 'List_Price', 'value': '$161.00'}, {'propertyName': 'Product Code', 'propertyAdminName': 'Product_Code', 'value': '12-801L'}]'
+2025-08-06 11:55:14,059 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:55:14] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 11:55:14,083 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:55:14] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 11:55:14,413 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:55:14] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 11:58:47,007 - app.routes - ERROR - Error loading SKUs: extract_known_ids_from_csv() missing 1 required positional argument: 'csv_path'
+2025-08-06 11:58:47,012 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:58:47] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-06 11:58:47,271 - app.routes - ERROR - Error loading SKUs: extract_known_ids_from_csv() missing 1 required positional argument: 'csv_path'
+2025-08-06 11:58:47,276 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 11:58:47] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-06 11:59:42,376 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 11:59:42,442 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 11:59:43,554 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 11:59:43,554 - __main__ - INFO - Debug mode: True
+2025-08-06 11:59:43,580 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 11:59:43,583 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 12:02:08,286 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\extract_skus.py', reloading
+2025-08-06 12:02:08,346 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 12:02:09,476 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 12:02:09,476 - __main__ - INFO - Debug mode: True
+2025-08-06 12:02:09,502 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 12:02:09,507 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 12:02:10,627 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\product_mapper.py', reloading
+2025-08-06 12:02:10,685 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 12:02:11,744 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 12:02:11,744 - __main__ - INFO - Debug mode: True
+2025-08-06 12:02:11,767 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 12:02:11,771 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 12:02:40,995 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:02:40] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 12:02:41,305 - app.routes - INFO - Searching Pimly for: 12-801L
+2025-08-06 12:02:41,306 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 12:02:44,098 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 12:02:44,104 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:02:44] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 12:02:44,109 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:02:44] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 12:02:44,112 - app.routes - INFO - Compare request data: {'skus': ['12-801L']}
+2025-08-06 12:02:44,112 - app.routes - INFO - Processing comparison for SKUs: ['12-801L']
+2025-08-06 12:02:44,121 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 12:02:45,480 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 12:02:45,486 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 12:02:46,784 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 12:02:46,789 - app.routes - INFO -    MISMATCH - description: SF='Silver Series 8" Center Wall Mount Faucet with 6" Wide Gooseneck Spout' vs Krowne='Silver Series 8" center wall mount faucet | 1/4 turn ceramic valves | 1/2" NPT female inlets'
+2025-08-06 12:02:46,790 - app.routes - INFO -    PARTIAL - weight: SF='3.49' vs Krowne='None'
+2025-08-06 12:02:46,790 - app.routes - INFO -    PARTIAL - length: SF='12.375' vs Krowne='None'
+2025-08-06 12:02:46,790 - app.routes - INFO -    PARTIAL - height: SF='9.5' vs Krowne='None'
+2025-08-06 12:02:46,791 - app.routes - INFO -    PARTIAL - depth: SF='6' vs Krowne='None'
+2025-08-06 12:02:46,791 - app.routes - INFO -    PARTIAL - mounting_style: SF='Wall Mount' vs Krowne='None'
+2025-08-06 12:02:46,791 - app.routes - INFO -    PARTIAL - spout_style: SF='Gooseneck' vs Krowne='None'
+2025-08-06 12:02:46,792 - app.routes - INFO -    PARTIAL - spout_size: SF='6' vs Krowne='None'
+2025-08-06 12:02:46,792 - app.routes - INFO -    PARTIAL - handle_type: SF='Lever' vs Krowne='None'
+2025-08-06 12:02:46,792 - app.routes - INFO -    PARTIAL - valve_type: SF='1/4 turn ceramic valve' vs Krowne='None'
+2025-08-06 12:02:46,793 - app.routes - INFO -    PARTIAL - flow_rate: SF='1.8' vs Krowne='None'
+2025-08-06 12:02:46,793 - app.routes - INFO -    PARTIAL - inlet: SF='1/2" NPT Female Inlets' vs Krowne='None'
+2025-08-06 12:02:46,793 - app.routes - INFO -    PARTIAL - nsf_certification: SF='['NSF/ANSI/CAN 61: Q<1', 'NSF-61 & NSF/ANSI 372']' vs Krowne='None'
+2025-08-06 12:02:46,794 - app.routes - INFO -    PARTIAL - csa_certification: SF='ASME A112.18.1-2012/CSA B125.1-12' vs Krowne='None'
+2025-08-06 12:02:46,794 - app.routes - INFO -    PARTIAL - cec_certification: SF='True' vs Krowne='None'
+2025-08-06 12:02:46,794 - app.routes - INFO -    PARTIAL - case_quantity: SF='12' vs Krowne='None'
+2025-08-06 12:02:46,794 - app.routes - INFO -    PARTIAL - case_weight: SF='41.89' vs Krowne='None'
+2025-08-06 12:02:46,794 - app.routes - INFO -    PARTIAL - shipping_weight: SF='3.68' vs Krowne='None'
+2025-08-06 12:02:46,795 - app.routes - INFO -    PARTIAL - upc: SF='822196428013' vs Krowne='None'
+2025-08-06 12:02:46,795 - app.routes - INFO -    PARTIAL - hts_code: SF='7324.90.0000' vs Krowne='None'
+2025-08-06 12:02:46,795 - app.routes - INFO -    PARTIAL - temperature_range: SF='40°F - 180°F' vs Krowne='None'
+2025-08-06 12:02:46,795 - app.routes - INFO -    PARTIAL - main_image_url: SF='None' vs Krowne='https://www.krowne.com/files/12-801l.jpg'
+2025-08-06 12:02:46,796 - app.routes - INFO -    PARTIAL - downloads: SF='None' vs Krowne='[{'name': 'DOWNLOAD', 'url': 'https://www.krowne.com/files/12-801l-spec-sheet.pdf'}, {'name': 'DOWNLOAD', 'url': 'https://www.krowne.com/files/12-8-installation-manual.pdf'}]'
+2025-08-06 12:02:46,796 - app.routes - INFO -    MISMATCH - features: SF='Durable full range spout with double o-ring construction' vs Krowne='['Silver Series 8" center wall mount faucet', '1/4 turn ceramic valves', '1/2" NPT female inlets', 'Durable full range swing spout with double o-ring construction', 'Lever handles', 'Chrome plated finish']'
+2025-08-06 12:02:46,796 - app.routes - INFO -    PARTIAL - breadcrumb: SF='None' vs Krowne='[{'name': 'Plumbing', 'url': 'https://www.krowne.com/product-showcase/plumbing'}, {'name': 'Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets'}, {'name': 'Manual Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets'}, {'name': 'Kitchen and Pantry Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets/kitchen-and-pantry-faucets'}]'
+2025-08-06 12:02:46,796 - app.routes - INFO -    PARTIAL - categories: SF='None' vs Krowne='[{'name': 'Plumbing', 'url': 'https://www.krowne.com/product-showcase/plumbing'}, {'name': 'Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets'}, {'name': 'Manual Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets'}, {'name': 'Kitchen and Pantry Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets/kitchen-and-pantry-faucets'}]'
+2025-08-06 12:02:46,796 - app.routes - INFO -    PARTIAL - related_products: SF='None' vs Krowne='[{'sku': '12-802l', 'name': '12-802L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 8-1/2" Wide Gooseneck Spout', 'url': 'https://www.krowne.com/12-802l/', 'imageUrl': 'https://www.krowne.com/files/12-802l.jpg'}, {'sku': '12-824l', 'name': '12-824L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 24" Jointed Spout', 'url': 'https://www.krowne.com/12-824l/', 'imageUrl': 'https://www.krowne.com/files/12-824l.jpg'}, {'sku': '12-818l', 'name': '12-818L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 18" Jointed Spout', 'url': 'https://www.krowne.com/12-818l/', 'imageUrl': 'https://www.krowne.com/files/12-818l.jpg'}, {'sku': '12-816l', 'name': '12-816L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 16" Spout', 'url': 'https://www.krowne.com/12-816l/', 'imageUrl': 'https://www.krowne.com/files/12-816l_1.jpg'}, {'sku': '12-814l', 'name': '12-814L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 14" Spout', 'url': 'https://www.krowne.com/12-814l/', 'imageUrl': 'https://www.krowne.com/files/12-814l_1.jpg'}, {'sku': '12-812l', 'name': '12-812L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 12" Spout', 'url': 'https://www.krowne.com/12-812l/', 'imageUrl': 'https://www.krowne.com/files/12-812l_1.jpg'}, {'sku': '12-810l', 'name': '12-810L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 10" Spout', 'url': 'https://www.krowne.com/12-810l/', 'imageUrl': 'https://www.krowne.com/files/12-810l_1.jpg'}, {'sku': '12-808l', 'name': '12-808L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 8" Spout', 'url': 'https://www.krowne.com/12-808l/', 'imageUrl': 'https://www.krowne.com/files/12-808l_1.jpg'}, {'sku': '12-806l', 'name': '12-806L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 6" Spout', 'url': 'https://www.krowne.com/12-806l/', 'imageUrl': 'https://www.krowne.com/files/12-806l_1.jpg'}, {'sku': '12-8xxl', 'name': '12-8XXL', 'description': 'Silver Series 8" Center Wall Mount Faucet Body, No Spout', 'url': 'https://www.krowne.com/12-8xxl/', 'imageUrl': 'https://www.krowne.com/files/12-8xxl.jpg'}]'
+2025-08-06 12:02:46,797 - app.routes - INFO -    PARTIAL - warranty_info: SF='None' vs Krowne='https://www.krowne.com/warranty-terms/'
+2025-08-06 12:02:46,797 - app.routes - INFO -    PARTIAL - properties: SF='None' vs Krowne='[{'propertyName': 'Series', 'propertyAdminName': 'Series', 'value': 'Silver Series'}, {'propertyName': 'Mounting Style', 'propertyAdminName': 'Mounting_Style', 'value': 'Wall Mount'}, {'propertyName': 'Centers', 'propertyAdminName': 'Centers', 'value': '8"'}, {'propertyName': 'Spout Style', 'propertyAdminName': 'Spout_Style', 'value': 'Gooseneck'}, {'propertyName': 'Spout Size', 'propertyAdminName': 'Spout_Size', 'value': '6"'}, {'propertyName': 'Outlet Type', 'propertyAdminName': 'Outlet_Type', 'value': 'Aerator'}, {'propertyName': 'Flow Rate', 'propertyAdminName': 'Flow_Rate', 'value': '1.8 GPM'}, {'propertyName': 'Handles', 'propertyAdminName': 'Handles', 'value': 'Lever'}, {'propertyName': 'Inlet', 'propertyAdminName': 'Inlet', 'value': '1/2" NPT Female'}, {'propertyName': 'Valves', 'propertyAdminName': 'Valves', 'value': '1/4 turn ceramic valves'}, {'propertyName': 'Finish', 'propertyAdminName': 'Finish', 'value': 'Chrome plated finish'}, {'propertyName': 'NSF Certification', 'propertyAdminName': 'NSF_Certification', 'value': 'NSF-61 & NSF/ANSI 372'}, {'propertyName': 'NSF Q Certification', 'propertyAdminName': 'NSF_Q_Certification', 'value': 'NSF/ANSI/CAN 61: Q < 1'}, {'propertyName': 'CSA Certification', 'propertyAdminName': 'CSA_Certification', 'value': 'ASME A112.18.1-2012/CSA B125.1-12 & NSF/ANSI 372'}, {'propertyName': 'Massachusetts Listed Certification', 'propertyAdminName': 'Massachusetts_Listed_Certification', 'value': 'TRUE'}, {'propertyName': 'CEC Certification', 'propertyAdminName': 'CEC_Certification', 'value': 'TRUE'}, {'propertyName': 'List Price', 'propertyAdminName': 'List_Price', 'value': '$161.00'}, {'propertyName': 'Product Code', 'propertyAdminName': 'Product_Code', 'value': '12-801L'}]'
+2025-08-06 12:02:46,808 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:02:46] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 12:02:47,128 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:02:47] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 12:02:47,394 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:02:47] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 12:07:24,982 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-06 12:07:25,103 - werkzeug - INFO -  * Restarting with stat
+2025-08-06 12:07:26,726 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-06 12:07:26,726 - __main__ - INFO - Debug mode: True
+2025-08-06 12:07:26,754 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 12:07:26,758 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-06 12:07:36,090 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:36] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 12:07:36,651 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 12:07:36,656 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:36] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 12:07:36,662 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:36] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 12:07:36,882 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 12:07:36,888 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:36] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 12:07:37,196 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:37] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 12:07:37,508 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:37] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 12:07:42,944 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:42] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 12:07:43,246 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:43] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 12:07:43,247 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 12:07:43,252 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:43] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 12:07:43,573 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:43] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 12:07:44,106 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 12:07:44,111 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:44] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 12:07:44,182 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 12:07:44,187 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:44] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 12:07:44,192 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:44] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 12:07:44,389 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 12:07:44,395 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:44] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 12:07:44,514 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:44] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 12:07:44,824 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:44] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 12:07:49,983 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:49] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 12:07:49,985 - app.routes - INFO - Searching Pimly for: kr-2000
+2025-08-06 12:07:49,985 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 12:07:51,068 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 12:07:51,072 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:51] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 12:07:51,078 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:51] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 12:07:51,382 - app.routes - INFO - Compare request data: {'skus': ['kr-2000']}
+2025-08-06 12:07:51,383 - app.routes - INFO - Processing comparison for SKUs: ['kr-2000']
+2025-08-06 12:07:51,392 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 12:07:52,584 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 12:07:52,588 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 12:07:53,901 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 12:07:53,905 - app.routes - INFO -    MISMATCH - product_name: SF='KR-2000 - MasterTap Storage Keg Stacker' vs Krowne='MasterTap Keg Stacker'
+2025-08-06 12:07:53,907 - app.routes - INFO -    MISMATCH - description: SF='MasterTap Storage Keg Stacker' vs Krowne='Transport heavy kegs with ease | Spacers available to stack and move 2 kegs on one dolly | Heavy duty plastic construction to withstand cold temperatures'
+2025-08-06 12:07:53,907 - app.routes - INFO -    PARTIAL - warranty: SF='1 year' vs Krowne='None'
+2025-08-06 12:07:53,907 - app.routes - INFO -    PARTIAL - weight: SF='1.3' vs Krowne='None'
+2025-08-06 12:07:53,907 - app.routes - INFO -    PARTIAL - nsf_certification: SF='N/A' vs Krowne='None'
+2025-08-06 12:07:53,907 - app.routes - INFO -    PARTIAL - csa_certification: SF='N/A' vs Krowne='None'
+2025-08-06 12:07:53,908 - app.routes - INFO -    PARTIAL - cec_certification: SF='False' vs Krowne='None'
+2025-08-06 12:07:53,908 - app.routes - INFO -    PARTIAL - case_quantity: SF='10' vs Krowne='None'
+2025-08-06 12:07:53,908 - app.routes - INFO -    PARTIAL - shipping_weight: SF='1.3' vs Krowne='None'
+2025-08-06 12:07:53,908 - app.routes - INFO -    PARTIAL - upc: SF='822196112233' vs Krowne='None'
+2025-08-06 12:07:53,909 - app.routes - INFO -    PARTIAL - main_image_url: SF='None' vs Krowne='https://www.krowne.com/files/kr-2000.jpg'
+2025-08-06 12:07:53,909 - app.routes - INFO -    PARTIAL - downloads: SF='None' vs Krowne='[{'name': 'DOWNLOAD', 'url': 'https://www.krowne.com/files/8-7-keg-dollies_001.pdf'}]'
+2025-08-06 12:07:53,909 - app.routes - INFO -    PARTIAL - breadcrumb: SF='None' vs Krowne='[{'name': 'Beverage Dispensing Systems', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment'}, {'name': 'Parts & Accessories', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment/parts-and-accessories'}]'
+2025-08-06 12:07:53,909 - app.routes - INFO -    PARTIAL - categories: SF='None' vs Krowne='[{'name': 'Beverage Dispensing Systems', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment'}, {'name': 'Parts & Accessories', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment/parts-and-accessories'}]'
+2025-08-06 12:07:53,909 - app.routes - INFO -    PARTIAL - related_products: SF='None' vs Krowne='[]'
+2025-08-06 12:07:53,910 - app.routes - INFO -    PARTIAL - warranty_info: SF='None' vs Krowne='https://www.krowne.com/warranty-terms/'
+2025-08-06 12:07:53,910 - app.routes - INFO -    PARTIAL - properties: SF='None' vs Krowne='[{'propertyName': 'Series', 'propertyAdminName': 'Series', 'value': 'MasterTap'}, {'propertyName': 'List Price', 'propertyAdminName': 'List_Price', 'value': '$75.00'}, {'propertyName': 'Product Code', 'propertyAdminName': 'Product_Code', 'value': 'KR-2000'}]'
+2025-08-06 12:07:53,920 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:53] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 12:07:53,938 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:53] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 12:07:54,263 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:07:54] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 12:09:37,093 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:09:37] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 12:09:37,712 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 12:09:37,718 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:09:37] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 12:09:37,725 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:09:37] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 12:09:37,963 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 12:09:37,968 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:09:37] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 12:09:38,290 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:09:38] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 12:09:38,605 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:09:38] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 12:10:52,502 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:10:52] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 12:10:52,503 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:10:52] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 12:10:53,083 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 12:10:53,087 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:10:53] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 12:10:53,092 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:10:53] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 12:10:53,483 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 12:10:53,489 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:10:53] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 12:10:53,631 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 12:10:53,635 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:10:53] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 12:10:53,949 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:10:53] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 12:10:54,162 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 12:10:54,167 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:10:54] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 12:10:54,216 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:10:54] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 12:10:54,263 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:10:54] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 12:11:00,831 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:11:00] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 12:11:00,833 - app.routes - INFO - Searching Pimly for: kr-1250
+2025-08-06 12:11:00,834 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 12:11:01,159 - app.services.pimly_client - INFO - Creating Pimly export job for search: kr-1250
+2025-08-06 12:11:01,420 - app.services.pimly_client - ERROR - Error searching products: 500 Server Error: Internal Server Error for url: https://krownemetalcorp.my.salesforce.com/services/apexrest/pimly/v2/exports
+2025-08-06 12:11:01,420 - app.services.pimly_client - ERROR - Fallback search failed: 'SalesforceClient' object has no attribute 'query'
+2025-08-06 12:11:01,424 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:11:01] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 12:11:05,704 - app.routes - INFO - Searching Pimly for: kr-1000
+2025-08-06 12:11:05,705 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 12:11:06,852 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-1000
+2025-08-06 12:11:06,857 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:11:06] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 12:11:07,166 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:11:07] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 12:11:07,169 - app.routes - INFO - Compare request data: {'skus': ['kr-1000']}
+2025-08-06 12:11:07,169 - app.routes - INFO - Processing comparison for SKUs: ['kr-1000']
+2025-08-06 12:11:07,173 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 12:11:08,078 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-1000
+2025-08-06 12:11:08,082 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 12:11:09,258 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 12:11:09,262 - app.routes - INFO -    MISMATCH - description: SF='MasterTap Keg Spacer' vs Krowne='Transport heavy kegs with ease | Spacers available to stack and move 2 kegs on one dolly | Heavy duty plastic construction to withstand cold temperatures'
+2025-08-06 12:11:09,263 - app.routes - INFO -    PARTIAL - warranty: SF='1 year' vs Krowne='None'
+2025-08-06 12:11:09,263 - app.routes - INFO -    PARTIAL - weight: SF='3.6' vs Krowne='None'
+2025-08-06 12:11:09,263 - app.routes - INFO -    PARTIAL - nsf_certification: SF='N/A' vs Krowne='None'
+2025-08-06 12:11:09,263 - app.routes - INFO -    PARTIAL - csa_certification: SF='N/A' vs Krowne='None'
+2025-08-06 12:11:09,263 - app.routes - INFO -    PARTIAL - cec_certification: SF='False' vs Krowne='None'
+2025-08-06 12:11:09,264 - app.routes - INFO -    PARTIAL - case_quantity: SF='6' vs Krowne='None'
+2025-08-06 12:11:09,264 - app.routes - INFO -    PARTIAL - shipping_weight: SF='3.6' vs Krowne='None'
+2025-08-06 12:11:09,264 - app.routes - INFO -    PARTIAL - upc: SF='822196100018' vs Krowne='None'
+2025-08-06 12:11:09,264 - app.routes - INFO -    PARTIAL - main_image_url: SF='None' vs Krowne='https://www.krowne.com/files/kr-1000.jpg'
+2025-08-06 12:11:09,265 - app.routes - INFO -    PARTIAL - downloads: SF='None' vs Krowne='[{'name': 'DOWNLOAD', 'url': 'https://www.krowne.com/files/8-7-keg-dollies.pdf'}]'
+2025-08-06 12:11:09,265 - app.routes - INFO -    PARTIAL - breadcrumb: SF='None' vs Krowne='[{'name': 'Beverage Dispensing Systems', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment'}, {'name': 'Parts & Accessories', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment/parts-and-accessories'}]'
+2025-08-06 12:11:09,265 - app.routes - INFO -    PARTIAL - categories: SF='None' vs Krowne='[{'name': 'Beverage Dispensing Systems', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment'}, {'name': 'Parts & Accessories', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment/parts-and-accessories'}]'
+2025-08-06 12:11:09,265 - app.routes - INFO -    PARTIAL - related_products: SF='None' vs Krowne='[]'
+2025-08-06 12:11:09,265 - app.routes - INFO -    PARTIAL - warranty_info: SF='None' vs Krowne='https://www.krowne.com/warranty-terms/'
+2025-08-06 12:11:09,266 - app.routes - INFO -    PARTIAL - properties: SF='None' vs Krowne='[{'propertyName': 'Series', 'propertyAdminName': 'Series', 'value': 'MasterTap'}, {'propertyName': 'List Price', 'propertyAdminName': 'List_Price', 'value': '$90.00'}, {'propertyName': 'Product Code', 'propertyAdminName': 'Product_Code', 'value': 'KR-1000'}]'
+2025-08-06 12:11:09,276 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:11:09] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 12:11:09,298 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:11:09] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 12:11:09,312 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:11:09] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 12:12:52,454 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:12:52] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 12:12:52,455 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:12:52] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 12:12:53,022 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 12:12:53,027 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:12:53] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 12:12:53,032 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:12:53] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 12:12:53,313 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 12:12:53,318 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:12:53] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 12:12:53,532 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 12:12:53,537 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:12:53] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 12:12:53,854 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:12:53] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 12:12:54,097 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 12:12:54,104 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:12:54] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 12:12:54,110 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:12:54] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 12:12:54,165 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:12:54] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 12:12:55,998 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:12:55] "OPTIONS /api/auth/krowne/logout HTTP/1.1" 200 -
+2025-08-06 12:12:56,000 - app.routes - INFO - Krowne logout successful
+2025-08-06 12:12:56,004 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:12:56] "POST /api/auth/krowne/logout HTTP/1.1" 200 -
+2025-08-06 12:12:58,216 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:12:58] "OPTIONS /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-06 12:12:58,528 - app.services.krowne_cms_service - INFO - Attempting Krowne CMS authentication for user: lmahler
+2025-08-06 12:12:58,970 - app.services.krowne_cms_service - INFO - Authentication likely successful - large response content
+2025-08-06 12:12:59,020 - app.services.krowne_cms_service - WARNING - Could not extract detailed user info: 'str' object has no attribute 'keys'
+2025-08-06 12:12:59,020 - app.services.krowne_cms_service - INFO - Krowne CMS authentication successful for user: lmahler
+2025-08-06 12:12:59,021 - app.routes - INFO - Krowne login successful for user: lmahler
+2025-08-06 12:12:59,027 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:12:59] "POST /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-06 12:13:03,085 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:13:03] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 12:13:03,089 - app.routes - INFO - Searching Pimly for: kr-1000
+2025-08-06 12:13:03,089 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 12:13:04,157 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-1000
+2025-08-06 12:13:04,163 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:13:04] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 12:13:04,482 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:13:04] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 12:13:04,792 - app.routes - INFO - Compare request data: {'skus': ['kr-1000']}
+2025-08-06 12:13:04,792 - app.routes - INFO - Processing comparison for SKUs: ['kr-1000']
+2025-08-06 12:13:04,797 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 12:13:05,825 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-1000
+2025-08-06 12:13:05,830 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 12:13:07,355 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 12:13:07,358 - app.routes - INFO -    MISMATCH - description: SF='MasterTap Keg Spacer' vs Krowne='Transport heavy kegs with ease | Spacers available to stack and move 2 kegs on one dolly | Heavy duty plastic construction to withstand cold temperatures'
+2025-08-06 12:13:07,358 - app.routes - INFO -    PARTIAL - warranty: SF='1 year' vs Krowne='None'
+2025-08-06 12:13:07,358 - app.routes - INFO -    PARTIAL - weight: SF='3.6' vs Krowne='None'
+2025-08-06 12:13:07,359 - app.routes - INFO -    PARTIAL - nsf_certification: SF='N/A' vs Krowne='None'
+2025-08-06 12:13:07,359 - app.routes - INFO -    PARTIAL - csa_certification: SF='N/A' vs Krowne='None'
+2025-08-06 12:13:07,359 - app.routes - INFO -    PARTIAL - cec_certification: SF='False' vs Krowne='None'
+2025-08-06 12:13:07,359 - app.routes - INFO -    PARTIAL - case_quantity: SF='6' vs Krowne='None'
+2025-08-06 12:13:07,359 - app.routes - INFO -    PARTIAL - shipping_weight: SF='3.6' vs Krowne='None'
+2025-08-06 12:13:07,359 - app.routes - INFO -    PARTIAL - upc: SF='822196100018' vs Krowne='None'
+2025-08-06 12:13:07,361 - app.routes - INFO -    PARTIAL - main_image_url: SF='None' vs Krowne='https://www.krowne.com/files/kr-1000.jpg'
+2025-08-06 12:13:07,361 - app.routes - INFO -    PARTIAL - downloads: SF='None' vs Krowne='[{'name': 'DOWNLOAD', 'url': 'https://www.krowne.com/files/8-7-keg-dollies.pdf'}]'
+2025-08-06 12:13:07,361 - app.routes - INFO -    PARTIAL - breadcrumb: SF='None' vs Krowne='[{'name': 'Beverage Dispensing Systems', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment'}, {'name': 'Parts & Accessories', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment/parts-and-accessories'}]'
+2025-08-06 12:13:07,361 - app.routes - INFO -    PARTIAL - categories: SF='None' vs Krowne='[{'name': 'Beverage Dispensing Systems', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment'}, {'name': 'Parts & Accessories', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment/parts-and-accessories'}]'
+2025-08-06 12:13:07,361 - app.routes - INFO -    PARTIAL - related_products: SF='None' vs Krowne='[]'
+2025-08-06 12:13:07,361 - app.routes - INFO -    PARTIAL - warranty_info: SF='None' vs Krowne='https://www.krowne.com/warranty-terms/'
+2025-08-06 12:13:07,361 - app.routes - INFO -    PARTIAL - properties: SF='None' vs Krowne='[{'propertyName': 'Series', 'propertyAdminName': 'Series', 'value': 'MasterTap'}, {'propertyName': 'List Price', 'propertyAdminName': 'List_Price', 'value': '$90.00'}, {'propertyName': 'Product Code', 'propertyAdminName': 'Product_Code', 'value': 'KR-1000'}]'
+2025-08-06 12:13:07,371 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:13:07] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 12:13:07,386 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:13:07] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 12:13:07,399 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:13:07] "GET /api/mapper/fields HTTP/1.1" 200 -
