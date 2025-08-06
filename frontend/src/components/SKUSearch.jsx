@@ -297,7 +297,7 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
               type="button"
               disabled={loading}
             >
-              ✕
+            X
             </button>
           )}
         </div>

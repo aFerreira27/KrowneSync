@@ -875,6 +875,13 @@ body {
   }
 }
 
+.clear-btn{
+  background-color: #dc2626;
+  text-align: center;
+  padding-left: 0.1rem;
+  padding-right: 0.1rem;
+}
+
 /* Sync Section */
 .sync-section {
   text-align: center;

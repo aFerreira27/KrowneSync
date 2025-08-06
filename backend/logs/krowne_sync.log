@@ -4388,3 +4388,38 @@ information about how to avoid this problem.
 2025-08-06 12:13:07,371 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:13:07] "POST /api/compare HTTP/1.1" 200 -
 2025-08-06 12:13:07,386 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:13:07] "GET /api/mapper/fields HTTP/1.1" 200 -
 2025-08-06 12:13:07,399 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:13:07] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 12:56:30,907 - app.routes - ERROR - Error loading SKUs: extract_known_ids_from_csv() missing 1 required positional argument: 'csv_path'
+2025-08-06 12:56:30,914 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:56:30] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-06 12:56:31,181 - app.routes - ERROR - Error loading SKUs: extract_known_ids_from_csv() missing 1 required positional argument: 'csv_path'
+2025-08-06 12:56:31,199 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:56:31] "[35m[1mGET /api/products/skus HTTP/1.1[0m" 500 -
+2025-08-06 12:56:32,255 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:56:32] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 12:56:32,566 - app.routes - INFO - Searching Pimly for: kr-1000
+2025-08-06 12:56:32,567 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 12:56:33,832 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-1000
+2025-08-06 12:56:33,836 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:56:33] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 12:56:33,841 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:56:33] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 12:56:33,845 - app.routes - INFO - Compare request data: {'skus': ['kr-1000']}
+2025-08-06 12:56:33,847 - app.routes - INFO - Processing comparison for SKUs: ['kr-1000']
+2025-08-06 12:56:33,852 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 12:56:34,974 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-1000
+2025-08-06 12:56:34,978 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 12:56:36,148 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 12:56:36,152 - app.routes - INFO -    MISMATCH - description: SF='MasterTap Keg Spacer' vs Krowne='Transport heavy kegs with ease | Spacers available to stack and move 2 kegs on one dolly | Heavy duty plastic construction to withstand cold temperatures'
+2025-08-06 12:56:36,152 - app.routes - INFO -    PARTIAL - warranty: SF='1 year' vs Krowne='None'
+2025-08-06 12:56:36,153 - app.routes - INFO -    PARTIAL - weight: SF='3.6' vs Krowne='None'
+2025-08-06 12:56:36,153 - app.routes - INFO -    PARTIAL - nsf_certification: SF='N/A' vs Krowne='None'
+2025-08-06 12:56:36,153 - app.routes - INFO -    PARTIAL - csa_certification: SF='N/A' vs Krowne='None'
+2025-08-06 12:56:36,153 - app.routes - INFO -    PARTIAL - cec_certification: SF='False' vs Krowne='None'
+2025-08-06 12:56:36,153 - app.routes - INFO -    PARTIAL - case_quantity: SF='6' vs Krowne='None'
+2025-08-06 12:56:36,153 - app.routes - INFO -    PARTIAL - shipping_weight: SF='3.6' vs Krowne='None'
+2025-08-06 12:56:36,154 - app.routes - INFO -    PARTIAL - upc: SF='822196100018' vs Krowne='None'
+2025-08-06 12:56:36,154 - app.routes - INFO -    PARTIAL - main_image_url: SF='None' vs Krowne='https://www.krowne.com/files/kr-1000.jpg'
+2025-08-06 12:56:36,154 - app.routes - INFO -    PARTIAL - downloads: SF='None' vs Krowne='[{'name': 'DOWNLOAD', 'url': 'https://www.krowne.com/files/8-7-keg-dollies.pdf'}]'
+2025-08-06 12:56:36,154 - app.routes - INFO -    PARTIAL - breadcrumb: SF='None' vs Krowne='[{'name': 'Beverage Dispensing Systems', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment'}, {'name': 'Parts & Accessories', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment/parts-and-accessories'}]'
+2025-08-06 12:56:36,154 - app.routes - INFO -    PARTIAL - categories: SF='None' vs Krowne='[{'name': 'Beverage Dispensing Systems', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment'}, {'name': 'Parts & Accessories', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment/parts-and-accessories'}]'
+2025-08-06 12:56:36,154 - app.routes - INFO -    PARTIAL - related_products: SF='None' vs Krowne='[]'
+2025-08-06 12:56:36,154 - app.routes - INFO -    PARTIAL - warranty_info: SF='None' vs Krowne='https://www.krowne.com/warranty-terms/'
+2025-08-06 12:56:36,154 - app.routes - INFO -    PARTIAL - properties: SF='None' vs Krowne='[{'propertyName': 'Series', 'propertyAdminName': 'Series', 'value': 'MasterTap'}, {'propertyName': 'List Price', 'propertyAdminName': 'List_Price', 'value': '$90.00'}, {'propertyName': 'Product Code', 'propertyAdminName': 'Product_Code', 'value': 'KR-1000'}]'
+2025-08-06 12:56:36,164 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:56:36] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 12:56:36,178 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:56:36] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 12:56:36,497 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:56:36] "GET /api/mapper/fields HTTP/1.1" 200 -
