@@ -200,16 +200,176 @@ class APIService {
       throw new Error('SKU is required for comparison.');
     }
 
-    return this.compareProducts({ sku });
+    console.log(`🔍 Comparing single product: ${sku}`);
+    
+    const startTime = Date.now();
+    
+    try {
+      const response = await this.compareProducts({ sku });
+      const duration = Date.now() - startTime;
+      
+      console.log(`✅ Single product comparison completed in ${duration}ms for ${sku}`);
+      return response;
+      
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      console.error(`❌ Single product comparison failed after ${duration}ms for ${sku}:`, error.message);
+      throw error;
+    }
   }
 
-  // Batch comparison
+  // Enhanced batch comparison method for better error handling and logging
   async compareBatch(skus = []) {
     if (!Array.isArray(skus) || skus.length === 0) {
       throw new Error('You must provide a non-empty array of SKUs to compare.');
     }
 
-    return this.compareProducts({ skus });
+    // Log the batch size for monitoring
+    console.log(`🔍 Comparing batch of ${skus.length} SKUs:`, skus.slice(0, 5).concat(skus.length > 5 ? ['...'] : []));
+
+    const startTime = Date.now();
+
+    try {
+      const response = await this.compareProducts({ skus });
+      
+      const duration = Date.now() - startTime;
+      console.log(`✅ Batch comparison completed in ${duration}ms:`, {
+        requested: skus.length,
+        returned: response.results?.length || 0,
+        success: response.success,
+        total: response.total
+      });
+
+      return response;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      console.error(`❌ Batch comparison failed after ${duration}ms:`, {
+        skus: skus.slice(0, 5).concat(skus.length > 5 ? ['...'] : []),
+        batchSize: skus.length,
+        error: error.message
+      });
+      
+      // Re-throw with additional context
+      throw new Error(`Batch comparison failed for ${skus.length} SKUs: ${error.message}`);
+    }
+  }
+
+  // Add method to validate batch before processing
+  validateBatch(skus) {
+    if (!Array.isArray(skus)) {
+      throw new Error('SKUs must be provided as an array');
+    }
+    
+    if (skus.length === 0) {
+      throw new Error('Cannot process empty SKU batch');
+    }
+    
+    // Check for invalid SKUs
+    const invalidSkus = skus.filter(sku => !sku || typeof sku !== 'string' || sku.trim() === '');
+    if (invalidSkus.length > 0) {
+      throw new Error(`Batch contains ${invalidSkus.length} invalid SKUs`);
+    }
+    
+    // Check for duplicates
+    const uniqueSkus = [...new Set(skus)];
+    if (uniqueSkus.length !== skus.length) {
+      console.warn(`⚠️ Batch contains ${skus.length - uniqueSkus.length} duplicate SKUs`);
+    }
+    
+    return {
+      isValid: true,
+      originalCount: skus.length,
+      uniqueCount: uniqueSkus.length,
+      duplicates: skus.length - uniqueSkus.length,
+      cleanedSkus: uniqueSkus
+    };
+  }
+
+  // Add method to get optimal batch size based on performance
+  getOptimalBatchSize() {
+    // You can make this configurable or dynamic based on performance metrics
+    const defaultBatchSize = 50;
+    
+    // Check if there's a configured batch size in environment or settings
+    if (window.APP_CONFIG?.COMPARISON_BATCH_SIZE) {
+      return parseInt(window.APP_CONFIG.COMPARISON_BATCH_SIZE);
+    }
+    
+    return defaultBatchSize;
+  }
+
+  // Add a method to handle progressive batch processing with callbacks
+  async compareBatchesWithProgress(allSkus, batchSize = 50, onProgress = null, onBatchComplete = null) {
+    const totalBatches = Math.ceil(allSkus.length / batchSize);
+    let allResults = [];
+    let errors = [];
+
+    console.log(`📦 Starting batch comparison: ${allSkus.length} SKUs in ${totalBatches} batches`);
+
+    for (let i = 0; i < totalBatches; i++) {
+      const start = i * batchSize;
+      const end = Math.min(start + batchSize, allSkus.length);
+      const batch = allSkus.slice(start, end);
+      
+      // Call progress callback
+      if (onProgress) {
+        onProgress({
+          currentBatch: i + 1,
+          totalBatches,
+          currentSku: start + 1,
+          totalSkus: allSkus.length,
+          processedSoFar: allResults.length
+        });
+      }
+
+      try {
+        console.log(`🔄 Processing batch ${i + 1}/${totalBatches} (${batch.length} SKUs)`);
+        
+        const batchResponse = await this.compareBatch(batch);
+        const formatted = this.formatComparisonResults(batchResponse);
+        
+        allResults = [...allResults, ...(formatted || [])];
+        
+        // Call batch complete callback
+        if (onBatchComplete) {
+          onBatchComplete({
+            batchNumber: i + 1,
+            batchResults: formatted,
+            totalResultsSoFar: allResults.length,
+            batchSize: batch.length
+          });
+        }
+        
+      } catch (error) {
+        const batchError = {
+          batchNumber: i + 1,
+          skus: batch,
+          error: error.message,
+          timestamp: new Date().toISOString()
+        };
+        
+        errors.push(batchError);
+        console.error(`❌ Batch ${i + 1} failed:`, batchError);
+        
+        // Continue with other batches - don't let one failure stop everything
+      }
+    }
+
+    const summary = {
+      totalSkus: allSkus.length,
+      totalBatches,
+      successfulResults: allResults.length,
+      errors: errors.length,
+      errorDetails: errors
+    };
+
+    console.log(`📊 Batch processing completed:`, summary);
+
+    return {
+      results: allResults,
+      summary,
+      errors
+    };
   }
 
   // ProductMapper utility endpoints
@@ -528,6 +688,56 @@ class APIService {
     }
   }
 
+  // Performance monitoring methods
+  async measureBatchPerformance(skus, batchSize = 50) {
+    const startTime = Date.now();
+    const results = {
+      totalSkus: skus.length,
+      batchSize,
+      batchCount: Math.ceil(skus.length / batchSize),
+      batchTimes: [],
+      errors: [],
+      totalTime: 0,
+      averageBatchTime: 0,
+      successfulBatches: 0,
+      failedBatches: 0
+    };
+
+    console.log(`📊 Starting performance measurement for ${skus.length} SKUs in batches of ${batchSize}`);
+
+    for (let i = 0; i < results.batchCount; i++) {
+      const batchStart = Date.now();
+      const batch = skus.slice(i * batchSize, (i + 1) * batchSize);
+      
+      try {
+        await this.compareBatch(batch);
+        const batchTime = Date.now() - batchStart;
+        results.batchTimes.push(batchTime);
+        results.successfulBatches++;
+        
+        console.log(`✅ Batch ${i + 1} completed in ${batchTime}ms`);
+      } catch (error) {
+        const batchTime = Date.now() - batchStart;
+        results.errors.push({
+          batch: i + 1,
+          error: error.message,
+          time: batchTime
+        });
+        results.failedBatches++;
+        
+        console.error(`❌ Batch ${i + 1} failed after ${batchTime}ms:`, error.message);
+      }
+    }
+
+    results.totalTime = Date.now() - startTime;
+    results.averageBatchTime = results.batchTimes.length > 0 
+      ? results.batchTimes.reduce((sum, time) => sum + time, 0) / results.batchTimes.length 
+      : 0;
+
+    console.log('📊 Performance measurement completed:', results);
+    return results;
+  }
+
   // Health Check
   async healthCheck() {
     return this.request('/health');
@@ -536,6 +746,81 @@ class APIService {
   // Test proxy connection
   async testProxy() {
     return this.request('/test-proxy');
+  }
+
+  // Configuration methods
+  getConfiguration() {
+    return {
+      apiBaseUrl: API_BASE_URL,
+      defaultBatchSize: this.getOptimalBatchSize(),
+      endpoints: {
+        salesforce: '/salesforce/status',
+        krowne: '/auth/krowne/status',
+        compare: '/compare',
+        products: '/products/skus',
+        mapper: '/mapper/fields'
+      }
+    };
+  }
+
+  // Utility method to check API health and configuration
+  async validateApiSetup() {
+    const checks = {
+      health: false,
+      salesforce: false,
+      krowne: false,
+      mapper: false,
+      errors: []
+    };
+
+    try {
+      // Test basic health
+      await this.healthCheck();
+      checks.health = true;
+      console.log('✅ API health check passed');
+    } catch (error) {
+      checks.errors.push(`Health check failed: ${error.message}`);
+      console.error('❌ API health check failed:', error);
+    }
+
+    try {
+      // Test Salesforce status
+      await this.getSalesforceStatus();
+      checks.salesforce = true;
+      console.log('✅ Salesforce connection check passed');
+    } catch (error) {
+      checks.errors.push(`Salesforce check failed: ${error.message}`);
+      console.error('❌ Salesforce check failed:', error);
+    }
+
+    try {
+      // Test Krowne status
+      await this.getKrowneStatus();
+      checks.krowne = true;
+      console.log('✅ Krowne connection check passed');
+    } catch (error) {
+      checks.errors.push(`Krowne check failed: ${error.message}`);
+      console.error('❌ Krowne check failed:', error);
+    }
+
+    try {
+      // Test ProductMapper
+      await this.getMapperFields();
+      checks.mapper = true;
+      console.log('✅ ProductMapper check passed');
+    } catch (error) {
+      checks.errors.push(`ProductMapper check failed: ${error.message}`);
+      console.error('❌ ProductMapper check failed:', error);
+    }
+
+    const allPassed = checks.health && checks.salesforce && checks.krowne && checks.mapper;
+    console.log(`📋 API validation ${allPassed ? 'passed' : 'failed'}:`, checks);
+
+    return {
+      ...checks,
+      allPassed,
+      timestamp: new Date().toISOString()
+    };
   }
 }
 

@@ -1,5 +1,3 @@
-// Simplified ProductCard.jsx - Side-by-side comparison with highlighted differences
-
 import React, { useState, useEffect } from 'react';
 import './ProductCard.css';
 

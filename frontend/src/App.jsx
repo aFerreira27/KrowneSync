@@ -4,7 +4,7 @@ import ConnectionStatus from './components/ConnectionStatus';
 import AuthModal from './components/AuthModal';
 import KrowneLoginModal from './components/KrowneLoginModal';
 import SKUSearch from './components/SKUSearch';
-import SyncTable from './components/SyncTable';
+import SyncTable from './components/SyncTable/SyncTable';
 import api from './services/api';
 import krowneAuthService from './services/krowneAuthService';
 
