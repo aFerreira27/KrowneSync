@@ -1,70 +1,49 @@
+// Enhanced ProductCard.jsx - Fixed field mapping and comparison
+
 import React, { useState, useEffect } from 'react';
 import './ProductCard.css';
 
 const ProductCard = ({ productData }) => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('comparison');
   const [expandedSections, setExpandedSections] = useState({});
   const [mismatches, setMismatches] = useState([]);
 
-  // Move all hooks to the top, before any conditional logic
-  // Calculate mismatches when data changes
+  // Calculate mismatches when product data changes
   useEffect(() => {
     if (productData?.salesforce && productData?.krowne) {
-      const { salesforce, krowne } = productData;
       const foundMismatches = [];
+      const { salesforce, krowne } = productData;
       
-      // Compare names
-      if (salesforce.name && krowne.name && salesforce.name.toLowerCase() !== krowne.name.toLowerCase()) {
-        foundMismatches.push({
-          field: 'Name',
-          salesforce: salesforce.name,
-          krowne: krowne.name
-        });
-      }
+      // Compare all available fields dynamically
+      const allFields = getAllComparisonFields();
       
-      // Compare prices
-      const sfPrice = getPropertyValue(salesforce.properties, 'List_Price');
-      if (sfPrice && krowne.price) {
-        const sfPriceNum = parseFloat(String(sfPrice).replace(/[^\d.]/g, ''));
-        const krownePriceNum = parseFloat(String(krowne.price).replace(/[^\d.]/g, ''));
-        if (!isNaN(sfPriceNum) && !isNaN(krownePriceNum) && Math.abs(sfPriceNum - krownePriceNum) > 0.01) {
-          foundMismatches.push({
-            field: 'Price',
-            salesforce: formatPrice(sfPrice),
-            krowne: formatPrice(krowne.price)
-          });
+      allFields.forEach(field => {
+        if (field.sf && field.krowne && field.sf !== field.krowne) {
+          // Special handling for price comparison
+          if (field.key === 'price') {
+            const sfPriceNum = parseFloat(String(field.sf).replace(/[^\d.]/g, ''));
+            const krownePriceNum = parseFloat(String(field.krowne).replace(/[^\d.]/g, ''));
+            if (!isNaN(sfPriceNum) && !isNaN(krownePriceNum) && Math.abs(sfPriceNum - krownePriceNum) > 0.01) {
+              foundMismatches.push({
+                field: field.label,
+                salesforce: formatPrice(field.sf),
+                krowne: formatPrice(field.krowne)
+              });
+            }
+          } else {
+            // General comparison for other fields
+            const sfValue = String(field.sf).toLowerCase().trim();
+            const krowneValue = String(field.krowne).toLowerCase().trim();
+            if (sfValue !== krowneValue) {
+              foundMismatches.push({
+                field: field.label,
+                salesforce: field.sf,
+                krowne: field.krowne
+              });
+            }
+          }
         }
-      }
-      
-      // Compare descriptions
-      const sfDescription = getPropertyValue(salesforce.properties, 'Product_Description');
-      if (sfDescription && krowne.description && sfDescription !== krowne.description) {
-        foundMismatches.push({
-          field: 'Description',
-          salesforce: sfDescription,
-          krowne: krowne.description
-        });
-      }
-
-      // Compare series
-      const sfSeries = getPropertyValue(salesforce.properties, 'Series');
-      if (sfSeries && krowne.series && sfSeries.toLowerCase() !== krowne.series.toLowerCase()) {
-        foundMismatches.push({
-          field: 'Series',
-          salesforce: sfSeries,
-          krowne: krowne.series
-        });
-      }
-
-      // Compare warranty
-      const sfWarranty = getPropertyValue(salesforce.properties, 'Warranty');
-      if (sfWarranty && krowne.warranty && sfWarranty.toLowerCase() !== krowne.warranty.toLowerCase()) {
-        foundMismatches.push({
-          field: 'Warranty',
-          salesforce: sfWarranty,
-          krowne: krowne.warranty
-        });
-      }
+      });
       
       setMismatches(foundMismatches);
     } else {
@@ -83,19 +62,13 @@ const ProductCard = ({ productData }) => {
 
   const { sku, salesforce, krowne } = productData;
 
-  // Toggle section expansion
-  const toggleSection = (section) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
-  };
-
   // Format price display
   const formatPrice = (price) => {
     if (!price && price !== 0) return 'N/A';
     if (typeof price === 'number') return `$${price.toFixed(2)}`;
     if (typeof price === 'string') {
+      // If it already has $ symbol, return as is
+      if (price.includes('$')) return price;
       const cleanPrice = price.replace(/\s+/g, '').replace('$', '');
       const numericPrice = parseFloat(cleanPrice);
       if (!isNaN(numericPrice)) return `$${numericPrice.toFixed(2)}`;
@@ -104,81 +77,80 @@ const ProductCard = ({ productData }) => {
     return String(price);
   };
 
-  // Extract key properties from the properties array
+  // Extract property value from properties array
   const getPropertyValue = (properties, propertyName) => {
     if (!properties || !Array.isArray(properties)) return null;
     const prop = properties.find(p => 
       p.propertyAdminName === propertyName || 
       p.propertyName === propertyName
     );
-    return prop ? prop.value : null;
+    return prop?.value || null;
   };
 
-  // Get main image URL with fallback to Krowne
-  const getMainImageUrl = () => {
-    // Try Salesforce first
-    if (salesforce?.mainAsset?.pimly__URL__c) {
-      return salesforce.mainAsset.pimly__URL__c;
+  // Helper function to get Krowne value by key
+  const getKrowneValueByKey = (key) => {
+    if (!krowne) return null;
+    
+    // Direct field mapping
+    const directMap = {
+      'name': krowne.name,
+      'price': krowne.price,
+      'description': krowne.description,
+      'Product_Description': krowne.description,
+      'series': krowne.series,
+      'Series': krowne.series,
+      'warranty': krowne.warranty,
+      'Warranty': krowne.warranty,
+      'List_Price': krowne.listPrice || krowne.price,
+      'Product_Code': krowne.productCode,
+      'SKU': krowne.productCode || sku,
+      'sku': krowne.productCode || sku
+    };
+    
+    if (directMap[key] !== undefined) {
+      return directMap[key];
     }
-    if (salesforce?.digitalAssets) {
-      const imageAssets = salesforce.digitalAssets.find(da => da.propertyAdminName === 'Images');
-      if (imageAssets?.assets?.[0]?.url) {
-        return imageAssets.assets[0].url;
-      }
+    
+    // Check properties array for specifications
+    if (krowne.properties && Array.isArray(krowne.properties)) {
+      const prop = krowne.properties.find(p => 
+        p.propertyAdminName === key || 
+        p.propertyName === key ||
+        p.propertyAdminName === key.replace(/ /g, '_') ||
+        p.propertyName === key.replace(/_/g, ' ')
+      );
+      if (prop) return prop.value;
     }
-    // Fallback to Krowne image
-    if (krowne?.mainImageUrl) {
-      return krowne.mainImageUrl;
-    }
+    
     return null;
   };
 
-  // Group properties by category
-  const groupProperties = (properties) => {
-    if (!properties || !Array.isArray(properties)) return {};
+  // Format field values for display
+  const formatFieldValue = (value, fieldKey) => {
+    if (!value && value !== 0) return null;
     
-    const groups = {
-      'Dimensions': ['Product_Length_(in.)', 'Product_Height_(in.)', 'Product_Depth_(in.)', 'Product_Weight_(lbs.)', 'Shipping_Weight_(lbs.)'],
-      'Specifications': ['Flow_Rate_(GPM)', 'Temperature_Range', 'Inlet', 'Mounting_Style', 'Handle_Type', 'Valve_Type', 'Spout_Size_(in.)', 'Spout_Style'],
-      'Pricing': ['List_Price', 'MAP_Price', 'Case_Price'],
-      'Certifications': ['NSF_Certification', 'CSA_Certification', 'ASSE_Certification', 'ETL_Certification', 'UL_Certification', 'IAMPO_Certification', 'CEC_Listed_Certification', 'Massachusetts_Listed_Certification'],
-      'Case Information': ['Case_Quantity', 'Case_Weight_(lbs.)', 'Case_Dimensions_(in.)'],
-      'Identifiers': ['SKU', 'UPC', 'HTS_Code'],
-      'Description': ['Product_Description', 'ERP_Description', 'Features'],
-      'Other': []
-    };
-
-    const grouped = {};
+    if (fieldKey === 'price' || fieldKey.includes('Price')) {
+      return formatPrice(value);
+    }
     
-    properties.forEach(prop => {
-      let assigned = false;
-      for (const [groupName, propNames] of Object.entries(groups)) {
-        if (propNames.includes(prop.propertyAdminName)) {
-          if (!grouped[groupName]) grouped[groupName] = [];
-          grouped[groupName].push(prop);
-          assigned = true;
-          break;
-        }
-      }
-      if (!assigned && prop.propertyAdminName !== 'Division' && prop.propertyAdminName !== 'Series') {
-        if (!grouped['Other']) grouped['Other'] = [];
-        grouped['Other'].push(prop);
-      }
-    });
-
-    // Remove empty groups
-    Object.keys(grouped).forEach(key => {
-      if (!grouped[key] || grouped[key].length === 0) {
-        delete grouped[key];
-      }
-    });
-
-    return grouped;
+    if (Array.isArray(value)) {
+      return value.join(', ');
+    }
+    
+    if (typeof value === 'object') {
+      return JSON.stringify(value, null, 2);
+    }
+    
+    return String(value);
   };
 
-  // Get comparison fields for detailed comparison
-  const getComparisonFields = () => {
-    const fields = [
+  // Get ALL comparison fields dynamically - ENHANCED
+  const getAllComparisonFields = () => {
+    const fields = [];
+    const addedFields = new Set(); // Prevent duplicates
+
+    // Core fields (avoid duplicate SKU)
+    const coreFields = [
       { key: 'name', label: 'Product Name', sf: salesforce?.name, krowne: krowne?.name },
       { key: 'price', label: 'Price', sf: getPropertyValue(salesforce?.properties, 'List_Price'), krowne: krowne?.price },
       { key: 'description', label: 'Description', sf: getPropertyValue(salesforce?.properties, 'Product_Description'), krowne: krowne?.description },
@@ -186,7 +158,94 @@ const ProductCard = ({ productData }) => {
       { key: 'warranty', label: 'Warranty', sf: getPropertyValue(salesforce?.properties, 'Warranty'), krowne: krowne?.warranty }
     ];
 
-    return fields.filter(field => field.sf || field.krowne);
+    coreFields.forEach(field => {
+      if (field.sf || field.krowne) {
+        fields.push(field);
+        addedFields.add(field.key);
+      }
+    });
+
+    // Add all Salesforce properties
+    if (salesforce?.properties && Array.isArray(salesforce.properties)) {
+      salesforce.properties.forEach(prop => {
+        const fieldKey = prop.propertyAdminName || prop.propertyName;
+        if (fieldKey && !addedFields.has(fieldKey) && fieldKey !== 'SKU' && fieldKey !== 'sku') { // Avoid duplicate SKU
+          const krowneValue = getKrowneValueByKey(fieldKey);
+          fields.push({
+            key: fieldKey,
+            label: prop.propertyName || fieldKey.replace(/_/g, ' '),
+            sf: prop.value,
+            krowne: krowneValue
+          });
+          addedFields.add(fieldKey);
+        }
+      });
+    }
+
+    // Add Krowne-specific fields that aren't in Salesforce
+    if (krowne) {
+      const krowneFields = [
+        { key: 'mainImageUrl', label: 'Main Image URL', value: krowne.mainImageUrl },
+        { key: 'categories', label: 'Categories', value: krowne.categories?.map(c => c.name).join(', ') },
+        { key: 'relatedProducts', label: 'Related Products', value: krowne.relatedProducts?.length > 0 ? `${krowne.relatedProducts.length} products` : null },
+        { key: 'downloads', label: 'Downloads', value: krowne.downloads?.length > 0 ? `${krowne.downloads.length} files` : null },
+        { key: 'specSheetUrl', label: 'Spec Sheet URL', value: krowne.specSheetUrl },
+        { key: 'warrantyInfo', label: 'Warranty Info URL', value: krowne.warrantyInfo },
+        { key: 'productCode', label: 'Product Code', value: krowne.productCode }
+      ];
+
+      krowneFields.forEach(field => {
+        if (field.value && !addedFields.has(field.key)) {
+          fields.push({
+            key: field.key,
+            label: field.label,
+            sf: null,
+            krowne: field.value
+          });
+          addedFields.add(field.key);
+        }
+      });
+
+      // Add Krowne properties that aren't already covered
+      if (krowne.properties && Array.isArray(krowne.properties)) {
+        krowne.properties.forEach(prop => {
+          const fieldKey = prop.propertyAdminName || prop.propertyName;
+          if (fieldKey && !addedFields.has(fieldKey)) {
+            const sfValue = getPropertyValue(salesforce?.properties, fieldKey);
+            fields.push({
+              key: fieldKey,
+              label: prop.propertyName || fieldKey.replace(/_/g, ' '),
+              sf: sfValue,
+              krowne: prop.value
+            });
+            addedFields.add(fieldKey);
+          }
+        });
+      }
+    }
+
+    // Add any direct Salesforce fields not in properties (but avoid duplicate SKU)
+    if (salesforce) {
+      const directFields = [
+        { key: 'productId', label: 'Product ID', value: salesforce.Id },
+        { key: 'isActive', label: 'Active Status', value: salesforce.IsActive },
+        { key: 'family', label: 'Product Family', value: salesforce.Family }
+      ];
+
+      directFields.forEach(field => {
+        if (field.value && !addedFields.has(field.key)) {
+          fields.push({
+            key: field.key,
+            label: field.label,
+            sf: field.value,
+            krowne: null
+          });
+          addedFields.add(field.key);
+        }
+      });
+    }
+
+    return fields;
   };
 
   return (
@@ -201,433 +260,245 @@ const ProductCard = ({ productData }) => {
           )}
         </div>
         <div className="header-right">
-          {(salesforce?.properties || krowne?.price) && (
+          {(getPropertyValue(salesforce?.properties, 'List_Price') || krowne?.price) && (
             <>
               <p className="price-display">
                 {formatPrice(getPropertyValue(salesforce?.properties, 'List_Price') || krowne?.price)}
               </p>
-              <p className="price-label">
-                {getPropertyValue(salesforce?.properties, 'List_Price') ? 'List Price' : 'Website Price'}
-              </p>
+              <p className="price-label">List Price</p>
             </>
+          )}
+          {mismatches.length > 0 && (
+            <div className="mismatch-badge">
+              {mismatches.length} Mismatch{mismatches.length !== 1 ? 'es' : ''}
+            </div>
           )}
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="tabs">
+      {/* Tab Navigation */}
+      <div className="tab-navigation">
         <button 
-          className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
-          onClick={() => setActiveTab('overview')}
+          className={`tab-btn ${activeTab === 'comparison' ? 'active' : ''}`}
+          onClick={() => setActiveTab('comparison')}
         >
-          Overview
+          Comparison ({getAllComparisonFields().length} fields)
         </button>
-        {salesforce?.properties && (
+        {salesforce && (
           <button 
-            className={`tab ${activeTab === 'specifications' ? 'active' : ''}`}
-            onClick={() => setActiveTab('specifications')}
+            className={`tab-btn ${activeTab === 'salesforce' ? 'active' : ''}`}
+            onClick={() => setActiveTab('salesforce')}
           >
-            Specifications
+            Pimly/Salesforce
           </button>
         )}
-        {salesforce?.digitalAssets && (
+        {krowne && (
           <button 
-            className={`tab ${activeTab === 'assets' ? 'active' : ''}`}
-            onClick={() => setActiveTab('assets')}
+            className={`tab-btn ${activeTab === 'krowne' ? 'active' : ''}`}
+            onClick={() => setActiveTab('krowne')}
           >
-            Digital Assets
-          </button>
-        )}
-        {(salesforce?.relatedProducts || krowne?.relatedProducts) && (
-          <button 
-            className={`tab ${activeTab === 'related' ? 'active' : ''}`}
-            onClick={() => setActiveTab('related')}
-          >
-            Related Products
-          </button>
-        )}
-        {(salesforce && krowne) && (
-          <button 
-            className={`tab ${activeTab === 'comparison' ? 'active' : ''}`}
-            onClick={() => setActiveTab('comparison')}
-          >
-            Comparison
-            {mismatches.length > 0 && <span className="badge-count">{mismatches.length}</span>}
+            Krowne Website
           </button>
         )}
       </div>
 
       {/* Tab Content */}
       <div className="tab-content">
-        {/* Overview Tab */}
-        {activeTab === 'overview' && (
-          <div className="overview-grid">
-            <div className="product-image-section">
-              <div className="main-image">
-                {getMainImageUrl() ? (
-                  <img src={getMainImageUrl()} alt={(salesforce?.name || krowne?.name) || sku} />
-                ) : (
-                  <span className="no-image">No image available</span>
-                )}
-              </div>
-            </div>
-
-            <div className="key-info">
-              {/* Basic Information */}
-              <div className="info-section">
-                <h3 className="section-title">📋 Basic Information</h3>
-                <div className="property-grid">
-                  <div className="property-item">
-                    <span className="property-label">Product Code</span>
-                    <span className="property-value large">{salesforce?.ProductCode || sku}</span>
-                  </div>
-                  {salesforce?.adminName && (
-                    <div className="property-item">
-                      <span className="property-label">Admin Name</span>
-                      <span className="property-value">{salesforce.adminName}</span>
-                    </div>
-                  )}
-                  {salesforce?.pimlyId && (
-                    <div className="property-item">
-                      <span className="property-label">Pimly ID</span>
-                      <span className="property-value">{salesforce.pimlyId}</span>
-                    </div>
-                  )}
-                  {salesforce?.salesforceId && (
-                    <div className="property-item">
-                      <span className="property-label">Salesforce ID</span>
-                      <span className="property-value">{salesforce.salesforceId}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Categories */}
-              {(salesforce?.categories || krowne?.categories) && (
-                <div className="info-section">
-                  <h3 className="section-title">🏷️ Categories</h3>
-                  <div className="categories">
-                    {(salesforce?.categories || krowne?.categories)?.map((cat, idx) => (
-                      <span key={idx} className="category-badge">
-                        {cat.Name || cat.pimly__Admin_Name__c || cat.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Key Specifications */}
-              {(salesforce?.properties || krowne) && (
-                <div className="info-section">
-                  <h3 className="section-title">⚙️ Key Specifications</h3>
-                  <div className="property-grid">
-                    {['Product_Description', 'Series', 'Mounting_Style', 'Handle_Type', 'Warranty']
-                      .map(prop => {
-                        const sfValue = getPropertyValue(salesforce?.properties, prop);
-                        const krowneValue = prop === 'Product_Description' ? krowne?.description :
-                                          prop === 'Series' ? krowne?.series :
-                                          prop === 'Warranty' ? krowne?.warranty : null;
-                        const value = sfValue || krowneValue;
-                        if (!value) return null;
-                        return (
-                          <div key={prop} className="property-item">
-                            <span className="property-label">
-                              {prop.replace(/_/g, ' ').replace(/\(.*\)/, '')}
-                            </span>
-                            <span className="property-value">{value}</span>
-                          </div>
-                        );
-                      })
-                      .filter(Boolean)}
-                  </div>
-                </div>
-              )}
-
-              {/* Krowne Features */}
-              {krowne?.features && krowne.features.length > 0 && (
-                <div className="info-section">
-                  <h3 className="section-title">✨ Features</h3>
-                  <ul className="features-list">
-                    {krowne.features.map((feature, idx) => (
-                      <li key={idx}>{feature}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Specifications Tab */}
-        {activeTab === 'specifications' && salesforce?.properties && (
+        {/* Comparison Tab - Show ALL Fields */}
+        {activeTab === 'comparison' && (
           <div>
-            {Object.entries(groupProperties(salesforce.properties)).map(([groupName, props]) => (
-              <div key={groupName} className="expandable-section">
-                <div 
-                  className="expandable-header"
-                  onClick={() => toggleSection(groupName)}
-                >
-                  <h3 className="section-title" style={{ margin: 0 }}>
-                    {groupName}
-                  </h3>
-                  <span className={`expand-icon ${expandedSections[groupName] ? 'expanded' : ''}`}>
-                    ▼
-                  </span>
+            {/* Summary Stats */}
+            <div className="comparison-summary">
+              <h3>Complete Field Comparison</h3>
+              <div className="summary-stats">
+                <div>
+                  <strong>Total Fields:</strong> {getAllComparisonFields().length}
                 </div>
-                {(expandedSections[groupName] !== false) && (
-                  <div className="expandable-content">
-                    <div className="property-grid">
-                      {props.map((prop, idx) => (
-                        <div key={idx} className="property-item">
-                          <span className="property-label">
-                            {prop.propertyName || prop.propertyAdminName.replace(/_/g, ' ')}
-                          </span>
-                          <span className="property-value">
-                            {Array.isArray(prop.value) 
-                              ? prop.value.join(', ') 
-                              : String(prop.value || 'N/A')}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <div className={mismatches.length > 0 ? 'text-danger' : 'text-success'}>
+                  <strong>Mismatches:</strong> {mismatches.length}
+                </div>
+                <div className="text-success">
+                  <strong>Matches:</strong> {getAllComparisonFields().length - mismatches.length}
+                </div>
+                <div className="text-info">
+                  <strong>Pimly Fields:</strong> {getAllComparisonFields().filter(f => f.sf).length}
+                </div>
+                <div className="text-info">
+                  <strong>Krowne Fields:</strong> {getAllComparisonFields().filter(f => f.krowne).length}
+                </div>
               </div>
-            ))}
-          </div>
-        )}
+            </div>
 
-        {/* Digital Assets Tab */}
-        {activeTab === 'assets' && salesforce?.digitalAssets && (
-          <div className="digital-assets">
-            {salesforce.digitalAssets.map((assetGroup, idx) => (
-              <div key={idx} className="asset-group">
-                <div className="asset-type">
-                  {assetGroup.propertyName || assetGroup.propertyAdminName}
-                </div>
-                <div className="asset-list">
-                  {assetGroup.assets.map((asset, assetIdx) => (
-                    <div key={assetIdx} className="asset-item">
-                      <span className="asset-icon">
-                        {asset.type === 'Image' ? '🖼️' : 
-                         asset.type === 'Video' ? '🎥' : 
-                         asset.type === 'Document' ? '📄' : '📎'}
-                      </span>
-                      <a href={asset.url} target="_blank" rel="noopener noreferrer">
-                        {asset.name}
-                      </a>
+            {/* Detailed Comparison Table - ALL FIELDS */}
+            <div className="table-container">
+              <table className="comparison-table">
+                <thead>
+                  <tr>
+                    <th className="field-column">Field</th>
+                    <th className="value-column">Pimly (Salesforce)</th>
+                    <th className="value-column">Krowne Website</th>
+                    <th className="status-column">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {getAllComparisonFields().map((field, idx) => {
+                    const mismatch = mismatches.find(m => m.field.toLowerCase() === field.label.toLowerCase());
+                    const isMatch = field.sf && field.krowne && !mismatch;
+                    const hasData = field.sf || field.krowne;
+                    const formattedSfValue = formatFieldValue(field.sf, field.key);
+                    const formattedKrowneValue = formatFieldValue(field.krowne, field.key);
+                    
+                    return (
+                      <tr key={idx} className={mismatch ? 'mismatch-row' : ''}>
+                        <td className="field-column">
+                          <strong>{field.label}</strong>
+                          <div className="field-key">{field.key}</div>
+                        </td>
+                        <td className="value-column">
+                          {formattedSfValue ? (
+                            <div className="field-value">{formattedSfValue}</div>
+                          ) : (
+                            <span className="missing-data">No data</span>
+                          )}
+                        </td>
+                        <td className="value-column">
+                          {formattedKrowneValue ? (
+                            <div className="field-value">{formattedKrowneValue}</div>
+                          ) : (
+                            <span className="missing-data">No data</span>
+                          )}
+                        </td>
+                        <td className="status-column">
+                          {mismatch ? (
+                            <span className="mismatch-indicator">⚠️ Mismatch</span>
+                          ) : isMatch ? (
+                            <span className="match-indicator">✅ Match</span>
+                          ) : hasData ? (
+                            <span className="partial-indicator">📝 Partial</span>
+                          ) : (
+                            <span className="no-data-indicator">❌ No Data</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mismatch Details */}
+            {mismatches.length > 0 && (
+              <div className="mismatch-details">
+                <h4>🔍 Mismatch Details</h4>
+                <div className="mismatch-list">
+                  {mismatches.map((mismatch, idx) => (
+                    <div key={idx} className="mismatch-item">
+                      <div className="mismatch-field">
+                        <strong>{mismatch.field}</strong>
+                      </div>
+                      <div className="mismatch-comparison">
+                        <div className="pimly-value">
+                          <strong>Pimly:</strong> {mismatch.salesforce}
+                        </div>
+                        <div className="comparison-operator">≠</div>
+                        <div className="krowne-value">
+                          <strong>Krowne:</strong> {mismatch.krowne}
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
-            ))}
+            )}
           </div>
         )}
 
-        {/* Related Products Tab */}
-        {activeTab === 'related' && (salesforce?.relatedProducts || krowne?.relatedProducts) && (
-          <div>
-            {/* Salesforce Related Products */}
-            {salesforce?.relatedProducts?.map((group, idx) => (
-              <div key={`sf-${idx}`} className="expandable-section">
-                <div 
-                  className="expandable-header"
-                  onClick={() => toggleSection(`sf-related-${idx}`)}
-                >
-                  <h3 className="section-title" style={{ margin: 0 }}>
-                    {group.propertyName || group.propertyAdminName.replace(/_/g, ' ')} (Salesforce)
-                    <span className="badge-count">{group.products?.length || 0}</span>
-                  </h3>
-                  <span className={`expand-icon ${expandedSections[`sf-related-${idx}`] ? 'expanded' : ''}`}>
-                    ▼
-                  </span>
+        {/* Salesforce Tab */}
+        {activeTab === 'salesforce' && salesforce && (
+          <div className="data-source">
+            <div className="source-header">
+              <span className="source-icon">🏢</span>
+              <span className="source-title">Pimly/Salesforce Data</span>
+            </div>
+            <div className="source-content">
+              <div className="field-grid">
+                <div className="field-item">
+                  <label>Product Name:</label>
+                  <value>{salesforce.name || 'N/A'}</value>
                 </div>
-                {(expandedSections[`sf-related-${idx}`] !== false) && (
-                  <div className="expandable-content">
-                    <div className="related-products">
-                      {group.products?.map((product, pIdx) => (
-                        <div key={pIdx} className="related-product">
-                          {product.mainImageUrl && (
-                            <img src={product.mainImageUrl} alt={product.name || product.adminName} />
-                          )}
-                          <div className="related-product-sku">{product.adminName || product.sku}</div>
-                          <div className="related-product-name">{product.name || 'N/A'}</div>
-                          {product.url && (
-                            <a 
-                              href={product.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="product-link"
-                            >
-                              View Product →
-                            </a>
-                          )}
-                        </div>
-                      )) || <div className="no-data">No products found</div>}
-                    </div>
+                <div className="field-item">
+                  <label>Product ID:</label>
+                  <value>{salesforce.Id || 'N/A'}</value>
+                </div>
+                {salesforce.properties && salesforce.properties.map((prop, idx) => (
+                  <div key={idx} className="field-item">
+                    <label>{prop.propertyName || prop.propertyAdminName}:</label>
+                    <value>{prop.value || 'N/A'}</value>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Krowne Tab */}
+        {activeTab === 'krowne' && krowne && (
+          <div className="data-source">
+            <div className="source-header">
+              <span className="source-icon">🌐</span>
+              <span className="source-title">Krowne Website Data</span>
+            </div>
+            <div className="source-content">
+              <div className="field-grid">
+                <div className="field-item">
+                  <label>Product Name:</label>
+                  <value>{krowne.name || 'N/A'}</value>
+                </div>
+                <div className="field-item">
+                  <label>Price:</label>
+                  <value>{formatPrice(krowne.price)}</value>
+                </div>
+                <div className="field-item">
+                  <label>Series:</label>
+                  <value>{krowne.series || 'N/A'}</value>
+                </div>
+                <div className="field-item">
+                  <label>Warranty:</label>
+                  <value>{krowne.warranty || 'N/A'}</value>
+                </div>
+                {krowne.description && (
+                  <div className="field-item full-width">
+                    <label>Description:</label>
+                    <value>{krowne.description}</value>
                   </div>
                 )}
-              </div>
-            ))}
-
-            {/* Krowne Related Products */}
-            {krowne?.relatedProducts && krowne.relatedProducts.length > 0 && (
-              <div className="expandable-section">
-                <div 
-                  className="expandable-header"
-                  onClick={() => toggleSection('krowne-related')}
-                >
-                  <h3 className="section-title" style={{ margin: 0 }}>
-                    Related Products (Krowne Website)
-                    <span className="badge-count">{krowne.relatedProducts.length}</span>
-                  </h3>
-                  <span className={`expand-icon ${expandedSections['krowne-related'] ? 'expanded' : ''}`}>
-                    ▼
-                  </span>
-                </div>
-                {(expandedSections['krowne-related'] !== false) && (
-                  <div className="expandable-content">
-                    <div className="related-products">
-                      {krowne.relatedProducts.map((product, pIdx) => (
-                        <div key={pIdx} className="related-product">
-                          {product.imageUrl && (
-                            <img src={product.imageUrl} alt={product.name || product.sku} />
-                          )}
-                          <div className="related-product-sku">{product.sku}</div>
-                          <div className="related-product-name">{product.name || 'N/A'}</div>
-                          {product.url && (
-                            <a 
-                              href={product.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="product-link"
-                            >
-                              View on Krowne →
-                            </a>
-                          )}
+                {krowne.properties && krowne.properties.map((prop, idx) => (
+                  <div key={idx} className="field-item">
+                    <label>{prop.propertyName}:</label>
+                    <value>{prop.value || 'N/A'}</value>
+                  </div>
+                ))}
+                {krowne.mainImageUrl && (
+                  <div className="field-item">
+                    <label>Image:</label>
+                    <img src={krowne.mainImageUrl} alt={krowne.name} className="product-image" />
+                  </div>
+                )}
+                {krowne.relatedProducts && krowne.relatedProducts.length > 0 && (
+                  <div className="field-item full-width">
+                    <label>Related Products ({krowne.relatedProducts.length}):</label>
+                    <div className="related-products-grid">
+                      {krowne.relatedProducts.slice(0, 6).map((product, idx) => (
+                        <div key={idx} className="related-product-card">
+                          <img src={product.imageUrl} alt={product.name} />
+                          <div>{product.name}</div>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
               </div>
-            )}
-          </div>
-        )}
-
-        {/* Comparison Tab */}
-        {activeTab === 'comparison' && salesforce && krowne && (
-          <div>
-            {/* Summary Stats */}
-            <div className="comparison-summary">
-              <h3>Comparison Summary</h3>
-              <div className="summary-stats">
-                <div>
-                  <strong>Total Fields Compared:</strong> {getComparisonFields().length}
-                </div>
-                <div className={mismatches.length > 0 ? 'text-danger' : 'text-success'}>
-                  <strong>Mismatches Found:</strong> {mismatches.length}
-                </div>
-                <div className="text-success">
-                  <strong>Matches:</strong> {getComparisonFields().length - mismatches.length}
-                </div>
-              </div>
             </div>
-
-            {/* Detailed Comparison Table */}
-            <table className="comparison-table">
-              <thead>
-                <tr>
-                  <th className="field-column">Field</th>
-                  <th className="value-column">Pimly (Salesforce)</th>
-                  <th className="value-column">Krowne Website</th>
-                  <th className="value-column">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {getComparisonFields().map((field, idx) => {
-                  const mismatch = mismatches.find(m => m.field.toLowerCase() === field.label.toLowerCase());
-                  const isMatch = field.sf && field.krowne && !mismatch;
-                  const hasData = field.sf || field.krowne;
-                  
-                  return (
-                    <tr key={idx} className={mismatch ? 'mismatch-row' : ''}>
-                      <td className="field-column">{field.label}</td>
-                      <td className="value-column">
-                        {field.sf ? (
-                          field.key === 'price' ? formatPrice(field.sf) : String(field.sf)
-                        ) : (
-                          <span className="missing-data">No data</span>
-                        )}
-                      </td>
-                      <td className="value-column">
-                        {field.krowne ? (
-                          field.key === 'price' ? formatPrice(field.krowne) : String(field.krowne)
-                        ) : (
-                          <span className="missing-data">No data</span>
-                        )}
-                      </td>
-                      <td className="value-column">
-                        {mismatch ? (
-                          <span className="mismatch-indicator">⚠️ Mismatch</span>
-                        ) : isMatch ? (
-                          <span className="match-indicator">✅ Match</span>
-                        ) : hasData ? (
-                          <span className="partial-indicator">ℹ️ Partial</span>
-                        ) : (
-                          <span className="missing-data">No data</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-
-            {/* Additional Krowne Data */}
-            {(krowne.specifications || krowne.certifications || krowne.features) && (
-              <div className="additional-data">
-                <h3>Additional Krowne Website Data</h3>
-                
-                <div className="comparison-grid">
-                  {/* Krowne Specifications */}
-                  {krowne.specifications && Object.keys(krowne.specifications).length > 0 && (
-                    <div className="source-column">
-                      <div className="source-header">
-                        <span className="source-icon">⚙️</span>
-                        <span className="source-title">Specifications</span>
-                      </div>
-                      <div className="property-grid">
-                        {Object.entries(krowne.specifications).map(([key, value]) => (
-                          <div key={key} className="property-item">
-                            <span className="property-label">{key}</span>
-                            <span className="property-value">{value}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Krowne Certifications */}
-                  {krowne.certifications && Object.keys(krowne.certifications).length > 0 && (
-                    <div className="source-column">
-                      <div className="source-header">
-                        <span className="source-icon">🏆</span>
-                        <span className="source-title">Certifications</span>
-                      </div>
-                      <div className="property-grid">
-                        {Object.entries(krowne.certifications).map(([key, value]) => (
-                          <div key={key} className="property-item">
-                            <span className="property-label">{key}</span>
-                            <span className="property-value">{value}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
         )}
       </div>
