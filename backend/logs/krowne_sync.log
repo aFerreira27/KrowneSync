@@ -3463,3 +3463,4 @@ information about how to avoid this problem.
 2025-08-06 09:23:23,343 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
 2025-08-06 09:23:23,344 - __main__ - INFO - Debug mode: True
 2025-08-06 09:23:23,369 - werkzeug - WARNING -  * Debugger is active!
+2025-08-06 09:23:23,374 - werkzeug - INFO -  * Debugger PIN: 117-175-968

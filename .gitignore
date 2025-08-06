@@ -34,3 +34,5 @@ coverage/
 *.bak
 *.tmp
 *.orig
+
+venv/
