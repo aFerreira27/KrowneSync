@@ -4423,3 +4423,242 @@ information about how to avoid this problem.
 2025-08-06 12:56:36,164 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:56:36] "POST /api/compare HTTP/1.1" 200 -
 2025-08-06 12:56:36,178 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:56:36] "GET /api/mapper/fields HTTP/1.1" 200 -
 2025-08-06 12:56:36,497 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 12:56:36] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 13:15:26,132 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:15:26] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 13:15:26,442 - app.routes - INFO - Searching Pimly for: 12-801L
+2025-08-06 13:15:26,442 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:15:28,351 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 13:15:28,358 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:15:28] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 13:15:28,363 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:15:28] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 13:15:28,366 - app.routes - INFO - Compare request data: {'skus': ['12-801L']}
+2025-08-06 13:15:28,366 - app.routes - INFO - Processing comparison for SKUs: ['12-801L']
+2025-08-06 13:15:28,371 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:15:29,771 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 13:15:29,775 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 13:15:30,981 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 13:15:30,984 - app.routes - INFO -    MISMATCH - description: SF='Silver Series 8" Center Wall Mount Faucet with 6" Wide Gooseneck Spout' vs Krowne='Silver Series 8" center wall mount faucet | 1/4 turn ceramic valves | 1/2" NPT female inlets'
+2025-08-06 13:15:30,984 - app.routes - INFO -    PARTIAL - weight: SF='3.49' vs Krowne='None'
+2025-08-06 13:15:30,985 - app.routes - INFO -    PARTIAL - length: SF='12.375' vs Krowne='None'
+2025-08-06 13:15:30,985 - app.routes - INFO -    PARTIAL - height: SF='9.5' vs Krowne='None'
+2025-08-06 13:15:30,985 - app.routes - INFO -    PARTIAL - depth: SF='6' vs Krowne='None'
+2025-08-06 13:15:30,987 - app.routes - INFO -    PARTIAL - mounting_style: SF='Wall Mount' vs Krowne='None'
+2025-08-06 13:15:30,987 - app.routes - INFO -    PARTIAL - spout_style: SF='Gooseneck' vs Krowne='None'
+2025-08-06 13:15:30,987 - app.routes - INFO -    PARTIAL - spout_size: SF='6' vs Krowne='None'
+2025-08-06 13:15:30,987 - app.routes - INFO -    PARTIAL - handle_type: SF='Lever' vs Krowne='None'
+2025-08-06 13:15:30,987 - app.routes - INFO -    PARTIAL - valve_type: SF='1/4 turn ceramic valve' vs Krowne='None'
+2025-08-06 13:15:30,988 - app.routes - INFO -    PARTIAL - flow_rate: SF='1.8' vs Krowne='None'
+2025-08-06 13:15:30,988 - app.routes - INFO -    PARTIAL - inlet: SF='1/2" NPT Female Inlets' vs Krowne='None'
+2025-08-06 13:15:30,988 - app.routes - INFO -    PARTIAL - nsf_certification: SF='['NSF/ANSI/CAN 61: Q<1', 'NSF-61 & NSF/ANSI 372']' vs Krowne='None'
+2025-08-06 13:15:30,988 - app.routes - INFO -    PARTIAL - csa_certification: SF='ASME A112.18.1-2012/CSA B125.1-12' vs Krowne='None'
+2025-08-06 13:15:30,989 - app.routes - INFO -    PARTIAL - cec_certification: SF='True' vs Krowne='None'
+2025-08-06 13:15:30,989 - app.routes - INFO -    PARTIAL - case_quantity: SF='12' vs Krowne='None'
+2025-08-06 13:15:30,990 - app.routes - INFO -    PARTIAL - case_weight: SF='41.89' vs Krowne='None'
+2025-08-06 13:15:30,990 - app.routes - INFO -    PARTIAL - shipping_weight: SF='3.68' vs Krowne='None'
+2025-08-06 13:15:30,990 - app.routes - INFO -    PARTIAL - upc: SF='822196428013' vs Krowne='None'
+2025-08-06 13:15:30,991 - app.routes - INFO -    PARTIAL - hts_code: SF='7324.90.0000' vs Krowne='None'
+2025-08-06 13:15:30,991 - app.routes - INFO -    PARTIAL - temperature_range: SF='40°F - 180°F' vs Krowne='None'
+2025-08-06 13:15:30,991 - app.routes - INFO -    PARTIAL - main_image_url: SF='None' vs Krowne='https://www.krowne.com/files/12-801l.jpg'
+2025-08-06 13:15:30,991 - app.routes - INFO -    PARTIAL - downloads: SF='None' vs Krowne='[{'name': 'DOWNLOAD', 'url': 'https://www.krowne.com/files/12-801l-spec-sheet.pdf'}, {'name': 'DOWNLOAD', 'url': 'https://www.krowne.com/files/12-8-installation-manual.pdf'}]'
+2025-08-06 13:15:30,992 - app.routes - INFO -    MISMATCH - features: SF='Durable full range spout with double o-ring construction' vs Krowne='['Silver Series 8" center wall mount faucet', '1/4 turn ceramic valves', '1/2" NPT female inlets', 'Durable full range swing spout with double o-ring construction', 'Lever handles', 'Chrome plated finish']'
+2025-08-06 13:15:30,992 - app.routes - INFO -    PARTIAL - breadcrumb: SF='None' vs Krowne='[{'name': 'Plumbing', 'url': 'https://www.krowne.com/product-showcase/plumbing'}, {'name': 'Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets'}, {'name': 'Manual Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets'}, {'name': 'Kitchen and Pantry Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets/kitchen-and-pantry-faucets'}]'
+2025-08-06 13:15:30,992 - app.routes - INFO -    PARTIAL - categories: SF='None' vs Krowne='[{'name': 'Plumbing', 'url': 'https://www.krowne.com/product-showcase/plumbing'}, {'name': 'Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets'}, {'name': 'Manual Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets'}, {'name': 'Kitchen and Pantry Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets/kitchen-and-pantry-faucets'}]'
+2025-08-06 13:15:30,992 - app.routes - INFO -    PARTIAL - related_products: SF='None' vs Krowne='[{'sku': '12-802l', 'name': '12-802L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 8-1/2" Wide Gooseneck Spout', 'url': 'https://www.krowne.com/12-802l/', 'imageUrl': 'https://www.krowne.com/files/12-802l.jpg'}, {'sku': '12-824l', 'name': '12-824L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 24" Jointed Spout', 'url': 'https://www.krowne.com/12-824l/', 'imageUrl': 'https://www.krowne.com/files/12-824l.jpg'}, {'sku': '12-818l', 'name': '12-818L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 18" Jointed Spout', 'url': 'https://www.krowne.com/12-818l/', 'imageUrl': 'https://www.krowne.com/files/12-818l.jpg'}, {'sku': '12-816l', 'name': '12-816L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 16" Spout', 'url': 'https://www.krowne.com/12-816l/', 'imageUrl': 'https://www.krowne.com/files/12-816l_1.jpg'}, {'sku': '12-814l', 'name': '12-814L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 14" Spout', 'url': 'https://www.krowne.com/12-814l/', 'imageUrl': 'https://www.krowne.com/files/12-814l_1.jpg'}, {'sku': '12-812l', 'name': '12-812L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 12" Spout', 'url': 'https://www.krowne.com/12-812l/', 'imageUrl': 'https://www.krowne.com/files/12-812l_1.jpg'}, {'sku': '12-810l', 'name': '12-810L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 10" Spout', 'url': 'https://www.krowne.com/12-810l/', 'imageUrl': 'https://www.krowne.com/files/12-810l_1.jpg'}, {'sku': '12-808l', 'name': '12-808L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 8" Spout', 'url': 'https://www.krowne.com/12-808l/', 'imageUrl': 'https://www.krowne.com/files/12-808l_1.jpg'}, {'sku': '12-806l', 'name': '12-806L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 6" Spout', 'url': 'https://www.krowne.com/12-806l/', 'imageUrl': 'https://www.krowne.com/files/12-806l_1.jpg'}, {'sku': '12-8xxl', 'name': '12-8XXL', 'description': 'Silver Series 8" Center Wall Mount Faucet Body, No Spout', 'url': 'https://www.krowne.com/12-8xxl/', 'imageUrl': 'https://www.krowne.com/files/12-8xxl.jpg'}]'
+2025-08-06 13:15:30,992 - app.routes - INFO -    PARTIAL - warranty_info: SF='None' vs Krowne='https://www.krowne.com/warranty-terms/'
+2025-08-06 13:15:30,992 - app.routes - INFO -    PARTIAL - properties: SF='None' vs Krowne='[{'propertyName': 'Series', 'propertyAdminName': 'Series', 'value': 'Silver Series'}, {'propertyName': 'Mounting Style', 'propertyAdminName': 'Mounting_Style', 'value': 'Wall Mount'}, {'propertyName': 'Centers', 'propertyAdminName': 'Centers', 'value': '8"'}, {'propertyName': 'Spout Style', 'propertyAdminName': 'Spout_Style', 'value': 'Gooseneck'}, {'propertyName': 'Spout Size', 'propertyAdminName': 'Spout_Size', 'value': '6"'}, {'propertyName': 'Outlet Type', 'propertyAdminName': 'Outlet_Type', 'value': 'Aerator'}, {'propertyName': 'Flow Rate', 'propertyAdminName': 'Flow_Rate', 'value': '1.8 GPM'}, {'propertyName': 'Handles', 'propertyAdminName': 'Handles', 'value': 'Lever'}, {'propertyName': 'Inlet', 'propertyAdminName': 'Inlet', 'value': '1/2" NPT Female'}, {'propertyName': 'Valves', 'propertyAdminName': 'Valves', 'value': '1/4 turn ceramic valves'}, {'propertyName': 'Finish', 'propertyAdminName': 'Finish', 'value': 'Chrome plated finish'}, {'propertyName': 'NSF Certification', 'propertyAdminName': 'NSF_Certification', 'value': 'NSF-61 & NSF/ANSI 372'}, {'propertyName': 'NSF Q Certification', 'propertyAdminName': 'NSF_Q_Certification', 'value': 'NSF/ANSI/CAN 61: Q < 1'}, {'propertyName': 'CSA Certification', 'propertyAdminName': 'CSA_Certification', 'value': 'ASME A112.18.1-2012/CSA B125.1-12 & NSF/ANSI 372'}, {'propertyName': 'Massachusetts Listed Certification', 'propertyAdminName': 'Massachusetts_Listed_Certification', 'value': 'TRUE'}, {'propertyName': 'CEC Certification', 'propertyAdminName': 'CEC_Certification', 'value': 'TRUE'}, {'propertyName': 'List Price', 'propertyAdminName': 'List_Price', 'value': '$161.00'}, {'propertyName': 'Product Code', 'propertyAdminName': 'Product_Code', 'value': '12-801L'}]'
+2025-08-06 13:15:31,004 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:15:31] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 13:15:31,019 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:15:31,327 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:15:31] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 13:15:31,651 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:15:31] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 13:15:32,080 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 13:15:33,271 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:15:33] "GET /api/mapper/compare-detailed/12-801L HTTP/1.1" 200 -
+2025-08-06 13:15:33,589 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:15:34,541 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 13:15:35,683 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:15:35] "GET /api/mapper/compare-detailed/12-801L HTTP/1.1" 200 -
+2025-08-06 13:16:34,043 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:16:34] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 13:16:34,044 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:16:34] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 13:16:34,603 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 13:16:34,608 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:16:34] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 13:16:34,612 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:16:34] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 13:16:34,853 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 13:16:34,858 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:16:34] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 13:16:35,137 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 13:16:35,143 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:16:35] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 13:16:35,460 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:16:35] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 13:16:35,665 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 13:16:35,669 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:16:35] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 13:16:35,719 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:16:35] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 13:16:35,768 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:16:35] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 13:16:38,519 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:16:38] "[33mGET /krowne/scrape-product/kr-2000 HTTP/1.1[0m" 404 -
+2025-08-06 13:16:45,232 - app.routes - INFO - Krowne product scraped successfully for SKU: kr-2000
+2025-08-06 13:16:45,235 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:16:45] "GET /api/krowne/scrape-product/kr-2000 HTTP/1.1" 200 -
+2025-08-06 13:17:04,606 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:17:04] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 13:17:04,926 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:17:04] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 13:17:04,927 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:17:04] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 13:17:05,155 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 13:17:05,159 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:17:05] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 13:17:05,190 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:17:05] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 13:17:05,368 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 13:17:05,373 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:17:05] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 13:17:05,507 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:17:05] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 13:17:05,818 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:17:05] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 13:17:09,984 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:17:09] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 13:17:09,989 - app.routes - INFO - Searching Pimly for: kr-2000
+2025-08-06 13:17:09,989 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:17:10,931 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 13:17:10,936 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:17:10] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 13:17:11,253 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:17:11] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 13:17:11,562 - app.routes - INFO - Compare request data: {'skus': ['kr-2000']}
+2025-08-06 13:17:11,563 - app.routes - INFO - Processing comparison for SKUs: ['kr-2000']
+2025-08-06 13:17:11,567 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:17:12,563 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 13:17:12,567 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 13:17:13,650 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 13:17:13,653 - app.routes - INFO -    MISMATCH - product_name: SF='KR-2000 - MasterTap Storage Keg Stacker' vs Krowne='MasterTap Keg Stacker'
+2025-08-06 13:17:13,654 - app.routes - INFO -    MISMATCH - description: SF='MasterTap Storage Keg Stacker' vs Krowne='Transport heavy kegs with ease | Spacers available to stack and move 2 kegs on one dolly | Heavy duty plastic construction to withstand cold temperatures'
+2025-08-06 13:17:13,654 - app.routes - INFO -    PARTIAL - warranty: SF='1 year' vs Krowne='None'
+2025-08-06 13:17:13,654 - app.routes - INFO -    PARTIAL - weight: SF='1.3' vs Krowne='None'
+2025-08-06 13:17:13,655 - app.routes - INFO -    PARTIAL - nsf_certification: SF='N/A' vs Krowne='None'
+2025-08-06 13:17:13,655 - app.routes - INFO -    PARTIAL - csa_certification: SF='N/A' vs Krowne='None'
+2025-08-06 13:17:13,655 - app.routes - INFO -    PARTIAL - cec_certification: SF='False' vs Krowne='None'
+2025-08-06 13:17:13,655 - app.routes - INFO -    PARTIAL - case_quantity: SF='10' vs Krowne='None'
+2025-08-06 13:17:13,656 - app.routes - INFO -    PARTIAL - shipping_weight: SF='1.3' vs Krowne='None'
+2025-08-06 13:17:13,656 - app.routes - INFO -    PARTIAL - upc: SF='822196112233' vs Krowne='None'
+2025-08-06 13:17:13,656 - app.routes - INFO -    PARTIAL - main_image_url: SF='None' vs Krowne='https://www.krowne.com/files/kr-2000.jpg'
+2025-08-06 13:17:13,656 - app.routes - INFO -    PARTIAL - downloads: SF='None' vs Krowne='[{'name': 'DOWNLOAD', 'url': 'https://www.krowne.com/files/8-7-keg-dollies_001.pdf'}]'
+2025-08-06 13:17:13,656 - app.routes - INFO -    PARTIAL - breadcrumb: SF='None' vs Krowne='[{'name': 'Beverage Dispensing Systems', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment'}, {'name': 'Parts & Accessories', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment/parts-and-accessories'}]'
+2025-08-06 13:17:13,657 - app.routes - INFO -    PARTIAL - categories: SF='None' vs Krowne='[{'name': 'Beverage Dispensing Systems', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment'}, {'name': 'Parts & Accessories', 'url': 'https://www.krowne.com/product-showcase/beverage-dispense-equipment/parts-and-accessories'}]'
+2025-08-06 13:17:13,657 - app.routes - INFO -    PARTIAL - related_products: SF='None' vs Krowne='[]'
+2025-08-06 13:17:13,657 - app.routes - INFO -    PARTIAL - warranty_info: SF='None' vs Krowne='https://www.krowne.com/warranty-terms/'
+2025-08-06 13:17:13,657 - app.routes - INFO -    PARTIAL - properties: SF='None' vs Krowne='[{'propertyName': 'Series', 'propertyAdminName': 'Series', 'value': 'MasterTap'}, {'propertyName': 'List Price', 'propertyAdminName': 'List_Price', 'value': '$75.00'}, {'propertyName': 'Product Code', 'propertyAdminName': 'Product_Code', 'value': 'KR-2000'}]'
+2025-08-06 13:17:13,667 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:17:13] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 13:17:13,680 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:17:13,686 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:17:13] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 13:17:14,011 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:17:14] "GET /api/mapper/fields HTTP/1.1" 200 -
+2025-08-06 13:17:14,546 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 13:17:15,610 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:17:15] "GET /api/mapper/compare-detailed/kr-2000 HTTP/1.1" 200 -
+2025-08-06 13:17:15,938 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:17:16,963 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 13:17:18,042 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:17:18] "GET /api/mapper/compare-detailed/kr-2000 HTTP/1.1" 200 -
+2025-08-06 13:23:38,781 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:23:39,895 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 13:23:41,027 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:23:41] "GET /api/mapper/compare-detailed/kr-2000 HTTP/1.1" 200 -
+2025-08-06 13:23:41,037 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:23:42,102 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 13:23:43,194 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:23:43] "GET /api/mapper/compare-detailed/kr-2000 HTTP/1.1" 200 -
+2025-08-06 13:26:15,798 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:26:16,863 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-06 13:26:17,921 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:26:17] "GET /api/mapper/compare-detailed/kr-2000 HTTP/1.1" 200 -
+2025-08-06 13:29:07,858 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:29:07] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 13:29:08,172 - app.routes - INFO - Searching Pimly for: 16-281
+2025-08-06 13:29:08,173 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:29:09,329 - app.services.pimly_client - INFO - Found product by exact SKU match: 16-281
+2025-08-06 13:29:09,335 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:29:09] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 13:29:09,340 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:29:09] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 13:29:09,343 - app.routes - INFO - Compare request data: {'skus': ['16-281']}
+2025-08-06 13:29:09,343 - app.routes - INFO - Processing comparison for SKUs: ['16-281']
+2025-08-06 13:29:09,347 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:29:10,381 - app.services.pimly_client - INFO - Found product by exact SKU match: 16-281
+2025-08-06 13:29:10,385 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 13:29:11,485 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 13:29:11,490 - app.routes - INFO -    MISMATCH - description: SF='Silver Series Service Sink Faucet with 6-1/2" Vacuum Breaker Spout' vs Krowne='Flanges with eccentric fittings for quick installations | 6-1/2" heavy cast spout with pail hook and hose thread | Includes wall bracket for spout support'
+2025-08-06 13:29:11,491 - app.routes - INFO -    PARTIAL - weight: SF='7' vs Krowne='None'
+2025-08-06 13:29:11,491 - app.routes - INFO -    PARTIAL - length: SF='12.5' vs Krowne='None'
+2025-08-06 13:29:11,491 - app.routes - INFO -    PARTIAL - height: SF='9.125' vs Krowne='None'
+2025-08-06 13:29:11,491 - app.routes - INFO -    PARTIAL - depth: SF='9.125' vs Krowne='None'
+2025-08-06 13:29:11,492 - app.routes - INFO -    PARTIAL - mounting_style: SF='Wall Mount' vs Krowne='None'
+2025-08-06 13:29:11,492 - app.routes - INFO -    PARTIAL - spout_style: SF='Cast' vs Krowne='None'
+2025-08-06 13:29:11,492 - app.routes - INFO -    PARTIAL - spout_size: SF='6.5' vs Krowne='None'
+2025-08-06 13:29:11,493 - app.routes - INFO -    PARTIAL - handle_type: SF='Lever' vs Krowne='None'
+2025-08-06 13:29:11,493 - app.routes - INFO -    PARTIAL - valve_type: SF='1/4 turn ceramic valve' vs Krowne='None'
+2025-08-06 13:29:11,493 - app.routes - INFO -    PARTIAL - flow_rate: SF='13.6' vs Krowne='None'
+2025-08-06 13:29:11,493 - app.routes - INFO -    PARTIAL - inlet: SF='1/2" NPT Male Inlets' vs Krowne='None'
+2025-08-06 13:29:11,494 - app.routes - INFO -    PARTIAL - finish: SF='Rough Chrome' vs Krowne='None'
+2025-08-06 13:29:11,494 - app.routes - INFO -    PARTIAL - centers: SF='8"' vs Krowne='None'
+2025-08-06 13:29:11,494 - app.routes - INFO -    PARTIAL - nsf_certification: SF='N/A' vs Krowne='None'
+2025-08-06 13:29:11,495 - app.routes - INFO -    PARTIAL - csa_certification: SF='['ASME A112.18.1-2018/CSA B125.1-18', 'Model AVB to ASSE 1001-2017', 'CSA B64.1.1-2011']' vs Krowne='None'
+2025-08-06 13:29:11,495 - app.routes - INFO -    PARTIAL - cec_certification: SF='True' vs Krowne='None'
+2025-08-06 13:29:11,495 - app.routes - INFO -    PARTIAL - case_quantity: SF='6' vs Krowne='None'
+2025-08-06 13:29:11,495 - app.routes - INFO -    PARTIAL - case_weight: SF='43' vs Krowne='None'
+2025-08-06 13:29:11,496 - app.routes - INFO -    PARTIAL - shipping_weight: SF='7' vs Krowne='None'
+2025-08-06 13:29:11,496 - app.routes - INFO -    PARTIAL - upc: SF='822196162818' vs Krowne='None'
+2025-08-06 13:29:11,496 - app.routes - INFO -    PARTIAL - temperature_range: SF='40°F - 180°F' vs Krowne='None'
+2025-08-06 13:29:11,496 - app.routes - INFO -    PARTIAL - main_image_url: SF='None' vs Krowne='https://www.krowne.com/files/16-281l.jpg'
+2025-08-06 13:29:11,496 - app.routes - INFO -    PARTIAL - downloads: SF='None' vs Krowne='[{'name': 'DOWNLOAD', 'url': 'https://www.krowne.com/files/16-281-spec-sheet.pdf'}]'
+2025-08-06 13:29:11,498 - app.routes - INFO -    MISMATCH - features: SF='['Flanges with eccentric fittings for quick installations', 'Spout with pail hook and hose thread', 'Includes wall bracket for spout support', 'Built-in vacuum breaker', 'Integral stops', 'Mounting kit included']' vs Krowne='['Flanges with eccentric fittings for quick installations', '6-1/2" heavy cast spout with pail hook and hose thread', 'Includes wall bracket for spout support', '1/4 turn ceramic valves', '1/2" NPT male inlets on 8" centers', 'Built-in vacuum breaker', 'Integral stops', 'Lever handles', 'Mounting kit included', 'Solid rough chrome brass base']'
+2025-08-06 13:29:11,498 - app.routes - INFO -    PARTIAL - breadcrumb: SF='None' vs Krowne='[{'name': 'Plumbing', 'url': 'https://www.krowne.com/product-showcase/plumbing'}, {'name': 'Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets'}, {'name': 'Manual Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets'}, {'name': 'Service Sink Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets/service-sink-faucets'}]'
+2025-08-06 13:29:11,498 - app.routes - INFO -    PARTIAL - categories: SF='None' vs Krowne='[{'name': 'Plumbing', 'url': 'https://www.krowne.com/product-showcase/plumbing'}, {'name': 'Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets'}, {'name': 'Manual Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets'}, {'name': 'Service Sink Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets/service-sink-faucets'}]'
+2025-08-06 13:29:11,498 - app.routes - INFO -    PARTIAL - related_products: SF='None' vs Krowne='[{'sku': '16-352l', 'name': '16-352L', 'description': 'Sprayer for the Kitchen Faucet', 'url': 'https://www.krowne.com/16-352l/', 'imageUrl': 'https://www.krowne.com/files/16-352l.jpg'}, {'sku': '16-351l', 'name': '16-351L', 'description': 'Kitchen Faucet', 'url': 'https://www.krowne.com/16-351l/', 'imageUrl': 'https://www.krowne.com/files/16-351l.jpg'}, {'sku': '16-128', 'name': '16-128', 'description': 'Royal Series Replacement Wall Bracket for 16-127 Service Sink Faucet', 'url': 'https://www.krowne.com/16-128/', 'imageUrl': 'https://www.krowne.com/files/16-128.jpg'}, {'sku': 'mh-24', 'name': 'MH-24', 'description': 'Mop Hanger with 3 Grips', 'url': 'https://www.krowne.com/mh-24/', 'imageUrl': 'https://www.krowne.com/files/mh-24.jpg'}, {'sku': 'ms-2424', 'name': 'MS-2424', 'description': '24" Floor Mop Sink', 'url': 'https://www.krowne.com/ms-2424/', 'imageUrl': 'https://www.krowne.com/files/ms-2424.jpg'}, {'sku': '12-510l', 'name': '12-510L', 'description': 'Silver Series 4" Center Deck Mount Single Lever Faucet', 'url': 'https://www.krowne.com/12-510l/', 'imageUrl': 'https://www.krowne.com/files/12-510l.jpg'}, {'sku': '16-129', 'name': '16-129', 'description': 'Royal Series Replacement Vacuum Breaker Cap', 'url': 'https://www.krowne.com/16-129/', 'imageUrl': 'https://www.krowne.com/files/16-129.jpg'}, {'sku': '11-406l', 'name': '11-406L', 'description': 'Silver Series 4" Center Deck Mount Faucet with 6" Spout', 'url': 'https://www.krowne.com/11-406l/', 'imageUrl': 'https://www.krowne.com/files/11-406l.jpg'}, {'sku': '16-127', 'name': '16-127', 'description': 'Royal Series 8" Center Wall Mount Service Sink Faucet with Cast Spout', 'url': 'https://www.krowne.com/16-127/', 'imageUrl': 'https://www.krowne.com/files/16-127_001.jpg'}, {'sku': '16-116l', 'name': '16-116L', 'description': 'Silver Series Single Hole Deck Mount Pantry Faucet with 6" Wide Gooseneck Spout', 'url': 'https://www.krowne.com/16-116l/', 'imageUrl': 'https://www.krowne.com/files/16-116l.jpg'}, {'sku': '16-115l', 'name': '16-115L', 'description': 'Silver Series Single Hole Deck Mount Pantry Faucet with 3-1/2" Wide Gooseneck Spout', 'url': 'https://www.krowne.com/16-115l/', 'imageUrl': 'https://www.krowne.com/files/16-115l.jpg'}, {'sku': '16-109l', 'name': '16-109L', 'description': 'Silver Series Single Hole Deck Mount Pantry Faucet with 12" Spout', 'url': 'https://www.krowne.com/16-109l/', 'imageUrl': 'https://www.krowne.com/files/16-109l.jpg'}, {'sku': '16-108l', 'name': '16-108L', 'description': 'Silver Series Single Hole Deck Mount Pantry Faucet with 6" Spout', 'url': 'https://www.krowne.com/16-108l/', 'imageUrl': 'https://www.krowne.com/files/16-108l_001.jpg'}, {'sku': '12-525l', 'name': '12-525L', 'description': 'Silver Series 4" Center Single Lever Handles Faucet with Pop-up Drain', 'url': 'https://www.krowne.com/12-525l/', 'imageUrl': 'https://www.krowne.com/files/12-525l_001.jpg'}, {'sku': '16-127-w', 'name': '16-127-W', 'description': 'Royal Series 8" Center Wall Mount Service Sink Faucet with Cast Spout & Vandal Resistant Wrist Blades Handles', 'url': 'https://www.krowne.com/16-127-w/', 'imageUrl': 'https://www.krowne.com/files/16-127-w_001.jpg'}, {'sku': 'mh-5', 'name': 'MH-5', 'description': 'Mop Hanger with 1 Grip', 'url': 'https://www.krowne.com/mh-5/', 'imageUrl': 'https://www.krowne.com/files/mh-5_001.jpg'}, {'sku': 'ms-1818', 'name': 'MS-1818', 'description': '18" Floor Mop Sink', 'url': 'https://www.krowne.com/ms-1818/', 'imageUrl': 'https://www.krowne.com/files/ms-1818.jpg'}, {'sku': '16-350l', 'name': '16-350L', 'description': 'Kitchen Faucet with Sprayer', 'url': 'https://www.krowne.com/16-350l/', 'imageUrl': 'https://www.krowne.com/files/16-350l.jpg'}]'
+2025-08-06 13:29:11,499 - app.routes - INFO -    PARTIAL - warranty_info: SF='None' vs Krowne='https://www.krowne.com/warranty-terms/'
+2025-08-06 13:29:11,499 - app.routes - INFO -    PARTIAL - properties: SF='None' vs Krowne='[{'propertyName': 'Series', 'propertyAdminName': 'Series', 'value': 'Silver Series'}, {'propertyName': 'Mounting Style', 'propertyAdminName': 'Mounting_Style', 'value': 'Wall Mount'}, {'propertyName': 'Centers', 'propertyAdminName': 'Centers', 'value': '8"'}, {'propertyName': 'Spout Style', 'propertyAdminName': 'Spout_Style', 'value': 'Straight'}, {'propertyName': 'Spout Size', 'propertyAdminName': 'Spout_Size', 'value': '6-1/2"'}, {'propertyName': 'Handles', 'propertyAdminName': 'Handles', 'value': 'Lever'}, {'propertyName': 'Valves', 'propertyAdminName': 'Valves', 'value': '1/4 turn ceramic valves'}, {'propertyName': 'Finish', 'propertyAdminName': 'Finish', 'value': 'Solid rough chrome brass base'}, {'propertyName': 'CSA Certification', 'propertyAdminName': 'CSA_Certification', 'value': 'ASME A112.18.1-2018/CSA B125.1-18 and Model AVB to ASSE 1001-2017 and CSA B64.1.1-2011'}, {'propertyName': 'CEC Certification', 'propertyAdminName': 'CEC_Certification', 'value': 'TRUE'}, {'propertyName': 'List Price', 'propertyAdminName': 'List_Price', 'value': '$230.00'}, {'propertyName': 'Product Code', 'propertyAdminName': 'Product_Code', 'value': '16-281'}]'
+2025-08-06 13:29:11,510 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:29:11] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 13:29:11,836 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:29:12,945 - app.services.pimly_client - INFO - Found product by exact SKU match: 16-281
+2025-08-06 13:29:14,051 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:29:14] "GET /api/mapper/compare-detailed/16-281 HTTP/1.1" 200 -
+2025-08-06 13:29:14,060 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:29:15,125 - app.services.pimly_client - INFO - Found product by exact SKU match: 16-281
+2025-08-06 13:29:16,166 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:29:16] "GET /api/mapper/compare-detailed/16-281 HTTP/1.1" 200 -
+2025-08-06 13:33:59,789 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:34:01,021 - app.services.pimly_client - INFO - Found product by exact SKU match: 16-281
+2025-08-06 13:34:02,243 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:02] "GET /api/mapper/compare-detailed/16-281 HTTP/1.1" 200 -
+2025-08-06 13:34:15,630 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:15] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 13:34:15,631 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:15] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 13:34:16,191 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 13:34:16,195 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:16] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 13:34:16,201 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:16] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 13:34:16,474 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 13:34:16,480 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:16] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-06 13:34:16,736 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 13:34:16,741 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:16] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 13:34:16,942 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-06 13:34:16,947 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:16] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-06 13:34:17,052 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:17] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 13:34:17,253 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:17] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 13:34:17,364 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:17] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 13:34:17,630 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:17] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-06 13:34:21,420 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:21] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 13:34:21,424 - app.routes - INFO - Searching Pimly for: 12-801L
+2025-08-06 13:34:21,424 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:34:22,556 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 13:34:22,562 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:22] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-06 13:34:22,876 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:22] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-06 13:34:23,188 - app.routes - INFO - Compare request data: {'skus': ['12-801L']}
+2025-08-06 13:34:23,189 - app.routes - INFO - Processing comparison for SKUs: ['12-801L']
+2025-08-06 13:34:23,193 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:34:24,338 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 13:34:24,343 - app.routes - INFO -    Salesforce fields: ['siblingProducts', 'salesforceId', 'salesforceFields', 'relatedProducts', 'properties', 'pimlyId', 'parentPimlyIds', 'parentId', 'parent', 'name', 'mainAsset', 'linkedItems', 'lastModifiedDate', 'inheritanceGroup', 'family', 'errorMessages', 'digitalAssets', 'createdDate', 'categories', 'adminName']
+2025-08-06 13:34:25,716 - app.routes - INFO -    Krowne fields: ['name', 'price', 'description', 'mainImageUrl', 'properties', 'categories', 'relatedProducts', 'series', 'warranty', 'features', 'downloads', 'specSheetUrl', 'warrantyInfo', 'breadcrumb', 'productCode', 'listPrice']
+2025-08-06 13:34:25,720 - app.routes - INFO -    MISMATCH - description: SF='Silver Series 8" Center Wall Mount Faucet with 6" Wide Gooseneck Spout' vs Krowne='Silver Series 8" center wall mount faucet | 1/4 turn ceramic valves | 1/2" NPT female inlets'
+2025-08-06 13:34:25,720 - app.routes - INFO -    PARTIAL - weight: SF='3.49' vs Krowne='None'
+2025-08-06 13:34:25,720 - app.routes - INFO -    PARTIAL - length: SF='12.375' vs Krowne='None'
+2025-08-06 13:34:25,720 - app.routes - INFO -    PARTIAL - height: SF='9.5' vs Krowne='None'
+2025-08-06 13:34:25,720 - app.routes - INFO -    PARTIAL - depth: SF='6' vs Krowne='None'
+2025-08-06 13:34:25,720 - app.routes - INFO -    PARTIAL - mounting_style: SF='Wall Mount' vs Krowne='None'
+2025-08-06 13:34:25,721 - app.routes - INFO -    PARTIAL - spout_style: SF='Gooseneck' vs Krowne='None'
+2025-08-06 13:34:25,721 - app.routes - INFO -    PARTIAL - spout_size: SF='6' vs Krowne='None'
+2025-08-06 13:34:25,721 - app.routes - INFO -    PARTIAL - handle_type: SF='Lever' vs Krowne='None'
+2025-08-06 13:34:25,721 - app.routes - INFO -    PARTIAL - valve_type: SF='1/4 turn ceramic valve' vs Krowne='None'
+2025-08-06 13:34:25,721 - app.routes - INFO -    PARTIAL - flow_rate: SF='1.8' vs Krowne='None'
+2025-08-06 13:34:25,721 - app.routes - INFO -    PARTIAL - inlet: SF='1/2" NPT Female Inlets' vs Krowne='None'
+2025-08-06 13:34:25,722 - app.routes - INFO -    PARTIAL - nsf_certification: SF='['NSF/ANSI/CAN 61: Q<1', 'NSF-61 & NSF/ANSI 372']' vs Krowne='None'
+2025-08-06 13:34:25,722 - app.routes - INFO -    PARTIAL - csa_certification: SF='ASME A112.18.1-2012/CSA B125.1-12' vs Krowne='None'
+2025-08-06 13:34:25,722 - app.routes - INFO -    PARTIAL - cec_certification: SF='True' vs Krowne='None'
+2025-08-06 13:34:25,722 - app.routes - INFO -    PARTIAL - case_quantity: SF='12' vs Krowne='None'
+2025-08-06 13:34:25,722 - app.routes - INFO -    PARTIAL - case_weight: SF='41.89' vs Krowne='None'
+2025-08-06 13:34:25,722 - app.routes - INFO -    PARTIAL - shipping_weight: SF='3.68' vs Krowne='None'
+2025-08-06 13:34:25,722 - app.routes - INFO -    PARTIAL - upc: SF='822196428013' vs Krowne='None'
+2025-08-06 13:34:25,722 - app.routes - INFO -    PARTIAL - hts_code: SF='7324.90.0000' vs Krowne='None'
+2025-08-06 13:34:25,723 - app.routes - INFO -    PARTIAL - temperature_range: SF='40°F - 180°F' vs Krowne='None'
+2025-08-06 13:34:25,723 - app.routes - INFO -    PARTIAL - main_image_url: SF='None' vs Krowne='https://www.krowne.com/files/12-801l.jpg'
+2025-08-06 13:34:25,723 - app.routes - INFO -    PARTIAL - downloads: SF='None' vs Krowne='[{'name': 'DOWNLOAD', 'url': 'https://www.krowne.com/files/12-801l-spec-sheet.pdf'}, {'name': 'DOWNLOAD', 'url': 'https://www.krowne.com/files/12-8-installation-manual.pdf'}]'
+2025-08-06 13:34:25,723 - app.routes - INFO -    MISMATCH - features: SF='Durable full range spout with double o-ring construction' vs Krowne='['Silver Series 8" center wall mount faucet', '1/4 turn ceramic valves', '1/2" NPT female inlets', 'Durable full range swing spout with double o-ring construction', 'Lever handles', 'Chrome plated finish']'
+2025-08-06 13:34:25,723 - app.routes - INFO -    PARTIAL - breadcrumb: SF='None' vs Krowne='[{'name': 'Plumbing', 'url': 'https://www.krowne.com/product-showcase/plumbing'}, {'name': 'Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets'}, {'name': 'Manual Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets'}, {'name': 'Kitchen and Pantry Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets/kitchen-and-pantry-faucets'}]'
+2025-08-06 13:34:25,723 - app.routes - INFO -    PARTIAL - categories: SF='None' vs Krowne='[{'name': 'Plumbing', 'url': 'https://www.krowne.com/product-showcase/plumbing'}, {'name': 'Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets'}, {'name': 'Manual Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets'}, {'name': 'Kitchen and Pantry Faucets', 'url': 'https://www.krowne.com/product-showcase/plumbing/faucets/manual-faucets/kitchen-and-pantry-faucets'}]'
+2025-08-06 13:34:25,723 - app.routes - INFO -    PARTIAL - related_products: SF='None' vs Krowne='[{'sku': '12-802l', 'name': '12-802L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 8-1/2" Wide Gooseneck Spout', 'url': 'https://www.krowne.com/12-802l/', 'imageUrl': 'https://www.krowne.com/files/12-802l.jpg'}, {'sku': '12-824l', 'name': '12-824L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 24" Jointed Spout', 'url': 'https://www.krowne.com/12-824l/', 'imageUrl': 'https://www.krowne.com/files/12-824l.jpg'}, {'sku': '12-818l', 'name': '12-818L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 18" Jointed Spout', 'url': 'https://www.krowne.com/12-818l/', 'imageUrl': 'https://www.krowne.com/files/12-818l.jpg'}, {'sku': '12-816l', 'name': '12-816L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 16" Spout', 'url': 'https://www.krowne.com/12-816l/', 'imageUrl': 'https://www.krowne.com/files/12-816l_1.jpg'}, {'sku': '12-814l', 'name': '12-814L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 14" Spout', 'url': 'https://www.krowne.com/12-814l/', 'imageUrl': 'https://www.krowne.com/files/12-814l_1.jpg'}, {'sku': '12-812l', 'name': '12-812L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 12" Spout', 'url': 'https://www.krowne.com/12-812l/', 'imageUrl': 'https://www.krowne.com/files/12-812l_1.jpg'}, {'sku': '12-810l', 'name': '12-810L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 10" Spout', 'url': 'https://www.krowne.com/12-810l/', 'imageUrl': 'https://www.krowne.com/files/12-810l_1.jpg'}, {'sku': '12-808l', 'name': '12-808L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 8" Spout', 'url': 'https://www.krowne.com/12-808l/', 'imageUrl': 'https://www.krowne.com/files/12-808l_1.jpg'}, {'sku': '12-806l', 'name': '12-806L', 'description': 'Silver Series 8" Center Wall Mount Faucet with 6" Spout', 'url': 'https://www.krowne.com/12-806l/', 'imageUrl': 'https://www.krowne.com/files/12-806l_1.jpg'}, {'sku': '12-8xxl', 'name': '12-8XXL', 'description': 'Silver Series 8" Center Wall Mount Faucet Body, No Spout', 'url': 'https://www.krowne.com/12-8xxl/', 'imageUrl': 'https://www.krowne.com/files/12-8xxl.jpg'}]'
+2025-08-06 13:34:25,724 - app.routes - INFO -    PARTIAL - warranty_info: SF='None' vs Krowne='https://www.krowne.com/warranty-terms/'
+2025-08-06 13:34:25,724 - app.routes - INFO -    PARTIAL - properties: SF='None' vs Krowne='[{'propertyName': 'Series', 'propertyAdminName': 'Series', 'value': 'Silver Series'}, {'propertyName': 'Mounting Style', 'propertyAdminName': 'Mounting_Style', 'value': 'Wall Mount'}, {'propertyName': 'Centers', 'propertyAdminName': 'Centers', 'value': '8"'}, {'propertyName': 'Spout Style', 'propertyAdminName': 'Spout_Style', 'value': 'Gooseneck'}, {'propertyName': 'Spout Size', 'propertyAdminName': 'Spout_Size', 'value': '6"'}, {'propertyName': 'Outlet Type', 'propertyAdminName': 'Outlet_Type', 'value': 'Aerator'}, {'propertyName': 'Flow Rate', 'propertyAdminName': 'Flow_Rate', 'value': '1.8 GPM'}, {'propertyName': 'Handles', 'propertyAdminName': 'Handles', 'value': 'Lever'}, {'propertyName': 'Inlet', 'propertyAdminName': 'Inlet', 'value': '1/2" NPT Female'}, {'propertyName': 'Valves', 'propertyAdminName': 'Valves', 'value': '1/4 turn ceramic valves'}, {'propertyName': 'Finish', 'propertyAdminName': 'Finish', 'value': 'Chrome plated finish'}, {'propertyName': 'NSF Certification', 'propertyAdminName': 'NSF_Certification', 'value': 'NSF-61 & NSF/ANSI 372'}, {'propertyName': 'NSF Q Certification', 'propertyAdminName': 'NSF_Q_Certification', 'value': 'NSF/ANSI/CAN 61: Q < 1'}, {'propertyName': 'CSA Certification', 'propertyAdminName': 'CSA_Certification', 'value': 'ASME A112.18.1-2012/CSA B125.1-12 & NSF/ANSI 372'}, {'propertyName': 'Massachusetts Listed Certification', 'propertyAdminName': 'Massachusetts_Listed_Certification', 'value': 'TRUE'}, {'propertyName': 'CEC Certification', 'propertyAdminName': 'CEC_Certification', 'value': 'TRUE'}, {'propertyName': 'List Price', 'propertyAdminName': 'List_Price', 'value': '$161.00'}, {'propertyName': 'Product Code', 'propertyAdminName': 'Product_Code', 'value': '12-801L'}]'
+2025-08-06 13:34:25,736 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:25] "POST /api/compare HTTP/1.1" 200 -
+2025-08-06 13:34:25,747 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:34:26,781 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 13:34:27,940 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:27] "GET /api/mapper/compare-detailed/12-801L HTTP/1.1" 200 -
+2025-08-06 13:34:27,948 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-06 13:34:29,011 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-06 13:34:30,203 - werkzeug - INFO - 127.0.0.1 - - [06/Aug/2025 13:34:30] "GET /api/mapper/compare-detailed/12-801L HTTP/1.1" 200 -
