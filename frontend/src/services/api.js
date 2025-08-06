@@ -12,14 +12,40 @@ class APIService {
       credentials: 'include', // Important for Flask session cookies
     };
 
-    const response = await fetch(url, { ...defaultOptions, ...options });
+    // Add timeout to requests
+    const timeoutMs = options.timeout || 60000; // 60 second default timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Request failed' }));
-      throw new Error(error.error || error.message || 'Request failed');
+    try {
+      const response = await fetch(url, { 
+        ...defaultOptions, 
+        ...options, 
+        signal: controller.signal 
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: 'Request failed' }));
+        throw new Error(error.error || error.message || 'Request failed');
+      }
+
+      return response.json();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      
+      if (error.name === 'AbortError') {
+        throw new Error(`Request timeout after ${timeoutMs}ms`);
+      }
+      
+      // Enhance error message for common connection issues
+      if (error.message === 'Failed to fetch') {
+        throw new Error('Server connection failed - please check if the backend server is running');
+      }
+      
+      throw error;
     }
-
-    return response.json();
   }
 
   // Salesforce OAuth Authentication
