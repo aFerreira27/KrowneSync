@@ -3,6 +3,8 @@ import './ProductCard.css';
 
 const ProductCard = ({ productData }) => {
   const [detailedComparison, setDetailedComparison] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // Extract data with proper structure handling
   const { sku, salesforce, krowne, comparison, status } = productData || {};
@@ -14,18 +16,106 @@ const ProductCard = ({ productData }) => {
   useEffect(() => {
     if (sku) {
       const fetchDetailedComparison = async () => {
+        setLoading(true);
+        setError(null);
         try {
-          const response = await fetch(`/api/mapper/compare-detailed/${sku}`);
+          // Use the correct backend route
+          const response = await fetch(`/api/mapper/compare-detailed/${encodeURIComponent(sku)}`);
+          
+          if (!response.ok) {
+            throw new Error(`Failed to fetch detailed comparison: ${response.statusText}`);
+          }
+          
           const data = await response.json();
+          console.log('Detailed comparison data:', data);
           setDetailedComparison(data);
         } catch (error) {
           console.error('Error fetching detailed comparison:', error);
+          setError(error.message);
+          
+          // Fallback to using the comparison data from props if available
+          if (comparison) {
+            console.log('Using fallback comparison data from props');
+            setDetailedComparison(formatComparisonForDisplay(comparison));
+          }
+        } finally {
+          setLoading(false);
         }
       };
       
       fetchDetailedComparison();
     }
-  }, [sku]);
+  }, [sku, comparison]);
+
+  // Format comparison data for display if using fallback
+  const formatComparisonForDisplay = (comparisonData) => {
+    if (!comparisonData) return null;
+
+    // Transform the comparison data to match expected format
+    const fieldComparisons = [];
+    
+    // Add mismatches
+    if (comparisonData.mismatches) {
+      comparisonData.mismatches.forEach(mismatch => {
+        fieldComparisons.push({
+          field_name: mismatch.canonical_name || mismatch.field,
+          display_name: mismatch.field || mismatch.canonical_name?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          salesforce_value: mismatch.salesforce,
+          krowne_value: mismatch.krowne,
+          is_mismatch: true,
+          is_match: false,
+          has_partial_data: false,
+          field_type: 'text',
+          description: mismatch.description || ''
+        });
+      });
+    }
+
+    // Add partial data
+    if (comparisonData.partial_data) {
+      comparisonData.partial_data.forEach(partial => {
+        fieldComparisons.push({
+          field_name: partial.canonical_name || partial.field,
+          display_name: partial.field || partial.canonical_name?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          salesforce_value: partial.salesforce,
+          krowne_value: partial.krowne,
+          is_mismatch: false,
+          is_match: false,
+          has_partial_data: true,
+          field_type: 'text',
+          description: partial.description || ''
+        });
+      });
+    }
+
+    // Add matches
+    if (comparisonData.matches) {
+      comparisonData.matches.forEach(match => {
+        fieldComparisons.push({
+          field_name: match.canonical_name || match.field,
+          display_name: match.field || match.canonical_name?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          salesforce_value: match.salesforce,
+          krowne_value: match.krowne,
+          is_mismatch: false,
+          is_match: true,
+          has_partial_data: false,
+          field_type: 'text',
+          description: match.description || ''
+        });
+      });
+    }
+
+    return {
+      sku: sku,
+      comparison_summary: comparisonData.summary || {
+        matches: comparisonData.match_count || 0,
+        mismatches: comparisonData.mismatch_count || 0,
+        partial_data: comparisonData.partial_data_count || 0,
+        total_fields: comparisonData.total_fields_compared || fieldComparisons.length
+      },
+      field_comparisons: fieldComparisons
+    };
+  };
 
   // Format price display
   const formatPrice = (price) => {
@@ -60,30 +150,6 @@ const ProductCard = ({ productData }) => {
           
           // Handle array of objects
           if (typeof value[0] === 'object' && value[0] !== null) {
-            // For categories/breadcrumb with name and url
-            if (value[0].name && value[0].url) {
-              return (
-                <div className="list-items">
-                  {value.map((item, idx) => (
-                    <a key={idx} href={item.url} target="_blank" rel="noopener noreferrer" className="breadcrumb-link">
-                      {item.name}
-                    </a>
-                  )).reduce((prev, curr, idx) => idx === 0 ? [curr] : [...prev, ' → ', curr], [])}
-                </div>
-              );
-            }
-            // For downloads
-            if (value[0].url) {
-              return (
-                <div className="list-items">
-                  {value.map((item, idx) => (
-                    <a key={idx} href={item.url} target="_blank" rel="noopener noreferrer" className="download-link">
-                      📄 {item.name || 'Download'}
-                    </a>
-                  ))}
-                </div>
-              );
-            }
             // For properties with propertyName and value
             if (value[0].propertyName) {
               return (
@@ -96,32 +162,12 @@ const ProductCard = ({ productData }) => {
                 </div>
               );
             }
-            // For related products (assuming they have SKUs or IDs)
-            if (typeof value[0] === 'string' || value[0].sku || value[0].id) {
-              const items = value.map(item => typeof item === 'string' ? item : (item.sku || item.id || item.name));
-              if (items.length > 5) {
-                return (
-                  <div className="related-products">
-                    {items.slice(0, 5).join(', ')} <em>...and {items.length - 5} more</em>
-                  </div>
-                );
-              }
-              return items.join(', ');
-            }
             // Fallback for other objects
             return value.map(item => JSON.stringify(item)).join(', ');
           }
-          // Simple array of strings
-          if (value.length > 10 && fieldType === 'list') {
-            // For long lists like related products
-            return (
-              <div className="long-list">
-                {value.slice(0, 10).join(', ')} <em>...and {value.length - 10} more</em>
-              </div>
-            );
-          }
+          
           // For features, use bullet points if multiple items
-          if (value.length > 1 && (fieldType === 'list' || value[0].includes(' '))) {
+          if (value.length > 1) {
             return (
               <ul className="feature-list">
                 {value.map((item, idx) => (
@@ -180,6 +226,10 @@ const ProductCard = ({ productData }) => {
     switch (status) {
       case 'found_both':
         return { text: 'Synced', color: 'green', icon: '✓' };
+      case 'data_matches':
+        return { text: 'Data Matches', color: 'green', icon: '✓' };
+      case 'mismatches_found':
+        return { text: 'Has Differences', color: 'yellow', icon: '⚠' };
       case 'missing_from_krowne':
         return { text: 'Not in Krowne', color: 'yellow', icon: '⚠' };
       case 'missing_from_salesforce':
@@ -193,15 +243,26 @@ const ProductCard = ({ productData }) => {
 
   // Get comparison summary from detailed comparison
   const getComparisonSummary = () => {
-    if (!detailedComparison?.comparison_summary) {
-      return { matches: 0, mismatches: 0, partial: 0, total: 0 };
+    if (detailedComparison?.comparison_summary) {
+      return {
+        matches: detailedComparison.comparison_summary.matches || 0,
+        mismatches: detailedComparison.comparison_summary.mismatches || 0,
+        partial: detailedComparison.comparison_summary.partial_data || 0,
+        total: detailedComparison.comparison_summary.total_fields || 0
+      };
     }
-    return {
-      matches: detailedComparison.comparison_summary.matches || 0,
-      mismatches: detailedComparison.comparison_summary.mismatches || 0,
-      partial: detailedComparison.comparison_summary.partial_data || 0,
-      total: detailedComparison.comparison_summary.total_fields || 0
-    };
+    
+    // Fallback to comparison prop data
+    if (comparison) {
+      return {
+        matches: comparison.match_count || 0,
+        mismatches: comparison.mismatch_count || 0,
+        partial: comparison.partial_data_count || 0,
+        total: comparison.total_fields_compared || 0
+      };
+    }
+    
+    return { matches: 0, mismatches: 0, partial: 0, total: 0 };
   };
 
   // Early return if no data
@@ -261,7 +322,7 @@ const ProductCard = ({ productData }) => {
           )}
         </div>
         <div className="header-source">
-          <div className="source-title">Krowne CMS</div>
+          <div className="source-title">Krowne Website</div>
           {krowneData?.name && (
             <div className="source-subtitle">{krowneData.name}</div>
           )}
@@ -270,7 +331,15 @@ const ProductCard = ({ productData }) => {
 
       {/* Field Comparisons */}
       <div className="comparison-content">
-        {detailedComparison?.field_comparisons ? (
+        {loading ? (
+          <div className="loading-message">
+            Loading detailed comparison data...
+          </div>
+        ) : error ? (
+          <div className="error-message">
+            Error loading comparison: {error}
+          </div>
+        ) : detailedComparison?.field_comparisons ? (
           <>
             {/* Show mismatches first (highlighted) */}
             {detailedComparison.field_comparisons
@@ -281,6 +350,9 @@ const ProductCard = ({ productData }) => {
                     <span className="field-title">{field.display_name}</span>
                     {field.description && (
                       <span className="field-description">{field.description}</span>
+                    )}
+                    {field.notes && field.notes.includes('[Dispersed field]') && (
+                      <span className="field-tag dispersed">Dispersed</span>
                     )}
                   </div>
                   <div className="field-value salesforce-value">
@@ -302,6 +374,9 @@ const ProductCard = ({ productData }) => {
                     {field.description && (
                       <span className="field-description">{field.description}</span>
                     )}
+                    {field.notes && field.notes.includes('[Dispersed field]') && (
+                      <span className="field-tag dispersed">Dispersed</span>
+                    )}
                   </div>
                   <div className={`field-value salesforce-value ${!field.salesforce_value ? 'empty' : ''}`}>
                     {formatFieldValue(field.salesforce_value, field.field_type)}
@@ -322,6 +397,9 @@ const ProductCard = ({ productData }) => {
                     {field.description && (
                       <span className="field-description">{field.description}</span>
                     )}
+                    {field.notes && field.notes.includes('[Dispersed field]') && (
+                      <span className="field-tag dispersed">Dispersed</span>
+                    )}
                   </div>
                   <div className="field-value salesforce-value">
                     {formatFieldValue(field.salesforce_value, field.field_type)}
@@ -333,8 +411,9 @@ const ProductCard = ({ productData }) => {
               ))}
           </>
         ) : (
-          <div className="loading-message">
-            Loading detailed comparison data...
+          <div className="no-comparison-data">
+            No detailed comparison data available. 
+            {comparison && ' Using summary data from initial comparison.'}
           </div>
         )}
       </div>
@@ -352,6 +431,10 @@ const ProductCard = ({ productData }) => {
         <div className="legend-item">
           <div className="legend-color match"></div>
           <span className="legend-label">Matches</span>
+        </div>
+        <div className="legend-item">
+          <div className="legend-color dispersed"></div>
+          <span className="legend-label">Dispersed Fields</span>
         </div>
       </div>
     </div>

@@ -13,7 +13,8 @@ from app.services.pimly_client import PimlyClient
 from app.services.krowne_cms_service import KrowneCMSService
 from app.services.krowne_scraper import KrowneScraper
 from app.services.extract_skus import extract_known_ids_from_csv
-from app.services.product_mapper import ProductMapper, get_enhanced_product_comparison
+from app.services.product_mapper import ProductMapper, get_enhanced_product_comparison, calculate_product_mismatches
+from app.services.krowne_property_extractor import KrownePropertyExtractor
 
 
 main = Blueprint('main', __name__)
@@ -398,31 +399,25 @@ def scrape_krowne_product(sku):
 
         logger.info(f"Krowne product scraped successfully for SKU: {sku}")
 
-        # 🔧 Augment the raw data with formatted properties
-        formatted_properties = raw_data.get("properties", [])
+        # 🔧 NEW: Use KrownePropertyExtractor to disperse properties
+        property_extractor = KrownePropertyExtractor()
+        enhanced_data = property_extractor.extract_and_disperse_properties(raw_data)
+        
+        # Get dispersal report for debugging
+        dispersal_report = property_extractor.get_dispersal_report(raw_data, enhanced_data)
+        
+        logger.info(f"Property dispersal completed: {dispersal_report['dispersed_fields_count']} fields dispersed")
 
-        # Append derived fields to properties
-        if raw_data.get("description"):
-            formatted_properties.append({
-                "propertyName": "Description",
-                "value": raw_data["description"]
-            })
-
-        if raw_data.get("features"):
-            formatted_properties.append({
-                "propertyName": "Features",
-                "value": "; ".join(raw_data["features"])
-            })
-
-        # Ensure 'properties' contains these enhancements
-        raw_data["properties"] = formatted_properties
-
-        return jsonify({'success': True, 'product': raw_data})
+        return jsonify({
+            'success': True, 
+            'product': enhanced_data,
+            'dispersal_report': dispersal_report  # Include for debugging
+        })
 
     except Exception as e:
         logger.error(f"Krowne scraping error for SKU {sku}: {str(e)}", exc_info=True)
         return jsonify({'success': False, 'error': str(e)}), 500
-
+    
 ### CORRECTED COMPARE ROUTE USING PRODUCTMAPPER ###
 
 @main.route("/api/compare", methods=["POST", "OPTIONS"])
@@ -455,8 +450,9 @@ def compare_products():
         
         logger.info(f"Processing comparison for SKUs: {target_skus}")
         
-        # Initialize the ProductMapper
+        # Initialize the ProductMapper and PropertyExtractor
         mapper = ProductMapper()
+        property_extractor = KrownePropertyExtractor()
         
         results = []
         
@@ -482,13 +478,19 @@ def compare_products():
                 logger.info(f"🔍 Starting Krowne scraping for SKU: {target_sku}")
                 krowne_scraper = KrowneScraper()
                 
-                # Get the product data - this should return the formatted data structure
-                krowne_data = asyncio.run(krowne_scraper.get_product_by_sku(target_sku))
+                # Get the raw product data
+                raw_krowne_data = asyncio.run(krowne_scraper.get_product_by_sku(target_sku))
                 
-                if krowne_data:
-                    logger.info(f"✅ Krowne data retrieved for {target_sku}")
+                if raw_krowne_data:
+                    # 🔧 NEW: Apply property extraction to disperse properties into fields
+                    krowne_data = property_extractor.extract_and_disperse_properties(raw_krowne_data)
+                    
+                    logger.info(f"✅ Krowne data retrieved and enhanced for {target_sku}")
                     if debug_mode:
-                        mapper.log_field_extraction_debug(krowne_data, "Krowne")
+                        mapper.log_field_extraction_debug(krowne_data, "Krowne (Enhanced)")
+                        # Log dispersal report in debug mode
+                        dispersal_report = property_extractor.get_dispersal_report(raw_krowne_data, krowne_data)
+                        logger.info(f"Dispersal report: {dispersal_report}")
                 else:
                     logger.warning(f"❌ No Krowne data returned for {target_sku}")
             except Exception as e:
@@ -546,15 +548,19 @@ def compare_products():
                 'status': determine_product_status(salesforce_data, krowne_data)
             }
             
-            # Add frontend-compatible fields
+            # Add frontend-compatible fields (now with dispersed properties)
             if krowne_data:
                 result_item.update({
                     'krowne_name': krowne_data.get('name'),
-                    'krowne_price': krowne_data.get('price') or krowne_data.get('listPrice'),
+                    'krowne_price': krowne_data.get('price') or krowne_data.get('listPrice') or krowne_data.get('list_price'),
                     'krowne_description': krowne_data.get('description'),
                     'krowne_url': f"https://www.krowne.com/{target_sku}",
                     'krowne_image': krowne_data.get('mainImageUrl'),
-                    'name': krowne_data.get('name')
+                    'name': krowne_data.get('name'),
+                    # Include dispersed fields for easier access
+                    'krowne_series': krowne_data.get('series') or krowne_data.get('Series'),
+                    'krowne_features': krowne_data.get('features') or krowne_data.get('Features'),
+                    'krowne_mounting_style': krowne_data.get('mounting_style') or krowne_data.get('Mounting_Style')
                 })
             
             if salesforce_data:
@@ -578,7 +584,7 @@ def compare_products():
             'mapper_info': {
                 'total_mapped_fields': len(mapper.get_all_canonical_fields()),
                 'mapped_fields': mapper.get_all_canonical_fields(),
-                'version': 'enhanced_v2'  # Version indicator
+                'version': 'enhanced_v3_with_dispersal'  # Updated version
             }
         }
         
@@ -592,8 +598,7 @@ def compare_products():
             "success": False,
             "timestamp": datetime.utcnow().isoformat()
         }), 500
-
-
+    
 # Add this new utility route for field mapping diagnostics:
 
 @main.route('/api/mapper/diagnose/<sku>', methods=['GET'])
@@ -732,7 +737,7 @@ def test_field_extraction():
 
 @main.route('/api/krowne/scrape-product-enhanced/<sku>', methods=['GET'])
 def scrape_krowne_product_enhanced(sku):
-    """Enhanced version of Krowne scraper with better property mapping"""
+    """Enhanced version of Krowne scraper with property dispersal"""
     try:
         scraper = KrowneScraper()
         raw_data = asyncio.run(scraper.get_product_by_sku(sku))
@@ -743,92 +748,51 @@ def scrape_krowne_product_enhanced(sku):
 
         logger.info(f"Krowne product scraped successfully for SKU: {sku}")
 
-        # Initialize ProductMapper for enhanced property handling
+        # Initialize PropertyExtractor for enhanced property handling
+        property_extractor = KrownePropertyExtractor()
+        
+        # Apply property extraction and dispersal
+        enhanced_data = property_extractor.extract_and_disperse_properties(raw_data)
+        
+        # Get dispersal report
+        dispersal_report = property_extractor.get_dispersal_report(raw_data, enhanced_data)
+        
+        # Initialize ProductMapper for validation
         mapper = ProductMapper()
         
-        # Get existing properties or initialize empty list
-        formatted_properties = raw_data.get("properties", [])
-
-        # Enhanced property augmentation using the mapper's field knowledge
-        property_enhancements = []
-
-        # Add description as property if it exists
-        if raw_data.get("description"):
-            property_enhancements.append({
-                "propertyName": "Description",
-                "propertyAdminName": "Product_Description",
-                "value": raw_data["description"]
-            })
-
-        # Add features as property if they exist
-        if raw_data.get("features"):
-            features_text = "; ".join(raw_data["features"]) if isinstance(raw_data["features"], list) else str(raw_data["features"])
-            property_enhancements.append({
-                "propertyName": "Features",
-                "propertyAdminName": "Features",
-                "value": features_text
-            })
-
-        # Add price as property if it exists
-        if raw_data.get("price") or raw_data.get("listPrice"):
-            price_value = raw_data.get("price") or raw_data.get("listPrice")
-            property_enhancements.append({
-                "propertyName": "List Price",
-                "propertyAdminName": "List_Price",
-                "value": price_value
-            })
-
-        # Add dimensions as separate properties if they exist in specifications
-        specs = raw_data.get("specifications", {})
-        dimension_mappings = {
-            "length": ("Length", "Product_Length_(in.)"),
-            "height": ("Height", "Product_Height_(in.)"),
-            "depth": ("Depth", "Product_Depth_(in.)"),
-            "width": ("Width", "Product_Width_(in.)"),
-            "weight": ("Weight", "Product_Weight_(lbs.)")
-        }
-
-        for spec_key, (prop_name, admin_name) in dimension_mappings.items():
-            if spec_key in specs and specs[spec_key]:
-                property_enhancements.append({
-                    "propertyName": prop_name,
-                    "propertyAdminName": admin_name,
-                    "value": specs[spec_key]
-                })
-
-        # Add all enhancements to the properties array
-        formatted_properties.extend(property_enhancements)
-
-        # Ensure 'properties' contains all enhancements
-        raw_data["properties"] = formatted_properties
-
-        # Add mapping diagnostics for debugging
+        # Test extraction of key fields for diagnostics
         diagnostics = {
-            "total_properties": len(formatted_properties),
-            "enhanced_properties_added": len(property_enhancements),
+            "total_properties_original": dispersal_report['original_properties_count'],
+            "total_properties_remaining": dispersal_report['remaining_properties_count'],
+            "dispersed_fields_count": dispersal_report['dispersed_fields_count'],
+            "dispersed_fields": dispersal_report['dispersed_fields'],
             "mapper_field_count": len(mapper.get_all_canonical_fields()),
             "extraction_test_results": {}
         }
 
-        # Test extraction of key fields for diagnostics
-        test_fields = ["product_name", "list_price", "weight", "length", "height", "features", "series"]
+        # Test extraction of key fields from the enhanced data
+        test_fields = ["product_name", "list_price", "weight", "length", "height", 
+                      "features", "series", "mounting_style", "flow_rate", "centers"]
+        
         for field in test_fields:
-            extracted_value = mapper.extract_krowne_value(raw_data, field)
+            extracted_value = mapper.extract_krowne_value(enhanced_data, field)
             diagnostics["extraction_test_results"][field] = {
                 "extracted_value": extracted_value,
-                "has_value": extracted_value is not None
+                "has_value": extracted_value is not None,
+                "direct_field": enhanced_data.get(field),  # Check if it's a direct field now
+                "pimly_mapped": enhanced_data.get(property_extractor.krowne_to_pimly_mapping.get(field))
             }
 
         return jsonify({
             'success': True, 
-            'product': raw_data,
-            'diagnostics': diagnostics
+            'product': enhanced_data,
+            'diagnostics': diagnostics,
+            'dispersal_report': dispersal_report
         })
 
     except Exception as e:
         logger.error(f"Enhanced Krowne scraping error for SKU {sku}: {str(e)}", exc_info=True)
         return jsonify({'success': False, 'error': str(e)}), 500
-
 
 # Add route to get mapping statistics:
 
@@ -1141,11 +1105,50 @@ def compare_debug():
         logger.error(f"Debug compare error: {e}")
         return jsonify({"error": str(e)}), 500
 
-# Add this fix to the top of your routes.py file, right after the existing imports:
 
-# Fix the import for calculate_product_mismatches
-from app.services.product_mapper import ProductMapper, calculate_product_mismatches
-
+@main.route('/api/krowne/test-property-dispersal/<sku>', methods=['GET'])
+def test_property_dispersal(sku):
+    """Test property dispersal for a specific SKU"""
+    try:
+        # Get raw data from scraper
+        scraper = KrowneScraper()
+        raw_data = asyncio.run(scraper.get_product_by_sku(sku))
+        
+        if not raw_data:
+            return jsonify({'error': 'Product not found'}), 404
+        
+        # Initialize extractor
+        property_extractor = KrownePropertyExtractor()
+        
+        # Get enhanced data
+        enhanced_data = property_extractor.extract_and_disperse_properties(raw_data)
+        
+        # Get detailed report
+        dispersal_report = property_extractor.get_dispersal_report(raw_data, enhanced_data)
+        
+        # Create comparison showing before and after
+        comparison = {
+            'sku': sku,
+            'before': {
+                'properties_count': len(raw_data.get('properties', [])),
+                'direct_fields': [k for k in raw_data.keys() if k != 'properties'],
+                'sample_properties': raw_data.get('properties', [])[:5]  # First 5 properties
+            },
+            'after': {
+                'properties_count': len(enhanced_data.get('properties', [])),
+                'direct_fields': [k for k in enhanced_data.keys() if k != 'properties'],
+                'new_fields': [k for k in enhanced_data.keys() if k not in raw_data],
+                'remaining_properties': enhanced_data.get('properties', [])
+            },
+            'dispersal_report': dispersal_report
+        }
+        
+        return jsonify(comparison)
+        
+    except Exception as e:
+        logger.error(f"Error testing property dispersal: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+    
 # Then update the compareRaw function to use the correct import:
 
 @main.route("/api/compare-raw/<sku>", methods=["GET"])

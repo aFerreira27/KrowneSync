@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import ConnectionStatus from './components/ConnectionStatus';
-import AuthModal from './components/AuthModal';
+// import AuthModal from './components/AuthModal';
 import KrowneLoginModal from './components/KrowneLoginModal';
 import SKUSearch from './components/SKUSearch';
 import SyncTable from './components/SyncTable/SyncTable';
@@ -365,17 +365,6 @@ function App() {
         loading={krowneAuth.loading}
         error={krowneAuth.error}
       />
-
-      {/* Legacy Salesforce Auth Modal (if needed for other auth methods) */}
-      {showAuthModal === 'salesforce' && (
-        <AuthModal
-          service="salesforce"
-          onClose={() => setShowAuthModal(null)}
-          onAuth={handleSalesforceConnect}
-          loading={salesforceAuth.loading}
-          error={salesforceAuth.error}
-        />
-      )}
     </div>
   );
 }

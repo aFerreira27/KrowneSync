@@ -11708,3 +11708,276 @@ information about how to avoid this problem.
 2025-08-06 17:13:31,436 - __main__ - INFO - Debug mode: True
 2025-08-06 17:13:31,464 - werkzeug - WARNING -  * Debugger is active!
 2025-08-06 17:13:31,468 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-07 08:00:04,971 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-07 08:00:04,972 - __main__ - INFO - Debug mode: True
+2025-08-07 08:00:06,314 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-08-07 08:00:06,314 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-07 08:00:06,316 - werkzeug - INFO -  * Restarting with stat
+2025-08-07 08:00:07,620 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-07 08:00:07,620 - __main__ - INFO - Debug mode: True
+2025-08-07 08:00:07,644 - werkzeug - WARNING -  * Debugger is active!
+2025-08-07 08:00:07,648 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-07 08:00:51,227 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:00:51] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-08-07 08:00:51,515 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:00:51] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 08:00:51,515 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:00:51] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 08:00:51,829 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:00:51] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 08:00:51,833 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:00:51] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-07 08:00:52,096 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:00:52] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 08:00:52,142 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:00:52] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-07 08:00:52,150 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:00:52] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-07 08:01:03,527 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:01:03] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 08:01:03,527 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:01:03] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 08:01:04,080 - app.services.salesforce_client - ERROR - Error getting user info: 403 Client Error: Forbidden for url: https://krownemetalcorp.my.salesforce.com/services/oauth2/userinfo
+2025-08-07 08:01:04,556 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 08:01:04,761 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 08:01:04,766 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:01:04] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 08:01:04,779 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:01:04] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-07 08:01:05,022 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 08:01:05,027 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:01:05] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 08:01:05,417 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 08:01:05,517 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:01:05] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-07 08:01:05,837 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:01:05] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-07 08:01:06,109 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:01:06] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-07 08:01:06,158 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 08:01:06,162 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:01:06] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-07 08:01:06,176 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:01:06] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-07 08:02:57,066 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:02:57] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 08:02:57,380 - app.routes - INFO - Searching Pimly for: 12-801L
+2025-08-07 08:02:57,382 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:02:58,610 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 08:02:58,623 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:02:58] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 08:02:58,631 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:02:58] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-07 08:02:58,635 - app.routes - INFO - Compare request data: {'skus': ['12-801L']}
+2025-08-07 08:02:58,636 - app.routes - INFO - Processing comparison for SKUs: ['12-801L']
+2025-08-07 08:02:58,652 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:02:59,822 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 08:03:01,060 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 11, 'mismatches': 2, 'partial_data': 29, 'no_data': 61, 'completion_percentage': 12.6}
+2025-08-07 08:03:01,074 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:03:01] "POST /api/compare HTTP/1.1" 200 -
+2025-08-07 08:03:01,395 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:03:02,463 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 08:03:03,600 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:03:03] "GET /api/mapper/compare-detailed/12-801L HTTP/1.1" 200 -
+2025-08-07 08:03:03,638 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:03:04,619 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 08:03:05,838 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:03:05] "GET /api/mapper/compare-detailed/12-801L HTTP/1.1" 200 -
+2025-08-07 08:13:38,036 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\krowne_property_extractor.py', reloading
+2025-08-07 08:13:38,169 - werkzeug - INFO -  * Restarting with stat
+2025-08-07 08:13:40,186 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-07 08:13:40,187 - __main__ - INFO - Debug mode: True
+2025-08-07 08:13:40,236 - werkzeug - WARNING -  * Debugger is active!
+2025-08-07 08:13:40,252 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-07 08:15:55,203 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\product_mapper.py', reloading
+2025-08-07 08:15:55,266 - werkzeug - INFO -  * Restarting with stat
+2025-08-07 08:15:56,422 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-07 08:15:56,423 - __main__ - INFO - Debug mode: True
+2025-08-07 08:15:56,447 - werkzeug - WARNING -  * Debugger is active!
+2025-08-07 08:15:56,452 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-07 08:16:44,018 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\product_mapper.py', reloading
+2025-08-07 08:16:44,090 - werkzeug - INFO -  * Restarting with stat
+2025-08-07 08:16:45,915 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-07 08:16:45,917 - __main__ - INFO - Debug mode: True
+2025-08-07 08:16:45,950 - werkzeug - WARNING -  * Debugger is active!
+2025-08-07 08:16:45,954 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-07 08:23:45,768 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\routes.py', reloading
+2025-08-07 08:23:45,991 - werkzeug - INFO -  * Restarting with stat
+2025-08-07 08:23:47,075 - __main__ - ERROR - Failed to start application: unterminated string literal (detected at line 1359) (routes.py, line 1359)
+2025-08-07 08:38:22,299 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-07 08:38:22,300 - __main__ - INFO - Debug mode: True
+2025-08-07 08:38:23,630 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-08-07 08:38:23,630 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-07 08:38:23,632 - werkzeug - INFO -  * Restarting with stat
+2025-08-07 08:38:24,957 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-07 08:38:24,958 - __main__ - INFO - Debug mode: True
+2025-08-07 08:38:24,981 - werkzeug - WARNING -  * Debugger is active!
+2025-08-07 08:38:24,985 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-07 08:38:30,137 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:38:30] "OPTIONS /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-07 08:38:30,450 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-08-07 08:38:30,456 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:38:30] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-07 08:41:36,083 - app.routes - INFO - === SALESFORCE OAUTH CALLBACK STARTED ===
+2025-08-07 08:41:36,699 - app.services.salesforce_client - INFO - Successfully exchanged authorization code for tokens
+2025-08-07 08:41:36,954 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 08:41:36,954 - app.routes - INFO - User info: Unknown
+2025-08-07 08:41:36,954 - app.routes - INFO - === SALESFORCE OAUTH CALLBACK COMPLETED SUCCESSFULLY ===
+2025-08-07 08:41:36,962 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:41:36] "[32mGET /api/auth/callback/salesforce?code=aPrxgWiFBAr4qtp34JqEomTF_4LnPiuHa5XbkfAGyTjmkrZK_sAcGJXIdwoRXs3w3NHSKpG2.w%3D%3D&state=IA56lamZZC8M1FGyLjh4NRyK5KnhXzGxRdu4LAijNSs HTTP/1.1[0m" 302 -
+2025-08-07 08:41:37,497 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:41:37] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 08:41:37,499 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:41:37] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 08:41:37,502 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:41:37] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 08:41:37,731 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 08:41:37,736 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:41:37] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 08:41:37,743 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:41:37] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-07 08:41:38,061 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 08:41:38,066 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:41:38] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 08:41:38,322 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 08:41:38,327 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:41:38] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-07 08:41:38,597 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 08:41:38,603 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:41:38] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 08:41:38,641 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:41:38] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-07 08:41:38,890 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 08:41:38,896 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:41:38] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-07 08:41:38,957 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:41:38] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-07 08:41:39,297 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:41:39] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-07 08:41:39,427 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 08:41:39,431 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:41:39] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-07 08:41:39,750 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:41:39] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-07 08:42:53,264 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:42:53] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 08:42:53,577 - app.routes - INFO - Searching Pimly for: 12-801L
+2025-08-07 08:42:53,578 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:42:54,779 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 08:42:54,787 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:42:54] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 08:42:54,793 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:42:54] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-07 08:42:54,795 - app.routes - INFO - Compare request data: {'skus': ['12-801L']}
+2025-08-07 08:42:54,797 - app.routes - INFO - Processing comparison for SKUs: ['12-801L']
+2025-08-07 08:42:54,811 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:42:55,588 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 08:42:56,824 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 18 properties
+2025-08-07 08:42:56,841 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 22 fields dispersed, 7 properties remaining
+2025-08-07 08:42:56,851 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 15, 'mismatches': 2, 'partial_data': 26, 'no_data': 60, 'completion_percentage': 16.5}
+2025-08-07 08:42:56,865 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:42:56] "POST /api/compare HTTP/1.1" 200 -
+2025-08-07 08:42:57,205 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:42:58,263 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 08:42:59,447 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:42:59] "GET /api/mapper/compare-detailed/12-801L HTTP/1.1" 200 -
+2025-08-07 08:42:59,457 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:43:00,492 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 08:43:01,616 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:43:01] "GET /api/mapper/compare-detailed/12-801L HTTP/1.1" 200 -
+2025-08-07 08:46:19,967 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:46:23,609 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 08:46:24,743 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:46:24] "GET /api/mapper/compare-detailed/12-801L HTTP/1.1" 200 -
+2025-08-07 08:46:24,797 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:46:25,959 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 08:46:27,208 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:46:27] "GET /api/mapper/compare-detailed/12-801L HTTP/1.1" 200 -
+2025-08-07 08:52:02,903 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:52:02] "OPTIONS /api/products/skus HTTP/1.1" 200 -
+2025-08-07 08:52:02,907 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:52:02] "OPTIONS /api/products/skus HTTP/1.1" 200 -
+2025-08-07 08:52:03,313 - app.services.extract_skus - INFO - Extracted 3421 IDs from C:\Users\aferreira\OneDrive - Krowne Metal Corporation\Desktop\KrowneSync\backend\uploads\Initial_Import.csv
+2025-08-07 08:52:03,319 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:52:03] "GET /api/products/skus HTTP/1.1" 200 -
+2025-08-07 08:52:03,597 - app.services.extract_skus - INFO - Extracted 3421 IDs from C:\Users\aferreira\OneDrive - Krowne Metal Corporation\Desktop\KrowneSync\backend\uploads\Initial_Import.csv
+2025-08-07 08:52:03,602 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:52:03] "GET /api/products/skus HTTP/1.1" 200 -
+2025-08-07 08:52:03,608 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:52:03] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-07 08:52:03,624 - app.routes - INFO - Compare request data: {'skus': ['1575', '1576', '2157', '2159', '2160', '2163', '2164', '2165', '10-400L', '10-400L-W']}
+2025-08-07 08:52:03,625 - app.routes - INFO - Processing comparison for SKUs: ['1575', '1576', '2157', '2159', '2160', '2163', '2164', '2165', '10-400L', '10-400L-W']
+2025-08-07 08:52:03,629 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:52:04,676 - app.services.pimly_client - INFO - Found product by exact SKU match: 1575
+2025-08-07 08:52:05,365 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 2 properties
+2025-08-07 08:52:05,369 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 2 properties remaining
+2025-08-07 08:52:05,380 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 0, 'partial_data': 22, 'no_data': 78, 'completion_percentage': 6.8}
+2025-08-07 08:52:05,383 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:52:06,260 - app.services.pimly_client - INFO - Found product by exact SKU match: 1576
+2025-08-07 08:52:06,704 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 0 properties
+2025-08-07 08:52:06,704 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 0 properties remaining
+2025-08-07 08:52:06,714 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 0, 'partial_data': 22, 'no_data': 81, 'completion_percentage': 6.8}
+2025-08-07 08:52:06,718 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:52:07,655 - app.services.pimly_client - INFO - Found product by exact SKU match: 2157
+2025-08-07 08:52:09,149 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 2 properties
+2025-08-07 08:52:09,152 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 2 properties remaining
+2025-08-07 08:52:09,166 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 6, 'mismatches': 1, 'partial_data': 21, 'no_data': 79, 'completion_percentage': 6.8}
+2025-08-07 08:52:09,170 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:52:09,202 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:52:09] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 08:52:09,205 - app.routes - INFO - Searching Pimly for: 12-801L
+2025-08-07 08:52:09,205 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:52:10,163 - app.services.pimly_client - INFO - Found product by exact SKU match: 2159
+2025-08-07 08:52:10,317 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 08:52:10,323 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:52:10] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 08:52:10,329 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:52:10] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-07 08:52:10,627 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 0 properties
+2025-08-07 08:52:10,627 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 0 properties remaining
+2025-08-07 08:52:10,637 - app.routes - INFO - Compare request data: {'skus': ['12-801L']}
+2025-08-07 08:52:10,638 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 0, 'partial_data': 22, 'no_data': 81, 'completion_percentage': 6.8}
+2025-08-07 08:52:10,638 - app.routes - INFO - Processing comparison for SKUs: ['12-801L']
+2025-08-07 08:52:10,643 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:52:10,646 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:52:11,616 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 08:52:11,634 - app.services.pimly_client - INFO - Found product by exact SKU match: 2160
+2025-08-07 08:52:12,847 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 18 properties
+2025-08-07 08:52:12,865 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 22 fields dispersed, 7 properties remaining
+2025-08-07 08:52:12,874 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 15, 'mismatches': 2, 'partial_data': 26, 'no_data': 60, 'completion_percentage': 16.5}
+2025-08-07 08:52:12,885 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:52:12] "POST /api/compare HTTP/1.1" 200 -
+2025-08-07 08:52:13,152 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 2 properties
+2025-08-07 08:52:13,156 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 2 properties remaining
+2025-08-07 08:52:13,166 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 6, 'mismatches': 1, 'partial_data': 21, 'no_data': 79, 'completion_percentage': 6.8}
+2025-08-07 08:52:13,170 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:52:13,205 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:52:14,138 - app.services.pimly_client - INFO - Found product by exact SKU match: 2163
+2025-08-07 08:52:15,561 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 2 properties
+2025-08-07 08:52:15,565 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 2 properties remaining
+2025-08-07 08:52:15,573 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 6, 'mismatches': 1, 'partial_data': 21, 'no_data': 79, 'completion_percentage': 6.8}
+2025-08-07 08:52:15,577 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:52:16,583 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 08:52:16,769 - app.services.pimly_client - INFO - Found product by exact SKU match: 2164
+2025-08-07 08:52:17,269 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 0 properties
+2025-08-07 08:52:17,270 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 0 properties remaining
+2025-08-07 08:52:17,279 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 0, 'partial_data': 22, 'no_data': 81, 'completion_percentage': 6.8}
+2025-08-07 08:52:17,285 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:52:17,892 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:52:17] "GET /api/mapper/compare-detailed/12-801L HTTP/1.1" 200 -
+2025-08-07 08:52:17,918 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:52:18,266 - app.services.pimly_client - INFO - Found product by exact SKU match: 2165
+2025-08-07 08:52:18,875 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 08:52:18,876 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 0 properties
+2025-08-07 08:52:18,881 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 0 properties remaining
+2025-08-07 08:52:19,054 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 0, 'partial_data': 22, 'no_data': 81, 'completion_percentage': 6.8}
+2025-08-07 08:52:19,059 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:54:07,968 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-07 08:54:07,969 - __main__ - INFO - Debug mode: True
+2025-08-07 08:54:09,298 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-08-07 08:54:09,298 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-07 08:54:09,300 - werkzeug - INFO -  * Restarting with stat
+2025-08-07 08:54:10,569 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-07 08:54:10,569 - __main__ - INFO - Debug mode: True
+2025-08-07 08:54:10,593 - werkzeug - WARNING -  * Debugger is active!
+2025-08-07 08:54:10,597 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-07 08:54:26,081 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:54:26] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 08:54:26,394 - app.routes - INFO - Searching Pimly for: KR-2000
+2025-08-07 08:54:26,394 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:54:27,240 - app.services.pimly_client - INFO - Found product by exact SKU match: KR-2000
+2025-08-07 08:54:27,246 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:54:27] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 08:54:27,253 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:54:27] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-07 08:54:27,256 - app.routes - INFO - Compare request data: {'skus': ['KR-2000']}
+2025-08-07 08:54:27,256 - app.routes - INFO - Processing comparison for SKUs: ['KR-2000']
+2025-08-07 08:54:27,265 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:54:28,174 - app.services.pimly_client - INFO - Found product by exact SKU match: KR-2000
+2025-08-07 08:54:29,248 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 3 properties
+2025-08-07 08:54:29,251 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 2 fields dispersed, 2 properties remaining
+2025-08-07 08:54:29,261 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 2, 'partial_data': 24, 'no_data': 73, 'completion_percentage': 8.7}
+2025-08-07 08:54:29,271 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:54:29] "POST /api/compare HTTP/1.1" 200 -
+2025-08-07 08:54:29,586 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:54:30,518 - app.services.pimly_client - INFO - Found product by exact SKU match: KR-2000
+2025-08-07 08:54:31,610 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:54:31] "GET /api/mapper/compare-detailed/KR-2000 HTTP/1.1" 200 -
+2025-08-07 08:54:31,620 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 08:54:32,440 - app.services.pimly_client - INFO - Found product by exact SKU match: KR-2000
+2025-08-07 08:54:33,533 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 08:54:33] "GET /api/mapper/compare-detailed/KR-2000 HTTP/1.1" 200 -
+2025-08-07 09:03:01,888 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:03:01] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 09:03:02,498 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 09:03:02,515 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:03:02] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 09:03:02,532 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:03:02] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-07 09:03:02,752 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 09:03:02,757 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:03:02] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-07 09:03:03,066 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:03:03] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-07 09:03:03,378 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:03:03] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-07 09:03:51,173 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:03:51] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 09:03:51,457 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 09:03:51,462 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:03:51] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 09:03:51,778 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:03:51] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-07 09:03:52,306 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 09:03:52,311 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:03:52] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-07 09:03:52,317 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:03:52] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-07 09:03:52,361 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:03:52] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-07 09:04:09,501 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:04:09] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 09:04:09,502 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:04:09] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 09:04:09,769 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 09:04:09,773 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:04:09] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 09:04:09,778 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:04:09] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-07 09:04:10,301 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 09:04:10,306 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:04:10] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-07 09:04:10,311 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 09:04:10,316 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:04:10] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-07 09:04:10,638 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:04:10] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-07 09:04:10,644 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:04:10] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-07 09:04:10,857 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-07 09:04:10,862 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:04:10] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-07 09:04:11,183 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:04:11] "GET /api/auth/krowne/status HTTP/1.1" 200 -

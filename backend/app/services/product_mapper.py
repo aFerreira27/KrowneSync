@@ -974,20 +974,67 @@ class ProductMapper:
         return None
     
     def extract_krowne_value(self, krowne_data: Dict[str, Any], field_name: str) -> Optional[Any]:
-        """Extract a value from Krowne data structure"""
+        """
+        Extract a value from Krowne data structure
+        Enhanced to handle both dispersed fields and properties array
+        """
         if not krowne_data:
             return None
             
         mapping = self.field_mappings.get(field_name)
         if not mapping:
             return None
-            
-        # Check direct fields first
+        
+        # 1. Check direct fields first (these might be dispersed from properties)
         for krowne_name in mapping.krowne_names:
             if krowne_name in krowne_data:
                 return krowne_data[krowne_name]
         
-        # Check specifications dict
+        # 2. Check for Pimly-mapped field names (from KrownePropertyExtractor)
+        # These are the standardized field names used by the property extractor
+        pimly_field_mappings = {
+            'series': 'Series',
+            'features': 'Features', 
+            'finish': 'Finish',
+            'mounting_style': 'Mounting_Style',
+            'centers': 'Centers',
+            'spout_style': 'Spout_Style',
+            'spout_size': 'Spout_Size_(in.)',
+            'flow_rate': 'Flow_Rate_(GPM)',
+            'inlet': 'Inlet',
+            'valves': 'Valve_Type',
+            'handles': 'Handle_Type',
+            'overall_height': 'Product_Height_(in.)',
+            'length_inches': 'Product_Length_(in.)',
+            'depth_front_to_back': 'Product_Depth_(in.)',
+            'weight': 'Product_Weight_(lbs.)',
+            'power_source': 'Power_Source',
+            'amps': 'Amps',
+            'operating_range': 'Operating_Range',
+            'temperature_range': 'Temperature_Range',
+            'drain_size': 'Drain_Size',
+            'outlet_type': 'Outlet',
+            'ice_capacity': 'Ice_Capacity_(lbs.)',
+            'btu': 'BTUhr_(K)',
+            'number_of_taps': 'Number_of_Taps',
+            'glycol_lines': 'Glycol_Lines',
+            'beer_lines': 'Beverage_Lines',
+            'compressor_hp': 'HP',
+            'refrigerant': 'Refrigerant',
+            'brakes': 'Brakes',
+            'wheel_diameter': 'Wheel_Diameter_(in.)',
+            'plate_size': 'Plate_Size_(in.)',
+            'weight_capacity': 'Load_Capacity_(lbs._per_caster)',
+            'hose_length': 'Hose_Length_(ft.)',
+            'spray_head': 'Spray_Head_Pattern'
+        }
+        
+        # Check if the Pimly-mapped field exists in the data
+        pimly_field = pimly_field_mappings.get(field_name)
+        if pimly_field and pimly_field in krowne_data:
+            return krowne_data[pimly_field]
+        
+        # 3. Check specifications dict
         specifications = krowne_data.get('specifications', {})
         if isinstance(specifications, dict):
             for krowne_name in mapping.krowne_names:
@@ -1001,7 +1048,7 @@ class ProductMapper:
                 if name_with_underscores in specifications:
                     return specifications[name_with_underscores]
         
-        # Check properties array (if exists) - this handles Krowne CMS property mappings
+        # 4. Check properties array (for any remaining properties not dispersed)
         properties = krowne_data.get('properties', [])
         if isinstance(properties, list):
             for prop in properties:
@@ -1026,7 +1073,8 @@ class ProductMapper:
                         return prop_value
         
         return None
-    
+
+        
     def extract_krowne_cms_value(self, krowne_data: Dict[str, Any], field_name: str) -> Optional[Any]:
         """Extract a value specifically using Krowne CMS property mappings"""
         if not krowne_data:
@@ -1340,26 +1388,114 @@ class ProductMapper:
                     logger.info(f"  ... and {len(properties) - 10} more properties")
 
 
-# Convenience functions for backward compatibility
-def calculate_product_mismatches(salesforce_data: Dict[str, Any], krowne_data: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """
-    Backward compatibility function that returns mismatches in the original format
-    """
-    mapper = ProductMapper()
-    comparison_results = mapper.compare_products(salesforce_data, krowne_data)
-    
-    # Convert to original mismatch format
-    mismatches = []
-    for result in comparison_results:
-        if result.is_mismatch:
-            mismatches.append({
-                'field': result.field_name.replace('_', ' ').title(),
-                'salesforce': result.salesforce_value,
-                'krowne': result.krowne_value
-            })
-    
-    return mismatches
+    def has_krowne_value(self, krowne_data: Dict[str, Any], field_name: str) -> bool:
+        """
+        Check if a Krowne value exists in any form (direct field, specification, or property)
+        """
+        return self.extract_krowne_value(krowne_data, field_name) is not None
 
+
+    # Add this method to get all available Krowne fields for debugging:
+
+    def get_all_krowne_fields(self, krowne_data: Dict[str, Any]) -> Dict[str, List[str]]:
+        """
+        Get all available fields from Krowne data organized by source
+        """
+        available_fields = {
+            'direct_fields': [],
+            'specification_fields': [],
+            'property_fields': []
+        }
+        
+        if not krowne_data:
+            return available_fields
+        
+        # Direct fields
+        for key in krowne_data.keys():
+            if key not in ['properties', 'specifications']:
+                available_fields['direct_fields'].append(key)
+        
+        # Specification fields
+        specifications = krowne_data.get('specifications', {})
+        if isinstance(specifications, dict):
+            available_fields['specification_fields'] = list(specifications.keys())
+        
+        # Property fields
+        properties = krowne_data.get('properties', [])
+        if isinstance(properties, list):
+            for prop in properties:
+                prop_name = prop.get('propertyName', '')
+                if prop_name:
+                    available_fields['property_fields'].append(prop_name)
+        
+        return available_fields
+
+
+    # Update the compare_products method to log more detail about dispersed fields:
+
+    def compare_products_with_dispersal_info(self, salesforce_data: Dict[str, Any], 
+                                            krowne_data: Dict[str, Any]) -> List[ComparisonResult]:
+        """
+        Compare all mapped fields between Salesforce and Krowne data
+        Enhanced version that shows whether Krowne values came from dispersed fields
+        """
+        results = []
+        
+        # Get info about available Krowne fields
+        krowne_fields_info = self.get_all_krowne_fields(krowne_data)
+        logger.debug(f"Available Krowne fields: {krowne_fields_info}")
+        
+        for field_name, mapping in self.field_mappings.items():
+            # Extract values from both sources
+            sf_value = self.extract_salesforce_value(salesforce_data, field_name)
+            krowne_value = self.extract_krowne_value(krowne_data, field_name)
+            
+            # Check if Krowne value is from a direct field (likely dispersed)
+            is_dispersed = False
+            if krowne_value is not None:
+                # Check if it's a direct field
+                if field_name in krowne_data:
+                    is_dispersed = True
+                # Check Pimly mapped names
+                pimly_field_mappings = {
+                    'series': 'Series',
+                    'features': 'Features',
+                    'mounting_style': 'Mounting_Style',
+                    'flow_rate': 'Flow_Rate_(GPM)',
+                    # ... (abbreviated for space, include all from above)
+                }
+                pimly_field = pimly_field_mappings.get(field_name)
+                if pimly_field and pimly_field in krowne_data:
+                    is_dispersed = True
+            
+            # Compare values
+            is_match, notes = self.compare_values(sf_value, krowne_value, mapping.field_type)
+            
+            # Add dispersal info to notes
+            if is_dispersed:
+                notes += " [Dispersed field]"
+            
+            # Determine status
+            has_data = sf_value is not None or krowne_value is not None
+            has_both = sf_value is not None and krowne_value is not None
+            is_mismatch = has_both and not is_match
+            has_partial_data = has_data and not has_both
+            
+            result = ComparisonResult(
+                field_name=mapping.canonical_name,
+                salesforce_value=sf_value,
+                krowne_value=krowne_value,
+                is_match=is_match,
+                is_mismatch=is_mismatch,
+                has_partial_data=has_partial_data,
+                notes=notes
+            )
+            
+            results.append(result)
+        
+        return results
+    
+    # Convenience functions for backward compatibility
 def get_enhanced_product_comparison(salesforce_data: Dict[str, Any], krowne_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Enhanced comparison function that returns detailed analysis
@@ -1388,3 +1524,23 @@ def get_enhanced_product_comparison(salesforce_data: Dict[str, Any], krowne_data
         'no_data': no_data,
         'comparison_results': comparison_results
     }
+
+
+def calculate_product_mismatches(salesforce_data: Dict[str, Any], krowne_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Backward compatibility function that returns mismatches in the original format
+    """
+    mapper = ProductMapper()
+    comparison_results = mapper.compare_products(salesforce_data, krowne_data)
+    
+    # Convert to original mismatch format
+    mismatches = []
+    for result in comparison_results:
+        if result.is_mismatch:
+            mismatches.append({
+                'field': result.field_name.replace('_', ' ').title(),
+                'salesforce': result.salesforce_value,
+                'krowne': result.krowne_value
+            })
+    
+    return mismatches
