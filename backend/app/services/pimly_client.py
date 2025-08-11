@@ -189,41 +189,21 @@ class PimlyClient:
         products = self.get_products_by_ids([sku], **kwargs)
         return products[0] if products else {}
 
-    def search_products(self, search_term: str, limit: int = 20) -> List[Dict[str, Any]]:
-        """
-        Search for products in Pimly using SOQL fallback
-        Note: This is a fallback method. For better search, consider using Pimly's search API if available
-        """
+    def search_products(self, search_term, limit=20):
+        """Search for products using REST API instead of SOQL query"""
         try:
-            # Escape single quotes for SOQL
-            escaped_term = search_term.replace("'", "\\'")
-            
-            query = f"""
-                SELECT Id, Name, pimly__SKU__c, pimly__Description__c, pimly__Admin_Name__c
-                FROM pimly__Product__c 
-                WHERE Name LIKE '%{escaped_term}%' 
-                   OR pimly__SKU__c LIKE '%{escaped_term}%'
-                   OR pimly__Admin_Name__c LIKE '%{escaped_term}%'
-                ORDER BY Name
-                LIMIT {limit}
-            """
-            
-            result = self.sf_client.query(query)
-            products = []
-            
-            if result and 'records' in result:
-                for record in result['records']:
-                    products.append({
-                        'Id': record.get('Id'),
-                        'Name': record.get('Name'),
-                        'SKU': record.get('pimly__SKU__c'),
-                        'AdminName': record.get('pimly__Admin_Name__c'),
-                        'Description': record.get('pimly__Description__c')
-                    })
-            
-            logger.info(f"Search for '{search_term}' returned {len(products)} results")
-            return products
-            
+            # Use the REST API to search products
+            # Option 1: Use the get_products_by_ids with a search parameter
+            if search_term.upper().startswith('KR-') or search_term.upper().startswith('12-'):
+                # Looks like a SKU, search by SKU
+                products = self.get_products_by_ids([search_term])
+                return products
+            else:
+                # Generic search - you'll need to implement this based on your Pimly API
+                # For now, return empty array or implement a basic search
+                logger.warning(f"Generic search not implemented for term: {search_term}")
+                return []
+                
         except Exception as e:
             logger.error(f"Product search failed for term '{search_term}': {str(e)}")
             return []

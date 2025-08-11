@@ -359,21 +359,6 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
           )}
         </>
       )}
-
-      {/* Debug Info in Development */}
-      {process.env.NODE_ENV === 'development' && productData && (
-        <details className="debug-info">
-          <summary>Debug Information</summary>
-          <pre>{JSON.stringify({
-            status: productData.status,
-            hasPimly: !!productData.salesforce,
-            hasKrowne: !!productData.krowne,
-            hasMappedData: !!productData.mapped_data,
-            hasComparison: !!productData.comparison,
-            mismatchCount: productData.mismatches?.length || 0
-          }, null, 2)}</pre>
-        </details>
-      )}
     </div>
   );
 };

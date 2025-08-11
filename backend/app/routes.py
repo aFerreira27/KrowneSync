@@ -16,7 +16,7 @@ from app.services.extract_skus import extract_known_ids_from_csv
 from app.services.product_data_mapper import ProductDataMapper
 from app.services.mapped_data_comparator import MappedDataComparator
 
-
+BASEURL = "https://krowne.com"
 
 main = Blueprint('main', __name__)
 
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 krowne_cms_service = KrowneCMSService()
 mapped_comparator = MappedDataComparator()
-
+krowne_scraper = KrowneScraper()
 
 
 def get_authenticated_sf_client():
@@ -602,7 +602,28 @@ def get_product_by_sku(sku):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
+### Krowne Scraper Routes ###
+@main.route("/api/krowne/scrape-product/<sku>", methods=["GET", "OPTIONS"])
+def scrape_krowne_product(sku):
+    """Scrape product data from Krowne public website"""
+    if request.method == "OPTIONS":
+        return '', 200
+    
+    try:
+        krowne_scraper = KrowneScraper()
+        product_data = krowne_scraper.scrapeSite(BASEURL, sku)
+        
+        if product_data:
+            logger.info(f"✅ Successfully scraped Krowne data for SKU: {sku}")
+            return jsonify(product_data)
+        else:
+            logger.warning(f"⚠️ No data found on Krowne website for SKU: {sku}")
+            return jsonify({"error": f"Product {sku} not found on Krowne website"}), 404
+            
+    except Exception as e:
+        logger.error(f"Error scraping Krowne product {sku}: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+    
 ### Krowne CMS Product Routes ###
 @main.route("/api/krowne/admin/search/<sku>", methods=["GET"])
 def search_cms_admin_product(sku):
@@ -986,7 +1007,7 @@ def compare_product_data_enhanced(sku):
         # Get public website data
         try:
             krowne_scraper = KrowneScraper()
-            public_data = krowne_scraper.scrapeSite(krowne_scraper.BASEURL, sku)
+            public_data = krowne_scraper.scrapeSite(BASEURL, sku)
             comparison_data["sources"]["public_website"] = {
                 "data": public_data,
                 "success": True,
@@ -1169,6 +1190,66 @@ def map_batch_products():
 
 ### Comparison Endpoints ###
 
+@main.route("/api/compare", methods=["POST", "OPTIONS"])
+def compare_products_legacy():
+    """Legacy comparison endpoint for backward compatibility"""
+    if request.method == "OPTIONS":
+        return '', 200
+    
+    try:
+        data = request.get_json()
+        
+        # Handle single SKU
+        if 'sku' in data:
+            sku = data['sku']
+            response = compare_product_data(sku)
+            
+            # Wrap single result in array format expected by legacy frontend
+            if response.status_code == 200:
+                result = response.get_json()
+                return jsonify({
+                    'results': [result],
+                    'total': 1,
+                    'success': True
+                })
+            else:
+                return response
+                
+        # Handle multiple SKUs
+        elif 'skus' in data:
+            skus = data['skus']
+            results = []
+            
+            for sku in skus:
+                try:
+                    result_response = compare_product_data(sku)
+                    if result_response.status_code == 200:
+                        results.append(result_response.get_json())
+                    else:
+                        results.append({
+                            'sku': sku,
+                            'error': 'Comparison failed',
+                            'status': 'error'
+                        })
+                except Exception as e:
+                    results.append({
+                        'sku': sku,
+                        'error': str(e),
+                        'status': 'error'
+                    })
+            
+            return jsonify({
+                'results': results,
+                'total': len(results),
+                'success': True
+            })
+        else:
+            return jsonify({"error": "Request must include 'sku' or 'skus'"}), 400
+            
+    except Exception as e:
+        logger.error(f"Error in legacy compare endpoint: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
 @main.route("/api/products/compare/<sku>", methods=["GET"]) 
 def compare_product_data(sku):
     """Enhanced product comparison with raw data included"""
@@ -1183,7 +1264,7 @@ def compare_product_data(sku):
         krowne_data = None
         
         try:
-            krowne_data = krowne_scraper.scrapeSite(krowne_scraper.BASEURL, sku)
+            krowne_data = krowne_scraper.scrapeSite(BASEURL, sku)
         except Exception as e:
             logger.warning(f"Could not fetch Krowne data for comparison of SKU {sku}: {e}")
         
@@ -1671,7 +1752,7 @@ def get_detailed_product_comparison(sku):
         
         try:
             # Try to get Krowne data (may not always be available)
-            raw_krowne_data = krowne_scraper.scrapeSite(krowne_scraper.BASEURL, sku)
+            raw_krowne_data = krowne_scraper.scrapeSite(BASEURL, sku)
         except Exception as e:
             logger.warning(f"Could not fetch Krowne data for SKU {sku}: {e}")
         

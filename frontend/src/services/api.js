@@ -656,13 +656,13 @@ class APIService {
   // ===== END KROWNE CMS AUTHENTICATION METHODS =====
 
   // Krowne Product Scraping
-  async scrapeKrowneProduct(sku) {
+async scrapeKrowneProduct(sku) {
     if (!sku) {
-      throw new Error('SKU is required to scrape Krowne product.');
+        throw new Error('SKU is required to scrape Krowne product.');
     }
 
-    return this.request(`/krowne/scrape-product/${encodeURIComponent(sku)}`);
-  }
+    return this.request(`/api/krowne/admin/search/${encodeURIComponent(sku)}`);
+}
 
   // ===== CMS ADMIN METHODS =====
 
@@ -1091,22 +1091,22 @@ class APIService {
     return enhanced;
   }
 
-  // Single product comparison for backward compatibility
   async compareSingleProduct(sku) {
     if (!sku) {
-      throw new Error('SKU is required for comparison.');
+        throw new Error('SKU is required for comparison.');
     }
 
     console.log(`🔍 Comparing single product: ${sku}`);
     
     try {
-      const response = await this.compareProducts({ sku });
-      return response;
+        // Use the correct endpoint
+        const response = await this.request(`/products/compare/${encodeURIComponent(sku)}`);
+        return response;
     } catch (error) {
-      console.error(`❌ Single product comparison failed for ${sku}:`, error.message);
-      throw error;
+        console.error(`❌ Single product comparison failed for ${sku}:`, error.message);
+        throw error;
     }
-  }
+}
 
   // Enhanced batch comparison method
   async compareBatch(skus = []) {
