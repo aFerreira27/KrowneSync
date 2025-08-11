@@ -15,7 +15,7 @@ class KrowneCMSService:
         self.admin_url = f"{base_url}/cmsAdmin/admin.php"
         self.session_timeout = timedelta(hours=24)
         
-        # Default headers to mimic a real browser
+    # Default headers to mimic a real browser
         self.default_headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -394,10 +394,28 @@ class KrowneCMSService:
                     self.logger.info("Session expired due to timeout")
                     return False
             
-            # TODO: Optionally make a request to verify the session is still active
-            # This would involve making a request with the stored cookies
+            # Make a test request to verify the session is still active
+            cookies = session_data.get('cookies', {})
+            if not cookies:
+                return False
+                
+            session = requests.Session()
+            session.headers.update(self.default_headers)
             
-            return True
+            # Set cookies from stored session
+            for name, value in cookies.items():
+                session.cookies.set(name, value)
+            
+            # Make a quick request to check if still authenticated
+            response = session.get(self.admin_url, timeout=5)
+            
+            if response.status_code == 200:
+                response_text = response.text.lower()
+                # Check for admin indicators
+                if any(indicator in response_text for indicator in ['logout', 'menu=product', 'cms admin']):
+                    return True
+            
+            return False
             
         except Exception as e:
             self.logger.error(f"Error verifying session: {str(e)}")
@@ -430,3 +448,45 @@ class KrowneCMSService:
         except Exception as e:
             self.logger.error(f"Error fetching user data: {str(e)}")
             return None
+
+
+# Helper function for testing
+def test_krowne_auth():
+    """Test the Krowne CMS authentication"""
+    import os
+    
+    username = os.getenv('KROWNE_USERNAME', 'your_username')
+    password = os.getenv('KROWNE_PASSWORD', 'your_password')
+    
+    if username == 'your_username' or password == 'your_password':
+        print("❌ Please set KROWNE_USERNAME and KROWNE_PASSWORD environment variables")
+        return
+    
+    cms_service = KrowneCMSService()
+    
+    try:
+        result = cms_service.authenticate(username, password)
+        
+        if result.get('success'):
+            print("✅ Authentication successful")
+            print(f"User: {result.get('userInfo', {}).get('username')}")
+            print(f"Role: {result.get('userInfo', {}).get('role')}")
+            
+            # Test session verification
+            session_data = result.get('session_data')
+            if cms_service.verify_session(session_data):
+                print("✅ Session verification successful")
+            else:
+                print("⚠️ Session verification failed")
+                
+        else:
+            print(f"❌ Authentication failed: {result.get('error')}")
+            
+    except Exception as e:
+        print(f"❌ Test failed with exception: {str(e)}")
+
+
+if __name__ == "__main__":
+    # Enable debug logging for testing
+    logging.basicConfig(level=logging.DEBUG)
+    test_krowne_auth()

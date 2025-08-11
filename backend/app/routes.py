@@ -23,6 +23,10 @@ main = Blueprint('main', __name__)
 # Configure logging
 logger = logging.getLogger(__name__)
 
+krowne_cms_service = KrowneCMSService()
+mapped_comparator = MappedDataComparator()
+
+
 
 def get_authenticated_sf_client():
     """Helper function to get authenticated Salesforce client"""
@@ -283,8 +287,6 @@ def test_krowne_connection():
     except Exception as e:
         logger.error(f"Krowne connection test failed: {str(e)}")
         return jsonify({'success': False, 'error': str(e), 'accessible': False}), 500
-
-
 ### Get Product SKUs ###
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # e.g. backend/app
 UPLOAD_PATH = os.path.abspath(os.path.join(BASE_DIR, '..', 'uploads', 'Initial_Import.csv'))
@@ -602,7 +604,500 @@ def get_product_by_sku(sku):
 
 
 ### Krowne CMS Product Routes ###
+@main.route("/api/krowne/admin/search/<sku>", methods=["GET"])
+def search_cms_admin_product(sku):
+    """
+    Search for a product in the CMS admin panel by SKU
+    """
+    try:
+        # Check if user is authenticated with Krowne CMS
+        krowne_auth = session.get('krowne_auth')
+        if not krowne_auth or not krowne_auth.get('authenticated'):
+            return jsonify({
+                "error": "Not authenticated with Krowne CMS admin panel",
+                "requires_auth": True
+            }), 401
+        
+        # Initialize the admin scraper
+        admin_scraper = KrowneCMSService()
+        
+        # Use existing session data
+        session_data = krowne_auth.get('session_data', {})
+        if not admin_scraper.use_existing_session(session_data):
+            # Session expired, need to re-authenticate
+            return jsonify({
+                "error": "CMS session expired, please re-authenticate",
+                "requires_auth": True
+            }), 401
+        
+        # Search for the product
+        search_result = admin_scraper.search_product_by_sku(sku)
+        
+        if search_result:
+            logger.info(f"✅ CMS admin search successful for SKU: {sku}")
+            return jsonify({
+                "success": True,
+                "sku": sku,
+                "search_result": search_result,
+                "found": True
+            })
+        else:
+            logger.warning(f"⚠️ SKU not found in CMS admin: {sku}")
+            return jsonify({
+                "success": True,
+                "sku": sku,
+                "search_result": None,
+                "found": False,
+                "message": f"SKU {sku} not found in CMS admin panel"
+            })
+            
+    except Exception as e:
+        logger.exception(f"Error searching CMS admin for SKU {sku}")
+        return jsonify({
+            "error": str(e),
+            "success": False,
+            "sku": sku
+        }), 500
 
+
+@main.route("/api/krowne/admin/product/<record_number>", methods=["GET"])
+def get_cms_admin_product_details(record_number):
+    """
+    Get detailed product information from CMS admin using record number
+    """
+    try:
+        # Check authentication
+        krowne_auth = session.get('krowne_auth')
+        if not krowne_auth or not krowne_auth.get('authenticated'):
+            return jsonify({
+                "error": "Not authenticated with Krowne CMS admin panel",
+                "requires_auth": True
+            }), 401
+        
+        # Initialize the admin scraper
+        admin_scraper = KrowneCMSService()
+        
+        # Use existing session data
+        session_data = krowne_auth.get('session_data', {})
+        if not admin_scraper.use_existing_session(session_data):
+            return jsonify({
+                "error": "CMS session expired, please re-authenticate",
+                "requires_auth": True
+            }), 401
+        
+        # Get product details
+        product_details = admin_scraper.get_product_by_record_number(record_number)
+        
+        if product_details:
+            logger.info(f"✅ CMS admin product details retrieved for record: {record_number}")
+            return jsonify({
+                "success": True,
+                "record_number": record_number,
+                "product_details": product_details
+            })
+        else:
+            logger.warning(f"⚠️ No product details found for record: {record_number}")
+            return jsonify({
+                "success": False,
+                "record_number": record_number,
+                "error": f"No product found with record number {record_number}"
+            }), 404
+            
+    except Exception as e:
+        logger.exception(f"Error getting CMS admin product details for record {record_number}")
+        return jsonify({
+            "error": str(e),
+            "success": False,
+            "record_number": record_number
+        }), 500
+
+
+@main.route("/api/krowne/admin/sku/<sku>", methods=["GET"])
+def get_cms_admin_product_by_sku(sku):
+    """
+    Complete workflow: search for SKU and get detailed product information from CMS admin
+    """
+    try:
+        # Check authentication
+        krowne_auth = session.get('krowne_auth')
+        if not krowne_auth or not krowne_auth.get('authenticated'):
+            return jsonify({
+                "error": "Not authenticated with Krowne CMS admin panel",
+                "requires_auth": True
+            }), 401
+        
+        # Initialize the admin scraper
+        admin_scraper = KrowneCMSService()
+        
+        # Use existing session data
+        session_data = krowne_auth.get('session_data', {})
+        if not admin_scraper.use_existing_session(session_data):
+            return jsonify({
+                "error": "CMS session expired, please re-authenticate",
+                "requires_auth": True
+            }), 401
+        
+        # Get complete product data
+        product_data = admin_scraper.get_product_by_sku(sku)
+        
+        if product_data:
+            logger.info(f"✅ Complete CMS admin data retrieved for SKU: {sku}")
+            
+            # Transform the data to match expected format for integration
+            formatted_data = {
+                "sku": sku,
+                "source": "cms_admin",
+                "raw_data": product_data,
+                "formatted_data": format_cms_admin_data(product_data),
+                "metadata": {
+                    "record_number": product_data.get('record_number'),
+                    "admin_url": product_data.get('detail_metadata', {}).get('admin_url'),
+                    "fields_count": len(product_data.get('admin_fields', {})),
+                    "form_fields_count": len(product_data.get('form_data', {})),
+                    "sections_count": len(product_data.get('sections', {}))
+                }
+            }
+            
+            return jsonify({
+                "success": True,
+                "sku": sku,
+                "product_data": formatted_data
+            })
+        else:
+            logger.warning(f"⚠️ SKU not found in CMS admin: {sku}")
+            return jsonify({
+                "success": False,
+                "sku": sku,
+                "error": f"Product with SKU {sku} not found in CMS admin panel"
+            }), 404
+            
+    except Exception as e:
+        logger.exception(f"Error getting CMS admin product by SKU {sku}")
+        return jsonify({
+            "error": str(e),
+            "success": False,
+            "sku": sku
+        }), 500
+
+
+@main.route("/api/krowne/admin/batch", methods=["POST"])
+def get_cms_admin_products_batch():
+    """
+    Get multiple products from CMS admin by SKU list
+    """
+    try:
+        # Check authentication
+        krowne_auth = session.get('krowne_auth')
+        if not krowne_auth or not krowne_auth.get('authenticated'):
+            return jsonify({
+                "error": "Not authenticated with Krowne CMS admin panel",
+                "requires_auth": True
+            }), 401
+        
+        data = request.get_json()
+        skus = data.get('skus', [])
+        
+        if not skus:
+            return jsonify({"error": "SKUs list is required"}), 400
+        
+        if len(skus) > 50:  # Limit batch size
+            return jsonify({"error": "Maximum 50 SKUs allowed per batch"}), 400
+        
+        # Initialize the admin scraper
+        admin_scraper = KrowneCMSService()
+        
+        # Use existing session data
+        session_data = krowne_auth.get('session_data', {})
+        if not admin_scraper.use_existing_session(session_data):
+            return jsonify({
+                "error": "CMS session expired, please re-authenticate",
+                "requires_auth": True
+            }), 401
+        
+        results = []
+        errors = []
+        
+        for sku in skus:
+            try:
+                product_data = admin_scraper.get_product_by_sku(sku)
+                
+                if product_data:
+                    formatted_data = {
+                        "sku": sku,
+                        "source": "cms_admin",
+                        "raw_data": product_data,
+                        "formatted_data": format_cms_admin_data(product_data),
+                        "success": True
+                    }
+                    results.append(formatted_data)
+                else:
+                    results.append({
+                        "sku": sku,
+                        "success": False,
+                        "error": "Not found"
+                    })
+                    
+            except Exception as e:
+                error_msg = f"Error processing SKU {sku}: {str(e)}"
+                logger.error(error_msg)
+                errors.append(error_msg)
+                results.append({
+                    "sku": sku,
+                    "success": False,
+                    "error": str(e)
+                })
+        
+        return jsonify({
+            "success": True,
+            "results": results,
+            "total_requested": len(skus),
+            "total_found": len([r for r in results if r.get('success')]),
+            "errors": errors
+        })
+        
+    except Exception as e:
+        logger.exception("Error in batch CMS admin product retrieval")
+        return jsonify({
+            "error": str(e),
+            "success": False
+        }), 500
+
+
+def format_cms_admin_data(raw_cms_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Format raw CMS admin data into a standardized structure
+    """
+    try:
+        formatted = {
+            "basic_info": {},
+            "admin_metadata": {},
+            "form_fields": {},
+            "display_sections": {},
+            "extracted_specs": {},
+            "images": [],
+            "files": [],
+            "urls": []
+        }
+        
+        # Extract basic info
+        basic_fields = ['sku', 'name', 'record_number']
+        for field in basic_fields:
+            if field in raw_cms_data:
+                formatted["basic_info"][field] = raw_cms_data[field]
+        
+        # Admin-specific metadata
+        admin_fields = raw_cms_data.get('admin_fields', {})
+        formatted["admin_metadata"] = admin_fields.copy()
+        
+        # Form data
+        form_data = raw_cms_data.get('form_data', {})
+        formatted["form_fields"] = form_data.copy()
+        
+        # Display sections
+        sections = raw_cms_data.get('sections', {})
+        formatted["display_sections"] = sections.copy()
+        
+        # Extract specifications from various sources
+        specs = {}
+        
+        # From form fields
+        for key, value in form_data.items():
+            if any(spec_term in key.lower() for spec_term in ['spec', 'dimension', 'weight', 'material', 'finish']):
+                specs[key] = value
+        
+        # From sections
+        for section_name, section_data in sections.items():
+            if 'spec' in section_name.lower() or 'dimension' in section_name.lower():
+                specs.update(section_data)
+        
+        formatted["extracted_specs"] = specs
+        
+        # Extract URLs and images from all data
+        all_values = []
+        
+        def collect_values(obj):
+            if isinstance(obj, dict):
+                for value in obj.values():
+                    collect_values(value)
+            elif isinstance(obj, list):
+                for item in obj:
+                    collect_values(item)
+            elif isinstance(obj, str):
+                all_values.append(value)
+        
+        collect_values(raw_cms_data)
+        
+        # Find URLs and images
+        for value in all_values:
+            if isinstance(value, str):
+                if value.startswith('http'):
+                    if any(ext in value.lower() for ext in ['.jpg', '.jpeg', '.png', '.gif', '.webp']):
+                        formatted["images"].append(value)
+                    elif any(ext in value.lower() for ext in ['.pdf', '.doc', '.docx', '.zip']):
+                        formatted["files"].append(value)
+                    else:
+                        formatted["urls"].append(value)
+        
+        # Remove duplicates
+        formatted["images"] = list(set(formatted["images"]))
+        formatted["files"] = list(set(formatted["files"]))
+        formatted["urls"] = list(set(formatted["urls"]))
+        
+        return formatted
+        
+    except Exception as e:
+        logger.error(f"Error formatting CMS admin data: {str(e)}")
+        return {"error": f"Formatting error: {str(e)}"}
+
+
+### Enhanced comparison route that includes CMS admin data ###
+
+@main.route("/api/products/compare-enhanced/<sku>", methods=["GET"])
+def compare_product_data_enhanced(sku):
+    """
+    Enhanced product comparison that includes CMS admin data, Pimly data, and public website data
+    """
+    try:
+        comparison_data = {
+            "sku": sku,
+            "sources": {},
+            "comparison": {},
+            "errors": []
+        }
+        
+        # Get Pimly data
+        try:
+            sf_client = get_authenticated_sf_client()
+            pimly_client = PimlyClient(sf_client)
+            pimly_data = pimly_client.get_product_by_sku(sku)
+            comparison_data["sources"]["pimly"] = {
+                "data": pimly_data,
+                "success": True,
+                "source": "pimly_api"
+            }
+        except Exception as e:
+            logger.error(f"Error fetching Pimly data: {str(e)}")
+            comparison_data["sources"]["pimly"] = {
+                "success": False,
+                "error": str(e)
+            }
+            comparison_data["errors"].append(f"Pimly: {str(e)}")
+        
+        # Get public website data
+        try:
+            krowne_scraper = KrowneScraper()
+            public_data = krowne_scraper.scrapeSite(krowne_scraper.BASEURL, sku)
+            comparison_data["sources"]["public_website"] = {
+                "data": public_data,
+                "success": True,
+                "source": "public_scraper"
+            }
+        except Exception as e:
+            logger.error(f"Error fetching public website data: {str(e)}")
+            comparison_data["sources"]["public_website"] = {
+                "success": False,
+                "error": str(e)
+            }
+            comparison_data["errors"].append(f"Public website: {str(e)}")
+        
+        # Get CMS admin data (if authenticated)
+        krowne_auth = session.get('krowne_auth')
+        if krowne_auth and krowne_auth.get('authenticated'):
+            try:
+                admin_scraper = KrowneCMSService()
+                session_data = krowne_auth.get('session_data', {})
+                
+                if admin_scraper.use_existing_session(session_data):
+                    cms_admin_data = admin_scraper.get_product_by_sku(sku)
+                    comparison_data["sources"]["cms_admin"] = {
+                        "data": cms_admin_data,
+                        "formatted_data": format_cms_admin_data(cms_admin_data) if cms_admin_data else None,
+                        "success": True,
+                        "source": "cms_admin_scraper"
+                    }
+                else:
+                    comparison_data["sources"]["cms_admin"] = {
+                        "success": False,
+                        "error": "Session expired"
+                    }
+                    comparison_data["errors"].append("CMS Admin: Session expired")
+            except Exception as e:
+                logger.error(f"Error fetching CMS admin data: {str(e)}")
+                comparison_data["sources"]["cms_admin"] = {
+                    "success": False,
+                    "error": str(e)
+                }
+                comparison_data["errors"].append(f"CMS Admin: {str(e)}")
+        else:
+            comparison_data["sources"]["cms_admin"] = {
+                "success": False,
+                "error": "Not authenticated with CMS admin"
+            }
+        
+        # Perform basic comparison
+        successful_sources = [name for name, data in comparison_data["sources"].items() if data.get("success")]
+        comparison_data["comparison"]["successful_sources"] = successful_sources
+        comparison_data["comparison"]["total_sources"] = len(comparison_data["sources"])
+        comparison_data["comparison"]["success_rate"] = len(successful_sources) / len(comparison_data["sources"])
+        
+        # Add timestamp
+        comparison_data["timestamp"] = datetime.now().isoformat()
+        
+        return jsonify(comparison_data)
+        
+    except Exception as e:
+        logger.exception(f"Error in enhanced product comparison for SKU {sku}")
+        return jsonify({
+            "error": str(e),
+            "sku": sku,
+            "success": False
+        }), 500
+
+### Admin Session Management ###
+
+@main.route("/api/krowne/admin/test-session", methods=["GET"])
+def test_cms_admin_session():
+    """
+    Test if the current CMS admin session is still valid
+    """
+    try:
+        krowne_auth = session.get('krowne_auth')
+        if not krowne_auth or not krowne_auth.get('authenticated'):
+            return jsonify({
+                "valid": False,
+                "authenticated": False,
+                "error": "No active CMS admin session"
+            })
+        
+        # Test the session
+        admin_scraper = KrowneCMSService()
+        session_data = krowne_auth.get('session_data', {})
+        
+        if admin_scraper.use_existing_session(session_data):
+            return jsonify({
+                "valid": True,
+                "authenticated": True,
+                "user_info": krowne_auth.get('userInfo', {}),
+                "session_age": krowne_auth.get('timestamp')
+            })
+        else:
+            # Session is invalid, clear it
+            session.pop('krowne_auth', None)
+            session.modified = True
+            
+            return jsonify({
+                "valid": False,
+                "authenticated": False,
+                "error": "CMS admin session expired"
+            })
+            
+    except Exception as e:
+        logger.error(f"Error testing CMS admin session: {str(e)}")
+        return jsonify({
+            "valid": False,
+            "authenticated": False,
+            "error": str(e)
+        }), 500
 
 ### Mapper Router ###
 
@@ -674,94 +1169,90 @@ def map_batch_products():
 
 ### Comparison Endpoints ###
 
-@main.route("/api/compare", methods=["POST", "OPTIONS"])
-def compare_mapped_products():
-    """
-    Compare products using the new mapped data comparison system
-    Supports single SKU, multiple SKUs, or direct data comparison
-    """
-    if request.method == "OPTIONS":
-        return '', 200
-
+@main.route("/api/products/compare/<sku>", methods=["GET"]) 
+def compare_product_data(sku):
+    """Enhanced product comparison with raw data included"""
     try:
         sf_client = get_authenticated_sf_client()
         pimly_client = PimlyClient(sf_client)
-        data = request.get_json()
+        krowne_scraper = KrowneScraper()
+        comparator = MappedDataComparator()
         
-        if not data:
-            return jsonify({"error": "Request body required"}), 400
-
-        results = []
-        mapper_info = {
-            "version": "2.0",
-            "timestamp": datetime.utcnow().isoformat(),
-            "comparison_type": "mapped_data",
-            "categories_supported": [
-                "basic_info", "features", "specifications", 
-                "certifications", "media", "files", "related_items"
-            ]
+        # Get data from both sources
+        pimly_data = pimly_client.get_product_by_sku(sku)
+        krowne_data = None
+        
+        try:
+            krowne_data = krowne_scraper.scrapeSite(krowne_scraper.BASEURL, sku)
+        except Exception as e:
+            logger.warning(f"Could not fetch Krowne data for comparison of SKU {sku}: {e}")
+        
+        # Perform comparison
+        comparison_result = comparator.compare_products(
+            pimly_data=pimly_data,
+            krowne_data=krowne_data, 
+            sku=sku
+        )
+        
+        # Format for response (keeping backward compatibility)
+        response = {
+            'sku': sku,
+            'comparison': {
+                'status': comparison_result.status,
+                'match_count': comparison_result.summary.matches if hasattr(comparison_result, 'summary') else 0,
+                'mismatch_count': comparison_result.summary.mismatches if hasattr(comparison_result, 'summary') else 0,
+                'partial_data_count': comparison_result.summary.partial_data if hasattr(comparison_result, 'summary') else 0,
+                'total_fields_compared': comparison_result.summary.total_fields_compared if hasattr(comparison_result, 'summary') else 0
+            },
+            'salesforce': pimly_data,  # Keep existing structure
+            'krowne': krowne_data,
+            'raw_data': {  # Add raw data section
+                'pimly': pimly_data,
+                'krowne': krowne_data
+            }
         }
-
-        # Handle different request types
-        if 'sku' in data:
-            # Single SKU comparison
-            sku = data['sku']
-            comparison = _compare_single_product_mapped(sku, pimly_client)  # NO await
-            if comparison:
-                results.append(comparison)
-                
-        elif 'skus' in data:
-            # Multiple SKU comparison
-            skus = data['skus']
-            if not isinstance(skus, list):
-                return jsonify({"error": "'skus' must be an array"}), 400
-            
-            if len(skus) > MAX_PRODUCTS_PER_REQUEST:
-                return jsonify({
-                    "error": f"Too many SKUs. Maximum: {MAX_PRODUCTS_PER_REQUEST}"
-                }), 400
-
-            for sku in skus:
-                comparison = _compare_single_product_mapped(sku, pimly_client)  # NO await
-                if comparison:
-                    results.append(comparison)
-                    
-        elif 'direct_comparison' in data:
-            # Direct data comparison (for when you already have the data)
-            comparison_data = data['direct_comparison']
-            pimly_data = comparison_data.get('pimly_data')
-            krowne_data = comparison_data.get('krowne_data')
-            sku = comparison_data.get('sku', 'unknown')
-            
-            product_comparison = mapped_comparator.compare_products(
-                pimly_data=pimly_data,
-                krowne_data=krowne_data,
-                sku=sku
-            )
-            
-            comparison_result = _format_comparison_result(product_comparison)
-            results.append(comparison_result)
-            
-        else:
-            return jsonify({
-                "error": "Request must include 'sku', 'skus', or 'direct_comparison'"
-            }), 400
-
-        return jsonify({
-            'results': results,
-            'total': len(results),
-            'success': True,
-            'mapper_info': mapper_info,
-            'timestamp': datetime.utcnow().isoformat()
-        })
-
+        
+        return jsonify(response)
+        
     except Exception as e:
-        logger.exception("Error in mapped product comparison")
-        return jsonify({
-            "error": str(e),
-            "type": "comparison_error",
-            "timestamp": datetime.utcnow().isoformat()
-        }), 500
+        logger.exception(f"Error comparing product data for SKU {sku}")
+        return jsonify({"error": str(e)}), 500
+
+
+# Helper function to clean sensitive data from raw responses (optional)
+def clean_raw_data_for_display(data, source_type="unknown"):
+    """
+    Clean raw data to remove sensitive information before sending to frontend
+    """
+    if not data or not isinstance(data, dict):
+        return data
+    
+    # List of sensitive fields to remove or mask
+    sensitive_fields = [
+        'password', 'token', 'secret', 'key', 'auth',
+        'login', 'credential', 'private', 'internal'
+    ]
+    
+    cleaned_data = data.copy()
+    
+    def clean_recursive(obj, path=""):
+        if isinstance(obj, dict):
+            for key, value in list(obj.items()):
+                current_path = f"{path}.{key}" if path else key
+                
+                # Check if field name suggests sensitive data
+                if any(sensitive in key.lower() for sensitive in sensitive_fields):
+                    obj[key] = "***REDACTED***"
+                elif isinstance(value, (dict, list)):
+                    clean_recursive(value, current_path)
+                    
+        elif isinstance(obj, list):
+            for i, item in enumerate(obj):
+                if isinstance(item, (dict, list)):
+                    clean_recursive(item, f"{path}[{i}]")
+    
+    clean_recursive(cleaned_data)
+    return cleaned_data
 
 
 
@@ -1160,6 +1651,110 @@ def _format_comparison_result(product_comparison) -> Dict[str, Any]:
             'krowne': mapped_comparator.mapper.export_mapping(product_comparison.krowne_mapping, format="dict") if product_comparison.krowne_mapping else None
         }
     }
+
+
+@main.route("/api/products/detailed/<sku>", methods=["GET"])
+def get_detailed_product_comparison(sku):
+    """
+    Get detailed product comparison including raw data from both sources
+    """
+    try:
+        sf_client = get_authenticated_sf_client()
+        pimly_client = PimlyClient(sf_client)
+        krowne_scraper = KrowneScraper()
+        comparator = MappedDataComparator()
+        mapper = ProductDataMapper()
+        
+        # Get raw data from both sources
+        raw_pimly_data = pimly_client.get_product_by_sku(sku)
+        raw_krowne_data = None
+        
+        try:
+            # Try to get Krowne data (may not always be available)
+            raw_krowne_data = krowne_scraper.scrapeSite(krowne_scraper.BASEURL, sku)
+        except Exception as e:
+            logger.warning(f"Could not fetch Krowne data for SKU {sku}: {e}")
+        
+        # Process and map the data
+        mapped_data = None
+        if raw_pimly_data:
+            mapped_data = mapper.process_json_data(raw_pimly_data, source_type="pimly")
+        
+        # Perform detailed comparison
+        comparison_result = comparator.compare_products(
+            pimly_data=raw_pimly_data,
+            krowne_data=raw_krowne_data,
+            sku=sku
+        )
+        
+        # Format field comparisons for frontend
+        field_comparisons = []
+        if hasattr(comparison_result, 'field_comparisons'):
+            for field_comp in comparison_result.field_comparisons:
+                field_comparisons.append({
+                    'field_name': field_comp.field_name,
+                    'display_name': field_comp.display_name,
+                    'category': field_comp.category,
+                    'pimly_value': field_comp.pimly_value,
+                    'krowne_value': field_comp.krowne_value,
+                    'is_match': field_comp.is_match,
+                    'is_mismatch': field_comp.is_mismatch,
+                    'has_partial_data': field_comp.has_partial_data,
+                    'field_type': field_comp.field_type,
+                    'confidence_score': field_comp.confidence_score,
+                    'notes': field_comp.notes,
+                    'description': field_comp.description
+                })
+        
+        # Format comparison summary
+        comparison_summary = None
+        if hasattr(comparison_result, 'summary'):
+            summary = comparison_result.summary
+            comparison_summary = {
+                'sku': summary.sku,
+                'total_fields': summary.total_fields_compared,
+                'matches': summary.matches,
+                'mismatches': summary.mismatches,
+                'partial_data': summary.partial_data,
+                'pimly_only_fields': summary.pimly_only_fields,
+                'krowne_only_fields': summary.krowne_only_fields,
+                'overall_match_percentage': summary.overall_match_percentage,
+                'comparison_timestamp': summary.comparison_timestamp,
+                'categories_compared': summary.categories_compared
+            }
+        
+        # Prepare response with raw data included
+        response_data = {
+            'sku': sku,
+            'field_comparisons': field_comparisons,
+            'comparison_summary': comparison_summary,
+            'mapped_data': mapper.export_mapping(mapped_data, format="dict") if mapped_data else None,
+            'raw_pimly_data': raw_pimly_data,  # Include raw Pimly data
+            'raw_krowne_data': raw_krowne_data,  # Include raw Krowne data
+            'status': comparison_result.status if hasattr(comparison_result, 'status') else 'unknown',
+            'errors': comparison_result.errors if hasattr(comparison_result, 'errors') else [],
+            'data_sources': {
+                'pimly_available': raw_pimly_data is not None,
+                'krowne_available': raw_krowne_data is not None,
+                'mapped_data_available': mapped_data is not None
+            }
+        }
+        
+        return jsonify(response_data)
+        
+    except Exception as e:
+        logger.exception(f"Error getting detailed product comparison for SKU {sku}")
+        return jsonify({
+            "error": str(e),
+            "sku": sku,
+            "field_comparisons": [],
+            "comparison_summary": None,
+            "mapped_data": None,
+            "raw_pimly_data": None,
+            "raw_krowne_data": None,
+            "status": "error",
+            "errors": [str(e)]
+        }), 500
 
 ### Misc and Utility Endpoints ###
 
