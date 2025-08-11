@@ -93,6 +93,238 @@ class APIService {
     return this.request('/products/skus');
   }
 
+  // NEW: Product Data Mapping Routes
+  async mapProductData(sku) {
+    /**
+     * Map a single product using the new ProductDataMapper
+     * Returns categorized product data (name, sku, series, features, specifications, etc.)
+     */
+    return this.request(`/products/map/${encodeURIComponent(sku)}`);
+  }
+
+  async mapBatchProducts(skus) {
+    /**
+     * Map multiple products at once using ProductDataMapper
+     * @param {Array} skus - Array of SKU strings to map
+     * @returns {Object} Response with mapped products
+     */
+    if (!Array.isArray(skus) || skus.length === 0) {
+      throw new Error('SKUs must be a non-empty array');
+    }
+
+    return this.request('/products/map/batch', {
+      method: 'POST',
+      body: JSON.stringify({ skus }),
+    });
+  }
+
+  // Enhanced product comparison with mapping integration
+  async getDetailedProductComparison(sku) {
+    /**
+     * Get detailed comparison data for a product using both mapping and comparison logic
+     * This combines the mapped data structure with comparison analysis
+     */
+    try {
+      // First get the mapped data
+      const mappedResponse = await this.mapProductData(sku);
+      const mappedData = mappedResponse.mapped_data;
+
+      // Try to get comparison data if available (from your existing comparison system)
+      let comparisonData = null;
+      try {
+        const comparisonResponse = await this.compareSingleProduct(sku);
+        comparisonData = comparisonResponse.results?.[0]?.comparison;
+      } catch (error) {
+        console.warn(`No comparison data available for ${sku}:`, error.message);
+      }
+
+      // Transform mapped data into comparison format for ProductCard
+      const fieldComparisons = this.transformMappedDataToComparisons(mappedData, comparisonData);
+
+      return {
+        sku: sku,
+        comparison_summary: {
+          matches: fieldComparisons.filter(f => f.is_match).length,
+          mismatches: fieldComparisons.filter(f => f.is_mismatch).length,
+          partial_data: fieldComparisons.filter(f => f.has_partial_data).length,
+          total_fields: fieldComparisons.length
+        },
+        field_comparisons: fieldComparisons,
+        mapped_data: mappedData
+      };
+    } catch (error) {
+      console.error(`Error getting detailed comparison for ${sku}:`, error);
+      throw error;
+    }
+  }
+
+  // Transform mapped data into comparison format for backward compatibility
+  transformMappedDataToComparisons(mappedData, existingComparison = null) {
+    const fieldComparisons = [];
+
+    // Helper function to create field comparison object
+    const createFieldComparison = (fieldName, displayName, pimlyValue, krowneValue, fieldType = 'text') => {
+      const isEmpty = (val) => val === null || val === undefined || val === '';
+      const pimlyEmpty = isEmpty(pimlyValue);
+      const krowneEmpty = isEmpty(krowneValue);
+
+      let status = { is_match: false, is_mismatch: false, has_partial_data: false };
+
+      if (pimlyEmpty && krowneEmpty) {
+        // Both empty - skip this field
+        return null;
+      } else if (pimlyEmpty || krowneEmpty) {
+        // One side has data, other doesn't
+        status.has_partial_data = true;
+      } else if (this.normalizeValue(pimlyValue) === this.normalizeValue(krowneValue)) {
+        // Both have data and match
+        status.is_match = true;
+      } else {
+        // Both have data but don't match
+        status.is_mismatch = true;
+      }
+
+      return {
+        field_name: fieldName,
+        display_name: displayName,
+        salesforce_value: pimlyValue,
+        krowne_value: krowneValue,
+        field_type: fieldType,
+        ...status,
+        description: `${displayName} comparison between Pimly and Krowne data`
+      };
+    };
+
+    // Process basic fields
+    const basicFieldMappings = [
+      { field: 'name', display: 'Product Name', type: 'text' },
+      { field: 'sku', display: 'SKU', type: 'text' },
+      { field: 'series', display: 'Series', type: 'text' }
+    ];
+
+    basicFieldMappings.forEach(({ field, display, type }) => {
+      const pimlyValue = mappedData[field];
+      // For now, we don't have Krowne mapped data, so we'll use null
+      // In the future, you could enhance this to include Krowne mapping
+      const krowneValue = null;
+      
+      const comparison = createFieldComparison(field, display, pimlyValue, krowneValue, type);
+      if (comparison) fieldComparisons.push(comparison);
+    });
+
+    // Process features
+    if (mappedData.features && mappedData.features.length > 0) {
+      const featuresString = mappedData.features.join(' | ');
+      const comparison = createFieldComparison(
+        'features', 
+        'Features', 
+        featuresString, 
+        null, // No Krowne data for now
+        'list'
+      );
+      if (comparison) fieldComparisons.push(comparison);
+    }
+
+    // Process specifications
+    if (mappedData.specifications) {
+      Object.entries(mappedData.specifications).forEach(([specKey, specValue]) => {
+        const displayName = specKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        const fieldType = this.inferFieldType(specKey, specValue);
+        
+        const comparison = createFieldComparison(
+          `spec_${specKey}`,
+          displayName,
+          specValue,
+          null, // No Krowne data for now
+          fieldType
+        );
+        if (comparison) fieldComparisons.push(comparison);
+      });
+    }
+
+    // Process certifications
+    if (mappedData.certifications) {
+      Object.entries(mappedData.certifications).forEach(([certKey, certValue]) => {
+        const displayName = `${certKey} Certification`;
+        
+        const comparison = createFieldComparison(
+          `cert_${certKey}`,
+          displayName,
+          certValue,
+          null, // No Krowne data for now
+          'boolean'
+        );
+        if (comparison) fieldComparisons.push(comparison);
+      });
+    }
+
+    // Process PIMLY_ONLY fields as Pimly-only data
+    if (mappedData.pimly_only) {
+      Object.entries(mappedData.pimly_only).forEach(([key, value]) => {
+        const displayName = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        
+        const comparison = createFieldComparison(
+          `pimly_only_${key}`,
+          `${displayName} (Pimly Only)`,
+          value,
+          null,
+          'text'
+        );
+        if (comparison) {
+          comparison.notes = '[Pimly Only Field]';
+          fieldComparisons.push(comparison);
+        }
+      });
+    }
+
+    return fieldComparisons;
+  }
+
+  // Helper method to normalize values for comparison
+  normalizeValue(value) {
+    if (value === null || value === undefined) return '';
+    if (typeof value === 'string') return value.trim().toLowerCase();
+    if (typeof value === 'boolean') return value.toString();
+    if (Array.isArray(value)) return value.join('|').toLowerCase();
+    return String(value).trim().toLowerCase();
+  }
+
+  // Helper method to infer field type from key and value
+  inferFieldType(key, value) {
+    const keyLower = key.toLowerCase();
+    
+    // Price fields
+    if (keyLower.includes('price') || keyLower.includes('cost')) {
+      return 'price';
+    }
+    
+    // Number fields
+    if (keyLower.includes('weight') || keyLower.includes('height') || 
+        keyLower.includes('width') || keyLower.includes('length') ||
+        keyLower.includes('diameter') || keyLower.includes('capacity') ||
+        keyLower.includes('flow') || keyLower.includes('btu')) {
+      return 'number';
+    }
+    
+    // Boolean fields
+    if (typeof value === 'boolean' || 
+        (typeof value === 'string' && ['true', 'false', 'yes', 'no'].includes(value.toLowerCase()))) {
+      return 'boolean';
+    }
+    
+    // List fields
+    if (Array.isArray(value) || (typeof value === 'string' && value.includes('|'))) {
+      return 'list';
+    }
+    
+    // URL fields
+    if (typeof value === 'string' && value.startsWith('http')) {
+      return 'url';
+    }
+    
+    return 'text';
+  }
+
   // Krowne CMS Authentication
   async getKrowneStatus() {
     return this.request('/auth/krowne/status');
@@ -128,19 +360,15 @@ class APIService {
     return this.request(`/krowne/scrape-product/${encodeURIComponent(sku)}`);
   }
 
-  // Product Comparison - Updated to use ProductMapper backend implementation
+  // Product Comparison - Keep existing methods for backward compatibility
   async compareProducts(data) {
-    // Handle different input formats to match backend expectations
     let requestData = {};
     
     if (typeof data === 'string') {
-      // Single SKU as string
       requestData = { sku: data };
     } else if (Array.isArray(data)) {
-      // Array of SKUs
       requestData = { skus: data };
     } else if (data && typeof data === 'object') {
-      // Object with sku, skus, or search - pass through as-is
       requestData = data;
     } else {
       throw new Error('Invalid data format for comparison');
@@ -157,17 +385,9 @@ class APIService {
       console.log('✅ Comparison response received:', {
         total: response.total,
         success: response.success,
-        mapper_info: response.mapper_info,
-        resultsPreview: response.results?.map(r => ({
-          sku: r.sku,
-          hasSalesforce: !!r.salesforce,
-          hasKrowne: !!r.krowne,
-          hasComparison: !!r.comparison,
-          comparisonKeys: r.comparison ? Object.keys(r.comparison) : []
-        }))
+        resultsPreview: response.results?.slice(0, 3)
       });
 
-      // Validate and enhance response data
       if (response.results) {
         response.results = response.results.map(result => this.validateAndEnhanceResult(result));
       }
@@ -183,7 +403,6 @@ class APIService {
   validateAndEnhanceResult(result) {
     const enhanced = { ...result };
 
-    // Ensure comparison object exists and has expected structure
     if (!enhanced.comparison) {
       enhanced.comparison = {
         mismatches: [],
@@ -196,7 +415,6 @@ class APIService {
       };
     }
 
-    // Fill in missing counts
     const comp = enhanced.comparison;
     if (comp.mismatch_count === undefined && comp.mismatches) {
       comp.mismatch_count = comp.mismatches.length;
@@ -206,15 +424,6 @@ class APIService {
     }
     if (comp.partial_data_count === undefined && comp.partial_data) {
       comp.partial_data_count = comp.partial_data.length;
-    }
-
-    // Log validation issues for debugging
-    if (enhanced.salesforce && enhanced.krowne && comp.total_fields_compared === 0) {
-      console.warn(`⚠️ ProductMapper returned no field comparisons for SKU ${result.sku}`, {
-        salesforceFields: Object.keys(enhanced.salesforce),
-        krowneFields: Object.keys(enhanced.krowne),
-        comparison: comp
-      });
     }
 
     return enhanced;
@@ -228,339 +437,44 @@ class APIService {
 
     console.log(`🔍 Comparing single product: ${sku}`);
     
-    const startTime = Date.now();
-    
     try {
       const response = await this.compareProducts({ sku });
-      const duration = Date.now() - startTime;
-      
-      console.log(`✅ Single product comparison completed in ${duration}ms for ${sku}`);
       return response;
-      
     } catch (error) {
-      const duration = Date.now() - startTime;
-      console.error(`❌ Single product comparison failed after ${duration}ms for ${sku}:`, error.message);
+      console.error(`❌ Single product comparison failed for ${sku}:`, error.message);
       throw error;
     }
   }
 
-  // Enhanced batch comparison method for better error handling and logging
+  // Enhanced batch comparison method
   async compareBatch(skus = []) {
     if (!Array.isArray(skus) || skus.length === 0) {
       throw new Error('You must provide a non-empty array of SKUs to compare.');
     }
 
-    // Log the batch size for monitoring
-    console.log(`🔍 Comparing batch of ${skus.length} SKUs:`, skus.slice(0, 5).concat(skus.length > 5 ? ['...'] : []));
-
-    const startTime = Date.now();
+    console.log(`🔍 Comparing batch of ${skus.length} SKUs`);
 
     try {
       const response = await this.compareProducts({ skus });
-      
-      const duration = Date.now() - startTime;
-      console.log(`✅ Batch comparison completed in ${duration}ms:`, {
-        requested: skus.length,
-        returned: response.results?.length || 0,
-        success: response.success,
-        total: response.total
-      });
-
       return response;
     } catch (error) {
-      const duration = Date.now() - startTime;
-      console.error(`❌ Batch comparison failed after ${duration}ms:`, {
-        skus: skus.slice(0, 5).concat(skus.length > 5 ? ['...'] : []),
-        batchSize: skus.length,
-        error: error.message
-      });
-      
-      // Re-throw with additional context
+      console.error(`❌ Batch comparison failed:`, error.message);
       throw new Error(`Batch comparison failed for ${skus.length} SKUs: ${error.message}`);
     }
   }
 
-  // Add method to validate batch before processing
-  validateBatch(skus) {
-    if (!Array.isArray(skus)) {
-      throw new Error('SKUs must be provided as an array');
-    }
-    
-    if (skus.length === 0) {
-      throw new Error('Cannot process empty SKU batch');
-    }
-    
-    // Check for invalid SKUs
-    const invalidSkus = skus.filter(sku => !sku || typeof sku !== 'string' || sku.trim() === '');
-    if (invalidSkus.length > 0) {
-      throw new Error(`Batch contains ${invalidSkus.length} invalid SKUs`);
-    }
-    
-    // Check for duplicates
-    const uniqueSkus = [...new Set(skus)];
-    if (uniqueSkus.length !== skus.length) {
-      console.warn(`⚠️ Batch contains ${skus.length - uniqueSkus.length} duplicate SKUs`);
-    }
-    
-    return {
-      isValid: true,
-      originalCount: skus.length,
-      uniqueCount: uniqueSkus.length,
-      duplicates: skus.length - uniqueSkus.length,
-      cleanedSkus: uniqueSkus
-    };
-  }
-
-  // Add method to get optimal batch size based on performance
-  getOptimalBatchSize() {
-    // You can make this configurable or dynamic based on performance metrics
-    const defaultBatchSize = 50;
-    
-    // Check if there's a configured batch size in environment or settings
-    if (window.APP_CONFIG?.COMPARISON_BATCH_SIZE) {
-      return parseInt(window.APP_CONFIG.COMPARISON_BATCH_SIZE);
-    }
-    
-    return defaultBatchSize;
-  }
-
-  // Add a method to handle progressive batch processing with callbacks
-  async compareBatchesWithProgress(allSkus, batchSize = 50, onProgress = null, onBatchComplete = null) {
-    const totalBatches = Math.ceil(allSkus.length / batchSize);
-    let allResults = [];
-    let errors = [];
-
-    console.log(`📦 Starting batch comparison: ${allSkus.length} SKUs in ${totalBatches} batches`);
-
-    for (let i = 0; i < totalBatches; i++) {
-      const start = i * batchSize;
-      const end = Math.min(start + batchSize, allSkus.length);
-      const batch = allSkus.slice(start, end);
-      
-      // Call progress callback
-      if (onProgress) {
-        onProgress({
-          currentBatch: i + 1,
-          totalBatches,
-          currentSku: start + 1,
-          totalSkus: allSkus.length,
-          processedSoFar: allResults.length
-        });
-      }
-
-      try {
-        console.log(`🔄 Processing batch ${i + 1}/${totalBatches} (${batch.length} SKUs)`);
-        
-        const batchResponse = await this.compareBatch(batch);
-        const formatted = this.formatComparisonResults(batchResponse);
-        
-        allResults = [...allResults, ...(formatted || [])];
-        
-        // Call batch complete callback
-        if (onBatchComplete) {
-          onBatchComplete({
-            batchNumber: i + 1,
-            batchResults: formatted,
-            totalResultsSoFar: allResults.length,
-            batchSize: batch.length
-          });
-        }
-        
-      } catch (error) {
-        const batchError = {
-          batchNumber: i + 1,
-          skus: batch,
-          error: error.message,
-          timestamp: new Date().toISOString()
-        };
-        
-        errors.push(batchError);
-        console.error(`❌ Batch ${i + 1} failed:`, batchError);
-        
-        // Continue with other batches - don't let one failure stop everything
-      }
-    }
-
-    const summary = {
-      totalSkus: allSkus.length,
-      totalBatches,
-      successfulResults: allResults.length,
-      errors: errors.length,
-      errorDetails: errors
-    };
-
-    console.log(`📊 Batch processing completed:`, summary);
-
-    return {
-      results: allResults,
-      summary,
-      errors
-    };
-  }
-
-  // ProductMapper utility endpoints
-  async getMapperFields() {
-    try {
-      return await this.request('/mapper/fields');
-    } catch (error) {
-      console.warn('Could not fetch mapper fields:', error);
-      // Return empty array if endpoint doesn't exist yet
-      return { fields: [] };
-    }
-  }
-
-  async getDetailedComparison(sku) {
-    return this.request(`/mapper/compare-detailed/${encodeURIComponent(sku)}`);
-  }
-
-  // Get all available canonical field names from ProductMapper
-  async getCanonicalFields() {
-    try {
-      const response = await this.getMapperFields();
-      return response.fields || [];
-    } catch (error) {
-      console.warn('Could not fetch canonical fields:', error);
-      return [];
-    }
-  }
-
-  // Debug methods for ProductMapper troubleshooting
-  async debugCompareProduct(sku) {
-    try {
-      console.log(`🔧 Debug comparison for SKU: ${sku}`);
-      
-      // First, try the regular comparison
-      const regularResponse = await this.compareProducts({ sku });
-      console.log('📊 Regular comparison result:', {
-        hasResults: !!regularResponse.results,
-        resultCount: regularResponse.results?.length || 0,
-        firstResult: regularResponse.results?.[0] ? {
-          sku: regularResponse.results[0].sku,
-          hasSalesforce: !!regularResponse.results[0].salesforce,
-          hasKrowne: !!regularResponse.results[0].krowne,
-          hasComparison: !!regularResponse.results[0].comparison,
-          comparisonFields: regularResponse.results[0].comparison ? Object.keys(regularResponse.results[0].comparison) : []
-        } : null
-      });
-
-      // Also try to get mapper fields to verify they're available
-      const mapperFields = await this.getMapperFields();
-      console.log('🗺️ Mapper fields available:', {
-        fieldCount: mapperFields.fields?.length || 0,
-        firstFewFields: mapperFields.fields?.slice(0, 5).map(f => f.canonical_name) || []
-      });
-
-      return {
-        regularResponse,
-        mapperFields,
-        debugInfo: {
-          timestamp: new Date().toISOString(),
-          sku: sku,
-          hasMapperFields: (mapperFields.fields?.length || 0) > 0,
-          hasComparisonResults: (regularResponse.results?.length || 0) > 0
-        }
-      };
-    } catch (error) {
-      console.error('❌ Debug comparison failed:', error);
-      return {
-        error: error.message,
-        timestamp: new Date().toISOString(),
-        sku: sku
-      };
-    }
-  }
-
-  // Test ProductMapper field extraction
-  async testMapperExtraction(sku) {
-    try {
-      // Get raw data from both sources
-      const salesforceData = await this.getProductBySKU(sku).catch(() => null);
-      const krowneData = await this.scrapeKrowneProduct(sku).catch(() => null);
-      
-      console.log('🧪 Testing mapper extraction:', {
-        sku,
-        hasSalesforce: !!salesforceData,
-        hasKrowne: !!krowneData,
-        salesforceFields: salesforceData ? Object.keys(salesforceData) : [],
-        krowneFields: krowneData ? Object.keys(krowneData) : []
-      });
-
-      return {
-        sku,
-        salesforce: salesforceData,
-        krowne: krowneData,
-        timestamp: new Date().toISOString()
-      };
-    } catch (error) {
-      console.error('❌ Test mapper extraction failed:', error);
-      throw error;
-    }
-  }
-
-  // Sync Operations
-  async syncPimlyData(options = {}) {
-    return this.request('/pimly-sync', {
-      method: 'POST',
-      body: JSON.stringify(options),
-    });
-  }
-
-  async syncProduct(sku, mismatches) {
-    return this.request('/pimly/sync-product', {
-      method: 'POST',
-      body: JSON.stringify({ sku, mismatches }),
-    });
-  }
-
-  // Export Results
-  async exportResults(results) {
-    return this.request('/export-results', {
-      method: 'POST',
-      body: JSON.stringify({ results }),
-    });
-  }
-
-  // Utility Methods - Updated for ProductMapper format
-  
-  // Format comparison results for display - Updated to handle ProductMapper response structure
+  // Utility Methods
   formatComparisonResults(apiResponse) {
     if (!apiResponse || !apiResponse.results) {
       console.warn('No results in API response:', apiResponse);
       return [];
     }
 
-    console.log('🔄 Formatting comparison results:', {
-      total: apiResponse.results.length,
-      hasMapperInfo: !!apiResponse.mapper_info,
-      firstResultStructure: apiResponse.results[0] ? {
-        hasSalesforce: !!apiResponse.results[0].salesforce,
-        hasKrowne: !!apiResponse.results[0].krowne,
-        hasComparison: !!apiResponse.results[0].comparison,
-        comparisonStructure: apiResponse.results[0].comparison ? Object.keys(apiResponse.results[0].comparison) : []
-      } : null
-    });
-
     return apiResponse.results.map((result, index) => {
-      // Extract ProductMapper comparison data
       const comparison = result.comparison || {};
       const mismatches = comparison.mismatches || result.mismatches || [];
       const matches = comparison.matches || [];
       const partialData = comparison.partial_data || [];
-
-      // Debug individual result formatting
-      if (index === 0) {
-        console.log('🔍 Formatting first result:', {
-          sku: result.sku,
-          salesforceKeys: result.salesforce ? Object.keys(result.salesforce) : [],
-          krowneKeys: result.krowne ? Object.keys(result.krowne) : [],
-          comparisonCounts: {
-            mismatches: mismatches.length,
-            matches: matches.length,
-            partialData: partialData.length,
-            totalFields: comparison.total_fields_compared || 0
-          }
-        });
-      }
 
       const formattedResult = {
         sku: result.sku,
@@ -570,21 +484,18 @@ class APIService {
           krowne: result.krowne,
           comparison: {
             ...comparison,
-            // Ensure all expected fields are present
             mismatches,
             matches,
             partial_data: partialData,
             total_fields_compared: comparison.total_fields_compared || 0,
             mismatch_count: comparison.mismatch_count || mismatches.length,
             match_count: comparison.match_count || matches.length,
-            partial_data_count: comparison.partial_data_count || partialData.length,
-            mapped_fields: apiResponse.mapper_info?.mapped_fields || []
+            partial_data_count: comparison.partial_data_count || partialData.length
           },
-          mismatches: mismatches // For backward compatibility
+          mismatches: mismatches
         },
         status: result.status || this.determineProductStatus(result),
         timestamp: result.timestamp,
-        // Additional fields for display
         name: result.name || result.krowne_name || result.salesforce_name,
         price: result.krowne_price || result.salesforce_price,
         description: result.krowne_description || result.salesforce_description,
@@ -592,16 +503,11 @@ class APIService {
         url: result.krowne_url
       };
 
-      // If we have data but no comparisons, log a warning
-      if (result.salesforce && result.krowne && (comparison.total_fields_compared || 0) === 0) {
-        console.warn(`⚠️ No field comparisons generated for SKU ${result.sku} despite having both data sources`);
-      }
-
       return formattedResult;
     });
   }
 
-  // Determine product status based on available data - Updated for ProductMapper results
+  // Determine product status based on available data
   determineProductStatus(result) {
     const hasSalesforce = result.salesforce && Object.keys(result.salesforce).length > 0;
     const hasKrowne = result.krowne && Object.keys(result.krowne).length > 0;
@@ -612,7 +518,6 @@ class APIService {
         return 'mismatches_found';
       }
       
-      // Check if we have meaningful matches
       const matchCount = result.comparison?.match_count || 0;
       const partialCount = result.comparison?.partial_data_count || 0;
       
@@ -630,138 +535,33 @@ class APIService {
     }
   }
 
-  // Get status display info
-  getStatusDisplayInfo(status) {
-    const statusMap = {
-      'found_both': { label: 'Found in Both', color: 'success', icon: '✓' },
-      'data_matches': { label: 'Data Matches', color: 'success', icon: '✓' },
-      'mismatches_found': { label: 'Mismatches Found', color: 'warning', icon: '⚠️' },
-      'missing_from_krowne': { label: 'Missing from Krowne', color: 'error', icon: '❌' },
-      'missing_from_salesforce': { label: 'Missing from Salesforce', color: 'error', icon: '❌' },
-      'not_found': { label: 'Not Found', color: 'error', icon: '❌' }
-    };
-
-    return statusMap[status] || { label: 'Unknown', color: 'default', icon: '❓' };
-  }
-
-  // Get ProductMapper statistics from results
-  getMapperStatistics(apiResponse) {
-    if (!apiResponse || !apiResponse.results) {
-      return null;
+  // Validation and utility methods
+  validateBatch(skus) {
+    if (!Array.isArray(skus)) {
+      throw new Error('SKUs must be provided as an array');
     }
-
-    const stats = {
-      totalProducts: apiResponse.results.length,
-      totalMismatches: 0,
-      totalMatches: 0,
-      totalPartialData: 0,
-      totalFieldsCompared: 0,
-      mapperInfo: apiResponse.mapper_info || null
-    };
-
-    apiResponse.results.forEach(result => {
-      if (result.comparison) {
-        stats.totalMismatches += result.comparison.mismatch_count || 0;
-        stats.totalMatches += result.comparison.match_count || 0;
-        stats.totalPartialData += result.comparison.partial_data_count || 0;
-        stats.totalFieldsCompared += result.comparison.total_fields_compared || 0;
-      }
-    });
-
-    return stats;
-  }
-
-  // Format field values for display based on ProductMapper field types
-  formatFieldValue(value, fieldType) {
-    if (!value && value !== 0) return null;
     
-    switch (fieldType) {
-      case 'price':
-        if (typeof value === 'number') return `$${value.toFixed(2)}`;
-        if (typeof value === 'string') {
-          if (value.includes('$')) return value;
-          const cleanPrice = value.replace(/[^\d.]/g, '');
-          const numericPrice = parseFloat(cleanPrice);
-          if (!isNaN(numericPrice)) return `$${numericPrice.toFixed(2)}`;
-          return value;
-        }
-        return String(value);
-        
-      case 'number':
-        const num = parseFloat(value);
-        if (!isNaN(num)) return num.toString();
-        return String(value);
-        
-      case 'boolean':
-        if (typeof value === 'boolean') return value ? 'Yes' : 'No';
-        if (typeof value === 'string') {
-          const lower = value.toLowerCase();
-          if (['true', 'yes', '1', 'y', 'on'].includes(lower)) return 'Yes';
-          if (['false', 'no', '0', 'n', 'off'].includes(lower)) return 'No';
-        }
-        return String(value);
-        
-      case 'list':
-        if (Array.isArray(value)) return value.join(', ');
-        return String(value);
-        
-      case 'url':
-        return value; // URLs can be displayed as-is or as links
-        
-      case 'text':
-      default:
-        return String(value);
+    if (skus.length === 0) {
+      throw new Error('Cannot process empty SKU batch');
     }
-  }
-
-  // Performance monitoring methods
-  async measureBatchPerformance(skus, batchSize = 50) {
-    const startTime = Date.now();
-    const results = {
-      totalSkus: skus.length,
-      batchSize,
-      batchCount: Math.ceil(skus.length / batchSize),
-      batchTimes: [],
-      errors: [],
-      totalTime: 0,
-      averageBatchTime: 0,
-      successfulBatches: 0,
-      failedBatches: 0
+    
+    const invalidSkus = skus.filter(sku => !sku || typeof sku !== 'string' || sku.trim() === '');
+    if (invalidSkus.length > 0) {
+      throw new Error(`Batch contains ${invalidSkus.length} invalid SKUs`);
+    }
+    
+    const uniqueSkus = [...new Set(skus)];
+    if (uniqueSkus.length !== skus.length) {
+      console.warn(`⚠️ Batch contains ${skus.length - uniqueSkus.length} duplicate SKUs`);
+    }
+    
+    return {
+      isValid: true,
+      originalCount: skus.length,
+      uniqueCount: uniqueSkus.length,
+      duplicates: skus.length - uniqueSkus.length,
+      cleanedSkus: uniqueSkus
     };
-
-    console.log(`📊 Starting performance measurement for ${skus.length} SKUs in batches of ${batchSize}`);
-
-    for (let i = 0; i < results.batchCount; i++) {
-      const batchStart = Date.now();
-      const batch = skus.slice(i * batchSize, (i + 1) * batchSize);
-      
-      try {
-        await this.compareBatch(batch);
-        const batchTime = Date.now() - batchStart;
-        results.batchTimes.push(batchTime);
-        results.successfulBatches++;
-        
-        console.log(`✅ Batch ${i + 1} completed in ${batchTime}ms`);
-      } catch (error) {
-        const batchTime = Date.now() - batchStart;
-        results.errors.push({
-          batch: i + 1,
-          error: error.message,
-          time: batchTime
-        });
-        results.failedBatches++;
-        
-        console.error(`❌ Batch ${i + 1} failed after ${batchTime}ms:`, error.message);
-      }
-    }
-
-    results.totalTime = Date.now() - startTime;
-    results.averageBatchTime = results.batchTimes.length > 0 
-      ? results.batchTimes.reduce((sum, time) => sum + time, 0) / results.batchTimes.length 
-      : 0;
-
-    console.log('📊 Performance measurement completed:', results);
-    return results;
   }
 
   // Health Check
@@ -772,81 +572,6 @@ class APIService {
   // Test proxy connection
   async testProxy() {
     return this.request('/test-proxy');
-  }
-
-  // Configuration methods
-  getConfiguration() {
-    return {
-      apiBaseUrl: API_BASE_URL,
-      defaultBatchSize: this.getOptimalBatchSize(),
-      endpoints: {
-        salesforce: '/salesforce/status',
-        krowne: '/auth/krowne/status',
-        compare: '/compare',
-        products: '/products/skus',
-        mapper: '/mapper/fields'
-      }
-    };
-  }
-
-  // Utility method to check API health and configuration
-  async validateApiSetup() {
-    const checks = {
-      health: false,
-      salesforce: false,
-      krowne: false,
-      mapper: false,
-      errors: []
-    };
-
-    try {
-      // Test basic health
-      await this.healthCheck();
-      checks.health = true;
-      console.log('✅ API health check passed');
-    } catch (error) {
-      checks.errors.push(`Health check failed: ${error.message}`);
-      console.error('❌ API health check failed:', error);
-    }
-
-    try {
-      // Test Salesforce status
-      await this.getSalesforceStatus();
-      checks.salesforce = true;
-      console.log('✅ Salesforce connection check passed');
-    } catch (error) {
-      checks.errors.push(`Salesforce check failed: ${error.message}`);
-      console.error('❌ Salesforce check failed:', error);
-    }
-
-    try {
-      // Test Krowne status
-      await this.getKrowneStatus();
-      checks.krowne = true;
-      console.log('✅ Krowne connection check passed');
-    } catch (error) {
-      checks.errors.push(`Krowne check failed: ${error.message}`);
-      console.error('❌ Krowne check failed:', error);
-    }
-
-    try {
-      // Test ProductMapper
-      await this.getMapperFields();
-      checks.mapper = true;
-      console.log('✅ ProductMapper check passed');
-    } catch (error) {
-      checks.errors.push(`ProductMapper check failed: ${error.message}`);
-      console.error('❌ ProductMapper check failed:', error);
-    }
-
-    const allPassed = checks.health && checks.salesforce && checks.krowne && checks.mapper;
-    console.log(`📋 API validation ${allPassed ? 'passed' : 'failed'}:`, checks);
-
-    return {
-      ...checks,
-      allPassed,
-      timestamp: new Date().toISOString()
-    };
   }
 }
 

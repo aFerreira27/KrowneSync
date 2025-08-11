@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import ConnectionStatus from './components/ConnectionStatus';
-// import AuthModal from './components/AuthModal';
 import KrowneLoginModal from './components/KrowneLoginModal';
-import SKUSearch from './components/SKUSearch';
+import SKUSearch from './components/SKUSearch/SKUSearch';
 import SyncTable from './components/SyncTable/SyncTable';
 import api from './services/api';
 import krowneAuthService from './services/krowneAuthService';
@@ -23,7 +22,6 @@ function App() {
     error: null
   });
   
-  const [showAuthModal, setShowAuthModal] = useState(null); // 'salesforce' or null
   const [showKrowneLogin, setShowKrowneLogin] = useState(false);
   const [viewMode, setViewMode] = useState('search'); // 'search' or 'sync'
   const [loading, setLoading] = useState(false);

@@ -1,8 +1,8 @@
 import os
-import asyncio
 import secrets
 import logging
 import math
+from typing import Optional, Dict, Any
 
 from flask import Blueprint, request, jsonify, current_app, session, url_for, redirect
 from werkzeug.utils import secure_filename
@@ -13,14 +13,16 @@ from app.services.pimly_client import PimlyClient
 from app.services.krowne_cms_service import KrowneCMSService
 from app.services.krowne_scraper import KrowneScraper
 from app.services.extract_skus import extract_known_ids_from_csv
-from app.services.product_mapper import ProductMapper, get_enhanced_product_comparison, calculate_product_mismatches
-from app.services.krowne_property_extractor import KrownePropertyExtractor
+from app.services.product_data_mapper import ProductDataMapper
+from app.services.mapped_data_comparator import MappedDataComparator
+
 
 
 main = Blueprint('main', __name__)
 
 # Configure logging
 logger = logging.getLogger(__name__)
+
 
 def get_authenticated_sf_client():
     """Helper function to get authenticated Salesforce client"""
@@ -39,6 +41,10 @@ def get_authenticated_sf_client():
     return sf_client
 
 krowne_cms_service = KrowneCMSService()
+mapped_comparator = MappedDataComparator()
+
+
+
 
 ### Salesforce OAuth Routes ###
 
@@ -192,114 +198,6 @@ def salesforce_logout():
         session.pop('sf_tokens', None)
         return jsonify({'success': True, 'message': 'Logged out (with errors)'})
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # e.g. backend/app
-UPLOAD_PATH = os.path.abspath(os.path.join(BASE_DIR, '..', 'uploads', 'Initial_Import.csv'))
-
-@main.route("/api/products/skus", methods=["GET", "OPTIONS"])
-def list_product_skus():
-    if request.method == "OPTIONS":
-        return '', 200
-    try:
-        if not os.path.exists(UPLOAD_PATH):
-            logger.warning(f"Upload CSV not found: {UPLOAD_PATH}")
-            return jsonify({"error": "SKU file not found"}), 404
-
-        skus = extract_known_ids_from_csv(UPLOAD_PATH)
-        return jsonify(skus)
-    except Exception as e:
-        logger.error("Error loading SKUs", exc_info=True)
-        return jsonify({"error": str(e)}), 500
-
-
-### Pimly Product Routes ###
-
-@main.route("/api/pimly/search", methods=["POST", "OPTIONS"])
-def search_pimly_products():
-    """Search for products in Pimly"""
-    if request.method == "OPTIONS":
-        return '', 200
-    
-    try:
-        sf_client = get_authenticated_sf_client()
-        pimly_client = PimlyClient(sf_client)
-        
-        data = request.get_json()
-        search_term = data.get('search', '')
-        limit = data.get('limit', 20)
-        
-        logger.info(f"Searching Pimly for: {search_term}")
-        
-        # Search for products
-        products = pimly_client.search_products(search_term, limit)
-        
-        return jsonify({
-            'products': products,
-            'count': len(products)
-        })
-    except Exception as e:
-        logger.error(f"Error searching Pimly: {str(e)}")
-        return jsonify({"error": str(e)}), 500
-
-BATCH_SIZE = int(os.environ.get("PIMLY_BATCH_SIZE", 50))  # tune as needed
-
-@main.route("/api/pimly/products", methods=["GET", "OPTIONS"])
-def get_pimly_products():
-    """Get products from Pimly using batched requests for known SKUs."""
-    if request.method == "OPTIONS":
-        return '', 200
-
-    try:
-        sf_client = get_authenticated_sf_client()
-        pimly_client = PimlyClient(sf_client)
-
-        # Pagination / query params
-        limit = request.args.get('limit', 100, type=int)
-        offset = request.args.get('offset', 0, type=int)
-
-        # Get known SKUs (pagination is applied to this list)
-        # NOTE: if your extract_known_ids_from_csv requires a csv_path, pass it here
-        known_skus = extract_known_ids_from_csv() or []
-        total = len(known_skus)
-
-        # Slice by offset/limit
-        paginated_skus = known_skus[offset: offset + limit]
-
-        products = []
-        if paginated_skus:
-            # Break into batches
-            for i in range(0, len(paginated_skus), BATCH_SIZE):
-                batch = paginated_skus[i:i + BATCH_SIZE]
-                try:
-                    batch_products = pimly_client.get_products_by_ids(batch) or []
-                    # You may want to normalize or extend results here
-                    products.extend(batch_products)
-                except Exception as e:
-                    # Log and continue: partial failure shouldn't block other batches
-                    logger.exception("Error fetching Pimly batch for SKUs %s: %s", batch, str(e))
-
-        return jsonify({
-            'products': products,
-            'total': total,
-            'limit': limit,
-            'offset': offset,
-            'batches': math.ceil(len(paginated_skus) / BATCH_SIZE) if paginated_skus else 0
-        })
-    except Exception as e:
-        logger.exception("Error getting Pimly products")
-        return jsonify({"error": str(e)}), 500
-
-@main.route("/api/products/<sku>", methods=["GET", "OPTIONS"])
-def get_product_by_sku(sku):
-    if request.method == "OPTIONS":
-        return '', 200
-    try:
-        sf_client = get_authenticated_sf_client()
-        pimly_client = PimlyClient(sf_client)
-        product = pimly_client.get_product_by_sku(sku)
-        return jsonify(product)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
 ### Krowne CMS Authentication Routes ###
 
 @main.route('/api/auth/krowne/login', methods=['POST'])
@@ -386,624 +284,883 @@ def test_krowne_connection():
         logger.error(f"Krowne connection test failed: {str(e)}")
         return jsonify({'success': False, 'error': str(e), 'accessible': False}), 500
 
-### Krowne Scraper Routes ###
-@main.route('/api/krowne/scrape-product/<sku>', methods=['GET'])
-def scrape_krowne_product(sku):
+
+### Get Product SKUs ###
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # e.g. backend/app
+UPLOAD_PATH = os.path.abspath(os.path.join(BASE_DIR, '..', 'uploads', 'Initial_Import.csv'))
+
+@main.route("/api/products/skus", methods=["GET", "OPTIONS"])
+def list_product_skus():
+    if request.method == "OPTIONS":
+        return '', 200
     try:
-        scraper = KrowneScraper()
-        raw_data = asyncio.run(scraper.get_product_by_sku(sku))
+        if not os.path.exists(UPLOAD_PATH):
+            logger.warning(f"Upload CSV not found: {UPLOAD_PATH}")
+            return jsonify({"error": "SKU file not found"}), 404
 
-        if not raw_data:
-            logger.warning(f"Krowne product not found for SKU: {sku}")
-            return jsonify({'success': False, 'error': 'Product not found'}), 404
-
-        logger.info(f"Krowne product scraped successfully for SKU: {sku}")
-
-        # 🔧 NEW: Use KrownePropertyExtractor to disperse properties
-        property_extractor = KrownePropertyExtractor()
-        enhanced_data = property_extractor.extract_and_disperse_properties(raw_data)
-        
-        # Get dispersal report for debugging
-        dispersal_report = property_extractor.get_dispersal_report(raw_data, enhanced_data)
-        
-        logger.info(f"Property dispersal completed: {dispersal_report['dispersed_fields_count']} fields dispersed")
-
-        return jsonify({
-            'success': True, 
-            'product': enhanced_data,
-            'dispersal_report': dispersal_report  # Include for debugging
-        })
-
+        skus = extract_known_ids_from_csv(UPLOAD_PATH)
+        return jsonify(skus)
     except Exception as e:
-        logger.error(f"Krowne scraping error for SKU {sku}: {str(e)}", exc_info=True)
-        return jsonify({'success': False, 'error': str(e)}), 500
-    
-### CORRECTED COMPARE ROUTE USING PRODUCTMAPPER ###
+        logger.error("Error loading SKUs", exc_info=True)
+        return jsonify({"error": str(e)}), 500
 
-@main.route("/api/compare", methods=["POST", "OPTIONS"])
-def compare_products():
-    """Compare product data between Pimly/Salesforce and Krowne website using enhanced ProductMapper"""
+
+### Pimly Product Routes ###
+
+@main.route("/api/pimly/search", methods=["POST", "OPTIONS"])
+def search_pimly_products():
+    """Search for products in Pimly"""
     if request.method == "OPTIONS":
         return '', 200
     
     try:
+        sf_client = get_authenticated_sf_client()
+        pimly_client = PimlyClient(sf_client)
+        
         data = request.get_json()
-        logger.info(f"Compare request data: {data}")
+        search_term = data.get('search', '')
+        limit = data.get('limit', 20)
         
-        # Handle different request formats from frontend
-        sku = data.get('sku')
-        skus = data.get('skus', [])
-        search_term = data.get('search')
-        debug_mode = data.get('debug', False)
+        logger.info(f"Searching Pimly for: {search_term}")
         
-        # Determine target SKU(s)
-        target_skus = []
-        if sku:
-            target_skus = [sku]
-        elif search_term:
-            target_skus = [search_term]
-        elif skus and len(skus) > 0:
-            target_skus = skus
+        # Search for products
+        products = pimly_client.search_products(search_term, limit)
         
-        if not target_skus:
-            return jsonify({"error": "SKU, search term, or skus required"}), 400
+        return jsonify({
+            'products': products,
+            'count': len(products)
+        })
+    except Exception as e:
+        logger.error(f"Error searching Pimly: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+BATCH_SIZE = int(os.environ.get("PIMLY_BATCH_SIZE", 50))
+MAX_PRODUCTS_PER_REQUEST = int(os.environ.get("MAX_PRODUCTS_PER_REQUEST", 4000))
+
+@main.route("/api/pimly/products", methods=["GET", "OPTIONS"])
+def get_pimly_products():
+    """Get products from Pimly using enhanced batched requests for known SKUs."""
+    if request.method == "OPTIONS":
+        return '', 200
+
+    try:
+        sf_client = get_authenticated_sf_client()
+        pimly_client = PimlyClient(sf_client)
+
+        # Parse query parameters
+        limit = min(request.args.get('limit', 100, type=int), MAX_PRODUCTS_PER_REQUEST)
+        offset = request.args.get('offset', 0, type=int)
         
-        logger.info(f"Processing comparison for SKUs: {target_skus}")
+        # Optional: Allow filtering by specific properties
+        properties = request.args.get('properties')
+        if properties:
+            properties = [prop.strip() for prop in properties.split(',')]
         
-        # Initialize the ProductMapper and PropertyExtractor
-        mapper = ProductMapper()
-        property_extractor = KrownePropertyExtractor()
+        # Optional: Channel and locale context
+        channel_id = request.args.get('channel_id', 'global')
+        locale_id = request.args.get('locale_id', 'global')
         
-        results = []
+        # Optional: Custom identifier field
+        context_identifier = request.args.get('context_identifier')
+
+        # Get known SKUs from CSV
+        known_skus = extract_known_ids_from_csv() or []
+        total_available = len(known_skus)
         
-        # Process each SKU
-        for target_sku in target_skus:
-            logger.info(f"🔍 Processing SKU: {target_sku}")
-            
-            # Get Salesforce/Pimly data
-            salesforce_data = None
+        if not known_skus:
+            logger.warning("No known SKUs found in CSV file")
+            return jsonify({
+                'products': [],
+                'total': 0,
+                'limit': limit,
+                'offset': offset,
+                'message': 'No known SKUs available'
+            })
+
+        # Apply pagination to SKU list
+        paginated_skus = known_skus[offset:offset + limit]
+        
+        logger.info(f"Processing {len(paginated_skus)} SKUs (offset: {offset}, limit: {limit})")
+
+        # Fetch products using enhanced batch processing
+        products = []
+        batch_count = 0
+        failed_batches = 0
+        
+        if paginated_skus:
             try:
-                sf_client = get_authenticated_sf_client()
-                pimly_client = PimlyClient(sf_client)
-                salesforce_data = pimly_client.get_product_by_sku(target_sku)
-                logger.info(f"✅ Salesforce data retrieved for {target_sku}")
-                if debug_mode and salesforce_data:
-                    mapper.log_field_extraction_debug(salesforce_data, "Salesforce")
+                # Use enhanced client with all parameters
+                batch_products = pimly_client.get_products_by_ids(
+                    ids=paginated_skus,
+                    properties=properties,
+                    context_identifier=context_identifier,
+                    channel_id=channel_id,
+                    locale_id=locale_id,
+                    max_batch_size=BATCH_SIZE
+                )
+                
+                products = batch_products or []
+                batch_count = math.ceil(len(paginated_skus) / BATCH_SIZE)
+                
+                logger.info(f"Successfully retrieved {len(products)} products from {batch_count} batches")
+                
             except Exception as e:
-                logger.warning(f"❌ Could not fetch Salesforce data for {target_sku}: {str(e)}")
-            
-            # Get Krowne website data using the scraper
-            krowne_data = None
-            try:
-                logger.info(f"🔍 Starting Krowne scraping for SKU: {target_sku}")
-                krowne_scraper = KrowneScraper()
-                
-                # Get the raw product data
-                raw_krowne_data = asyncio.run(krowne_scraper.get_product_by_sku(target_sku))
-                
-                if raw_krowne_data:
-                    # 🔧 NEW: Apply property extraction to disperse properties into fields
-                    krowne_data = property_extractor.extract_and_disperse_properties(raw_krowne_data)
-                    
-                    logger.info(f"✅ Krowne data retrieved and enhanced for {target_sku}")
-                    if debug_mode:
-                        mapper.log_field_extraction_debug(krowne_data, "Krowne (Enhanced)")
-                        # Log dispersal report in debug mode
-                        dispersal_report = property_extractor.get_dispersal_report(raw_krowne_data, krowne_data)
-                        logger.info(f"Dispersal report: {dispersal_report}")
-                else:
-                    logger.warning(f"❌ No Krowne data returned for {target_sku}")
-            except Exception as e:
-                logger.error(f"❌ Krowne scraping failed for {target_sku}: {str(e)}")
-            
-            # Use enhanced ProductMapper for comprehensive comparison
-            enhanced_comparison = get_enhanced_product_comparison(
-                salesforce_data or {},
-                krowne_data or {}
-            )
-            
-            logger.info(f"📊 Enhanced comparison completed for {target_sku}")
-            logger.info(f"   Summary: {enhanced_comparison['summary']}")
-            
-            # Convert comparison results to the format expected by frontend
-            mismatches = []
-            matches = []
-            partial_data = []
-            
-            for result in enhanced_comparison['comparison_results']:
-                comparison_item = {
-                    'field': result.field_name.replace('_', ' ').title(),
-                    'canonical_name': result.field_name,
-                    'salesforce': result.salesforce_value,
-                    'krowne': result.krowne_value,
-                    'notes': result.notes,
-                    'description': mapper.get_field_description(result.field_name)
-                }
-                
-                if result.is_mismatch:
-                    mismatches.append(comparison_item)
-                elif result.has_partial_data:
-                    partial_data.append(comparison_item)
-                elif result.is_match and (result.salesforce_value is not None or result.krowne_value is not None):
-                    matches.append(comparison_item)
-            
-            # Create result item with comprehensive data
-            result_item = {
-                'sku': target_sku,
-                'product_id': target_sku,
-                'salesforce': salesforce_data,
-                'krowne': krowne_data,
-                'comparison': {
-                    'summary': enhanced_comparison['summary'],
-                    'mismatches': mismatches,
-                    'matches': matches,
-                    'partial_data': partial_data,
-                    'total_fields_compared': len(enhanced_comparison['comparison_results']),
-                    'mismatch_count': len(mismatches),
-                    'match_count': len(matches),
-                    'partial_data_count': len(partial_data)
-                },
-                'mismatches': mismatches,  # For backward compatibility
-                'timestamp': datetime.utcnow().isoformat(),
-                'status': determine_product_status(salesforce_data, krowne_data)
-            }
-            
-            # Add frontend-compatible fields (now with dispersed properties)
-            if krowne_data:
-                result_item.update({
-                    'krowne_name': krowne_data.get('name'),
-                    'krowne_price': krowne_data.get('price') or krowne_data.get('listPrice') or krowne_data.get('list_price'),
-                    'krowne_description': krowne_data.get('description'),
-                    'krowne_url': f"https://www.krowne.com/{target_sku}",
-                    'krowne_image': krowne_data.get('mainImageUrl'),
-                    'name': krowne_data.get('name'),
-                    # Include dispersed fields for easier access
-                    'krowne_series': krowne_data.get('series') or krowne_data.get('Series'),
-                    'krowne_features': krowne_data.get('features') or krowne_data.get('Features'),
-                    'krowne_mounting_style': krowne_data.get('mounting_style') or krowne_data.get('Mounting_Style')
-                })
-            
-            if salesforce_data:
-                result_item.update({
-                    'salesforce_name': salesforce_data.get('name'),
-                    'salesforce_price': mapper.extract_salesforce_value(salesforce_data, 'list_price'),
-                    'salesforce_description': (
-                        mapper.extract_salesforce_value(salesforce_data, 'description') or
-                        salesforce_data.get('description')
-                    )
-                })
-            
-            results.append(result_item)
-        
-        # Return results in consistent format
+                logger.exception("Error in batch product retrieval")
+                failed_batches = 1
+                # Return partial results with error info rather than complete failure
+                products = []
+
+        # Prepare response with enhanced metadata
         response_data = {
-            'results': results,
-            'total': len(results),
-            'timestamp': datetime.utcnow().isoformat(),
-            'success': True,
-            'mapper_info': {
-                'total_mapped_fields': len(mapper.get_all_canonical_fields()),
-                'mapped_fields': mapper.get_all_canonical_fields(),
-                'version': 'enhanced_v3_with_dispersal'  # Updated version
-            }
+            'products': products,
+            'pagination': {
+                'total': total_available,
+                'limit': limit,
+                'offset': offset,
+                'returned': len(products),
+                'has_more': (offset + limit) < total_available
+            },
+            'batch_info': {
+                'batch_size': BATCH_SIZE,
+                'total_batches': batch_count,
+                'failed_batches': failed_batches,
+                'requested_skus': len(paginated_skus)
+            },
+            'filters': {
+                'properties': properties,
+                'channel_id': channel_id,
+                'locale_id': locale_id,
+                'context_identifier': context_identifier
+            },
+            'success': failed_batches == 0
         }
         
-        logger.info(f"📤 Returning {len(results)} enhanced comparison results")
-        return jsonify(response_data)
+        # Add warnings if applicable
+        if failed_batches > 0:
+            response_data['warnings'] = [f"{failed_batches} batch(es) failed to process"]
         
+        if len(products) < len(paginated_skus):
+            missing_count = len(paginated_skus) - len(products)
+            response_data['warnings'] = response_data.get('warnings', [])
+            response_data['warnings'].append(f"{missing_count} SKUs returned no data")
+
+        return jsonify(response_data)
+
     except Exception as e:
-        logger.error(f"💥 Error in compare_products: {str(e)}", exc_info=True)
+        logger.exception("Fatal error in get_pimly_products")
         return jsonify({
             "error": str(e),
-            "success": False,
+            "type": "server_error",
             "timestamp": datetime.utcnow().isoformat()
         }), 500
-    
-# Add this new utility route for field mapping diagnostics:
 
-@main.route('/api/mapper/diagnose/<sku>', methods=['GET'])
-def diagnose_field_mapping(sku):
-    """Diagnose field mapping for a specific SKU to help with troubleshooting"""
+
+@main.route("/api/pimly/products/batch", methods=["POST", "OPTIONS"])
+def get_pimly_products_batch():
+    """Get specific products by providing a list of SKUs in the request body."""
+    if request.method == "OPTIONS":
+        return '', 200
+
     try:
-        mapper = ProductMapper()
+        sf_client = get_authenticated_sf_client()
+        pimly_client = PimlyClient(sf_client)
         
-        # Get both data sources
-        salesforce_data = None
-        try:
-            sf_client = get_authenticated_sf_client()
-            pimly_client = PimlyClient(sf_client)
-            salesforce_data = pimly_client.get_product_by_sku(sku)
-        except Exception as e:
-            logger.warning(f"Could not fetch Salesforce data: {str(e)}")
-        
-        krowne_data = None
-        try:
-            krowne_scraper = KrowneScraper()
-            krowne_data = asyncio.run(krowne_scraper.get_product_by_sku(sku))
-        except Exception as e:
-            logger.warning(f"Could not fetch Krowne data: {str(e)}")
-        
-        # Extract available properties from both sources
-        diagnosis = {
-            'sku': sku,
-            'timestamp': datetime.utcnow().isoformat(),
-            'salesforce': {
-                'available': salesforce_data is not None,
-                'direct_fields': list(salesforce_data.keys()) if salesforce_data else [],
-                'properties': []
-            },
-            'krowne': {
-                'available': krowne_data is not None,
-                'direct_fields': list(krowne_data.keys()) if krowne_data else [],
-                'properties': []
-            },
-            'mapping_analysis': []
-        }
-        
-        # Extract Salesforce properties
-        if salesforce_data and 'properties' in salesforce_data:
-            sf_props = salesforce_data.get('properties', [])
-            for prop in sf_props:
-                diagnosis['salesforce']['properties'].append({
-                    'propertyName': prop.get('propertyName', ''),
-                    'propertyAdminName': prop.get('propertyAdminName', ''),
-                    'value': prop.get('value', '')
-                })
-        
-        # Extract Krowne properties
-        if krowne_data and 'properties' in krowne_data:
-            krowne_props = krowne_data.get('properties', [])
-            for prop in krowne_props:
-                diagnosis['krowne']['properties'].append({
-                    'propertyName': prop.get('propertyName', ''),
-                    'propertyAdminName': prop.get('propertyAdminName', ''),
-                    'value': prop.get('value', '')
-                })
-        
-        # Analyze each mapping
-        for field_name, mapping in mapper.field_mappings.items():
-            sf_value = mapper.extract_salesforce_value(salesforce_data or {}, field_name)
-            krowne_value = mapper.extract_krowne_value(krowne_data or {}, field_name)
-            
-            analysis = {
-                'canonical_name': field_name,
-                'description': mapping.description,
-                'field_type': mapping.field_type,
-                'salesforce_names': mapping.salesforce_names,
-                'krowne_names': mapping.krowne_names,
-                'krowne_cms_names': mapping.krowne_cms_names,
-                'salesforce_value': sf_value,
-                'krowne_value': krowne_value,
-                'has_salesforce_data': sf_value is not None,
-                'has_krowne_data': krowne_value is not None,
-                'values_match': sf_value == krowne_value if sf_value is not None and krowne_value is not None else None
-            }
-            
-            diagnosis['mapping_analysis'].append(analysis)
-        
-        return jsonify(diagnosis)
-        
-    except Exception as e:
-        logger.error(f"Error in field mapping diagnosis: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
-
-# Add this route to test specific field extractions:
-
-@main.route('/api/mapper/test-extraction', methods=['POST'])
-def test_field_extraction():
-    """Test field extraction with sample data"""
-    try:
         data = request.get_json()
-        test_data = data.get('test_data', {})
-        field_name = data.get('field_name')
-        source_type = data.get('source_type', 'krowne')  # 'salesforce' or 'krowne'
+        if not data or 'skus' not in data:
+            return jsonify({"error": "Request must include 'skus' array"}), 400
         
-        mapper = ProductMapper()
+        skus = data.get('skus', [])
+        if not isinstance(skus, list):
+            return jsonify({"error": "'skus' must be an array"}), 400
         
-        if source_type == 'salesforce':
-            extracted_value = mapper.extract_salesforce_value(test_data, field_name)
-        else:
-            extracted_value = mapper.extract_krowne_value(test_data, field_name)
-        
-        mapping_info = mapper.get_mapping_info(field_name)
-        
-        result = {
-            'field_name': field_name,
-            'source_type': source_type,
-            'extracted_value': extracted_value,
-            'mapping_info': {
-                'description': mapping_info.description if mapping_info else None,
-                'field_type': mapping_info.field_type if mapping_info else None,
-                'salesforce_names': mapping_info.salesforce_names if mapping_info else [],
-                'krowne_names': mapping_info.krowne_names if mapping_info else [],
-                'krowne_cms_names': mapping_info.krowne_cms_names if mapping_info else []
-            },
-            'test_data_structure': {
-                'top_level_keys': list(test_data.keys()) if isinstance(test_data, dict) else None,
-                'has_properties': 'properties' in test_data if isinstance(test_data, dict) else False,
-                'properties_count': len(test_data.get('properties', [])) if isinstance(test_data, dict) and 'properties' in test_data else 0
-            }
-        }
-        
-        return jsonify(result)
-        
-    except Exception as e:
-        logger.error(f"Error in test field extraction: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        if len(skus) > MAX_PRODUCTS_PER_REQUEST:
+            return jsonify({
+                "error": f"Too many SKUs requested. Maximum: {MAX_PRODUCTS_PER_REQUEST}"
+            }), 400
 
+        # Optional parameters
+        properties = data.get('properties')
+        channel_id = data.get('channel_id', 'global')
+        locale_id = data.get('locale_id', 'global')
+        context_identifier = data.get('context_identifier')
 
-# Enhanced version of the existing scraper route with better property handling:
+        logger.info(f"Batch request for {len(skus)} specific SKUs")
 
-@main.route('/api/krowne/scrape-product-enhanced/<sku>', methods=['GET'])
-def scrape_krowne_product_enhanced(sku):
-    """Enhanced version of Krowne scraper with property dispersal"""
-    try:
-        scraper = KrowneScraper()
-        raw_data = asyncio.run(scraper.get_product_by_sku(sku))
-
-        if not raw_data:
-            logger.warning(f"Krowne product not found for SKU: {sku}")
-            return jsonify({'success': False, 'error': 'Product not found'}), 404
-
-        logger.info(f"Krowne product scraped successfully for SKU: {sku}")
-
-        # Initialize PropertyExtractor for enhanced property handling
-        property_extractor = KrownePropertyExtractor()
-        
-        # Apply property extraction and dispersal
-        enhanced_data = property_extractor.extract_and_disperse_properties(raw_data)
-        
-        # Get dispersal report
-        dispersal_report = property_extractor.get_dispersal_report(raw_data, enhanced_data)
-        
-        # Initialize ProductMapper for validation
-        mapper = ProductMapper()
-        
-        # Test extraction of key fields for diagnostics
-        diagnostics = {
-            "total_properties_original": dispersal_report['original_properties_count'],
-            "total_properties_remaining": dispersal_report['remaining_properties_count'],
-            "dispersed_fields_count": dispersal_report['dispersed_fields_count'],
-            "dispersed_fields": dispersal_report['dispersed_fields'],
-            "mapper_field_count": len(mapper.get_all_canonical_fields()),
-            "extraction_test_results": {}
-        }
-
-        # Test extraction of key fields from the enhanced data
-        test_fields = ["product_name", "list_price", "weight", "length", "height", 
-                      "features", "series", "mounting_style", "flow_rate", "centers"]
-        
-        for field in test_fields:
-            extracted_value = mapper.extract_krowne_value(enhanced_data, field)
-            diagnostics["extraction_test_results"][field] = {
-                "extracted_value": extracted_value,
-                "has_value": extracted_value is not None,
-                "direct_field": enhanced_data.get(field),  # Check if it's a direct field now
-                "pimly_mapped": enhanced_data.get(property_extractor.krowne_to_pimly_mapping.get(field))
-            }
-
-        return jsonify({
-            'success': True, 
-            'product': enhanced_data,
-            'diagnostics': diagnostics,
-            'dispersal_report': dispersal_report
-        })
-
-    except Exception as e:
-        logger.error(f"Enhanced Krowne scraping error for SKU {sku}: {str(e)}", exc_info=True)
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-# Add route to get mapping statistics:
-
-@main.route('/api/mapper/statistics', methods=['GET'])
-def get_mapper_statistics():
-    """Get statistics about the field mappings"""
-    try:
-        mapper = ProductMapper()
-        
-        # Count mappings by category
-        field_types = {}
-        salesforce_coverage = 0
-        krowne_coverage = 0
-        krowne_cms_coverage = 0
-        
-        for field_name, mapping in mapper.field_mappings.items():
-            # Count by field type
-            if mapping.field_type not in field_types:
-                field_types[mapping.field_type] = 0
-            field_types[mapping.field_type] += 1
-            
-            # Count coverage
-            if mapping.salesforce_names:
-                salesforce_coverage += 1
-            if mapping.krowne_names:
-                krowne_coverage += 1
-            if mapping.krowne_cms_names:
-                krowne_cms_coverage += 1
-        
-        statistics = {
-            'total_mapped_fields': len(mapper.field_mappings),
-            'field_types': field_types,
-            'coverage': {
-                'salesforce': salesforce_coverage,
-                'krowne_website': krowne_coverage,
-                'krowne_cms': krowne_cms_coverage
-            },
-            'coverage_percentages': {
-                'salesforce': round(salesforce_coverage / len(mapper.field_mappings) * 100, 1),
-                'krowne_website': round(krowne_coverage / len(mapper.field_mappings) * 100, 1),
-                'krowne_cms': round(krowne_cms_coverage / len(mapper.field_mappings) * 100, 1)
-            },
-            'timestamp': datetime.utcnow().isoformat()
-        }
-        
-        return jsonify(statistics)
-        
-    except Exception as e:
-        logger.error(f"Error getting mapper statistics: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
-
-# Add route to validate property name matching:
-
-@main.route('/api/mapper/validate-property-names', methods=['POST'])
-def validate_property_names():
-    """Validate how property names match against our mappings"""
-    try:
-        data = request.get_json()
-        property_names = data.get('property_names', [])
-        
-        mapper = ProductMapper()
-        validation_results = []
-        
-        for prop_name in property_names:
-            matches = []
-            
-            # Check which canonical fields this property name might match
-            for field_name, mapping in mapper.field_mappings.items():
-                # Check against all name variations
-                all_names = (mapping.salesforce_names + 
-                           mapping.krowne_names + 
-                           mapping.krowne_cms_names)
-                
-                for mapped_name in all_names:
-                    if mapper._property_name_matches(prop_name, mapped_name):
-                        matches.append({
-                            'canonical_field': field_name,
-                            'matched_name': mapped_name,
-                            'field_type': mapping.field_type,
-                            'description': mapping.description
-                        })
-                        break  # Only count first match per canonical field
-            
-            validation_results.append({
-                'property_name': prop_name,
-                'matches': matches,
-                'match_count': len(matches),
-                'has_matches': len(matches) > 0
-            })
-        
-        summary = {
-            'total_properties': len(property_names),
-            'properties_with_matches': len([r for r in validation_results if r['has_matches']]),
-            'properties_without_matches': len([r for r in validation_results if not r['has_matches']]),
-            'total_matches': sum(r['match_count'] for r in validation_results)
-        }
-        
-        return jsonify({
-            'validation_results': validation_results,
-            'summary': summary,
-            'timestamp': datetime.utcnow().isoformat()
-        })
-        
-    except Exception as e:
-        logger.error(f"Error validating property names: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
-def determine_product_status(salesforce_data, krowne_data):
-    """Determine the status of a product based on available data"""
-    if salesforce_data and krowne_data:
-        return 'found_both'
-    elif salesforce_data and not krowne_data:
-        return 'missing_from_krowne'
-    elif not salesforce_data and krowne_data:
-        return 'missing_from_salesforce'
-    else:
-        return 'not_found'
-
-### Additional ProductMapper Utility Routes ###
-
-@main.route('/api/mapper/fields', methods=['GET'])
-def get_mapped_fields():
-    """Get all available mapped fields from ProductMapper"""
-    try:
-        mapper = ProductMapper()
-        fields_info = []
-        
-        for field_name in mapper.get_all_canonical_fields():
-            mapping = mapper.field_mappings[field_name]
-            fields_info.append({
-                'canonical_name': field_name,
-                'display_name': field_name.replace('_', ' ').title(),
-                'description': mapping.description,
-                'field_type': mapping.field_type,
-                'salesforce_names': mapping.salesforce_names,
-                'krowne_names': mapping.krowne_names
-            })
-        
-        return jsonify({
-            'fields': fields_info,
-            'total_fields': len(fields_info)
-        })
-        
-    except Exception as e:
-        logger.error(f"Error getting mapped fields: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
-@main.route('/api/mapper/compare-detailed/<sku>', methods=['GET'])
-def get_detailed_comparison(sku):
-    """Get detailed field-by-field comparison for a single SKU"""
-    try:
-        # Get both data sources
-        salesforce_data = None
-        try:
-            sf_client = get_authenticated_sf_client()
-            pimly_client = PimlyClient(sf_client)
-            salesforce_data = pimly_client.get_product_by_sku(sku)
-        except Exception as e:
-            logger.warning(f"Could not fetch Salesforce data: {str(e)}")
-        
-        krowne_data = None
-        try:
-            krowne_scraper = KrowneScraper()
-            krowne_data = asyncio.run(krowne_scraper.get_product_by_sku(sku))
-        except Exception as e:
-            logger.warning(f"Could not fetch Krowne data: {str(e)}")
-        
-        # Use ProductMapper for detailed comparison
-        mapper = ProductMapper()
-        comparison_results = mapper.compare_products(
-            salesforce_data or {},
-            krowne_data or {}
+        # Use enhanced client
+        products = pimly_client.get_products_by_ids(
+            ids=skus,
+            properties=properties,
+            context_identifier=context_identifier,
+            channel_id=channel_id,
+            locale_id=locale_id,
+            max_batch_size=BATCH_SIZE
         )
-        
-        # Organize results by category
-        detailed_results = {
-            'sku': sku,
-            'salesforce_available': salesforce_data is not None,
-            'krowne_available': krowne_data is not None,
-            'comparison_summary': {
-                'total_fields': len(comparison_results),
-                'matches': len([r for r in comparison_results if r.is_match]),
-                'mismatches': len([r for r in comparison_results if r.is_mismatch]),
-                'partial_data': len([r for r in comparison_results if r.has_partial_data]),
-                'no_data': len([r for r in comparison_results if not r.salesforce_value and not r.krowne_value])
-            },
-            'field_comparisons': []
-        }
-        
-        for result in comparison_results:
-            detailed_results['field_comparisons'].append({
-                'field_name': result.field_name,
-                'display_name': result.field_name.replace('_', ' ').title(),
-                'description': mapper.get_field_description(result.field_name),
-                'field_type': mapper.field_mappings[result.field_name].field_type,
-                'salesforce_value': result.salesforce_value,
-                'krowne_value': result.krowne_value,
-                'normalized_sf': mapper.normalize_value(result.salesforce_value, mapper.field_mappings[result.field_name].field_type),
-                'normalized_krowne': mapper.normalize_value(result.krowne_value, mapper.field_mappings[result.field_name].field_type),
-                'is_match': result.is_match,
-                'is_mismatch': result.is_mismatch,
-                'has_partial_data': result.has_partial_data,
-                'notes': result.notes
-            })
-        
-        return jsonify(detailed_results)
-        
+
+        return jsonify({
+            'products': products,
+            'requested': len(skus),
+            'returned': len(products),
+            'success': True,
+            'batch_info': {
+                'batch_size': BATCH_SIZE,
+                'total_batches': math.ceil(len(skus) / BATCH_SIZE)
+            }
+        })
+
     except Exception as e:
-        logger.error(f"Error in detailed comparison: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        logger.exception("Error in batch SKU request")
+        return jsonify({"error": str(e)}), 500
+
+
+@main.route("/api/pimly/products/validate", methods=["GET", "OPTIONS"])
+def validate_pimly_connection():
+    """Validate connection to Pimly API"""
+    if request.method == "OPTIONS":
+        return '', 200
+
+    try:
+        sf_client = get_authenticated_sf_client()
+        pimly_client = PimlyClient(sf_client)
+        
+        is_valid = pimly_client.validate_connection()
+        
+        return jsonify({
+            'valid': is_valid,
+            'message': 'Connection successful' if is_valid else 'Connection failed',
+            'salesforce_instance': sf_client.instance_url,
+            'timestamp': datetime.utcnow().isoformat()
+        })
+
+    except Exception as e:
+        logger.exception("Error validating Pimly connection")
+        return jsonify({
+            'valid': False,
+            'error': str(e),
+            'timestamp': datetime.utcnow().isoformat()
+        }), 500
+
+
+@main.route("/api/pimly/products/properties", methods=["POST", "OPTIONS"])
+def get_products_with_properties():
+    """Get products with specific Pimly properties for a given channel/locale context"""
+    if request.method == "OPTIONS":
+        return '', 200
+
+    try:
+        sf_client = get_authenticated_sf_client()
+        pimly_client = PimlyClient(sf_client)
+        
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Request body required"}), 400
+        
+        skus = data.get('skus', [])
+        properties = data.get('properties', [])
+        channel_id = data.get('channel_id', 'global')
+        locale_id = data.get('locale_id', 'global')
+        
+        if not skus:
+            return jsonify({"error": "SKUs list is required"}), 400
+        if not properties:
+            return jsonify({"error": "Properties list is required"}), 400
+
+        logger.info(f"Getting {len(properties)} properties for {len(skus)} products in channel '{channel_id}'")
+
+        products = pimly_client.get_products_with_specific_properties(
+            ids=skus,
+            property_names=properties,
+            channel_id=channel_id,
+            locale_id=locale_id
+        )
+
+        return jsonify({
+            'products': products,
+            'requested_skus': len(skus),
+            'requested_properties': properties,
+            'returned_products': len(products),
+            'context': {
+                'channel_id': channel_id,
+                'locale_id': locale_id
+            },
+            'success': True
+        })
+
+    except Exception as e:
+        logger.exception("Error getting products with properties")
+        return jsonify({"error": str(e)}), 500
+@main.route("/api/products/<sku>", methods=["GET", "OPTIONS"])
+def get_product_by_sku(sku):
+    if request.method == "OPTIONS":
+        return '', 200
+    try:
+        sf_client = get_authenticated_sf_client()
+        pimly_client = PimlyClient(sf_client)
+        product = pimly_client.get_product_by_sku(sku)
+        return jsonify(product)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+### Krowne CMS Product Routes ###
+
+
+### Mapper Router ###
+
+@main.route("/api/products/map/<sku>", methods=["GET"])
+def map_product_data(sku):
+   try:
+       # Get raw data from Pimly
+       sf_client = get_authenticated_sf_client()
+       pimly_client = PimlyClient(sf_client)
+       raw_pimly_data = pimly_client.get_product_by_sku(sku)
+       
+       # Get raw data from Krowne (if available)
+       # krowne_data = krowne_scraper.get_product_data(sku)
+       
+       # Map the data
+       mapper = ProductDataMapper()
+       mapped_data = mapper.process_json_data(raw_pimly_data, source_type="pimly")
+       
+       return jsonify({
+           'sku': sku,
+           'mapped_data': mapper.export_mapping(mapped_data, format="dict"),
+           'success': True
+       })
+       
+   except Exception as e:
+       logger.exception(f"Error mapping product data for SKU {sku}")
+       return jsonify({"error": str(e)}), 500
+
+@main.route("/api/products/map/batch", methods=["POST"])
+def map_batch_products():
+   """Map multiple products at once"""
+   try:
+       data = request.get_json()
+       skus = data.get('skus', [])
+       
+       if not skus:
+           return jsonify({"error": "SKUs list is required"}), 400
+       
+       sf_client = get_authenticated_sf_client()
+       pimly_client = PimlyClient(sf_client)
+       mapper = ProductDataMapper()
+       
+       # Get batch data from Pimly
+       raw_products = pimly_client.get_products_by_ids(skus)
+       
+       mapped_products = []
+       for product in raw_products:
+           try:
+               mapped_data = mapper.process_json_data(product, source_type="pimly")
+               mapped_products.append({
+                   'sku': mapped_data.sku,
+                   'mapped_data': mapper.export_mapping(mapped_data, format="dict")
+               })
+           except Exception as e:
+               logger.error(f"Error mapping product {product.get('SKU', 'unknown')}: {e}")
+               continue
+       
+       return jsonify({
+           'products': mapped_products,
+           'requested': len(skus),
+           'mapped': len(mapped_products),
+           'success': True
+       })
+       
+   except Exception as e:
+       logger.exception("Error in batch product mapping")
+       return jsonify({"error": str(e)}), 500
+
+
+### Comparison Endpoints ###
+
+@main.route("/api/compare", methods=["POST", "OPTIONS"])
+def compare_mapped_products():
+    """
+    Compare products using the new mapped data comparison system
+    Supports single SKU, multiple SKUs, or direct data comparison
+    """
+    if request.method == "OPTIONS":
+        return '', 200
+
+    try:
+        sf_client = get_authenticated_sf_client()
+        pimly_client = PimlyClient(sf_client)
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({"error": "Request body required"}), 400
+
+        results = []
+        mapper_info = {
+            "version": "2.0",
+            "timestamp": datetime.utcnow().isoformat(),
+            "comparison_type": "mapped_data",
+            "categories_supported": [
+                "basic_info", "features", "specifications", 
+                "certifications", "media", "files", "related_items"
+            ]
+        }
+
+        # Handle different request types
+        if 'sku' in data:
+            # Single SKU comparison
+            sku = data['sku']
+            comparison = _compare_single_product_mapped(sku, pimly_client)  # NO await
+            if comparison:
+                results.append(comparison)
+                
+        elif 'skus' in data:
+            # Multiple SKU comparison
+            skus = data['skus']
+            if not isinstance(skus, list):
+                return jsonify({"error": "'skus' must be an array"}), 400
+            
+            if len(skus) > MAX_PRODUCTS_PER_REQUEST:
+                return jsonify({
+                    "error": f"Too many SKUs. Maximum: {MAX_PRODUCTS_PER_REQUEST}"
+                }), 400
+
+            for sku in skus:
+                comparison = _compare_single_product_mapped(sku, pimly_client)  # NO await
+                if comparison:
+                    results.append(comparison)
+                    
+        elif 'direct_comparison' in data:
+            # Direct data comparison (for when you already have the data)
+            comparison_data = data['direct_comparison']
+            pimly_data = comparison_data.get('pimly_data')
+            krowne_data = comparison_data.get('krowne_data')
+            sku = comparison_data.get('sku', 'unknown')
+            
+            product_comparison = mapped_comparator.compare_products(
+                pimly_data=pimly_data,
+                krowne_data=krowne_data,
+                sku=sku
+            )
+            
+            comparison_result = _format_comparison_result(product_comparison)
+            results.append(comparison_result)
+            
+        else:
+            return jsonify({
+                "error": "Request must include 'sku', 'skus', or 'direct_comparison'"
+            }), 400
+
+        return jsonify({
+            'results': results,
+            'total': len(results),
+            'success': True,
+            'mapper_info': mapper_info,
+            'timestamp': datetime.utcnow().isoformat()
+        })
+
+    except Exception as e:
+        logger.exception("Error in mapped product comparison")
+        return jsonify({
+            "error": str(e),
+            "type": "comparison_error",
+            "timestamp": datetime.utcnow().isoformat()
+        }), 500
+
+
+
+@main.route("/api/compare/detailed/<sku>", methods=["GET", "OPTIONS"])
+def get_detailed_mapped_comparison(sku):
+    """Get detailed field-by-field comparison for a single product"""
+    if request.method == "OPTIONS":
+        return '', 200
+
+    try:
+        sf_client = get_authenticated_sf_client()
+        pimly_client = PimlyClient(sf_client)
+        
+        logger.info(f"Getting detailed mapped comparison for SKU: {sku}")
+        
+        # Get Pimly data
+        pimly_data = None
+        try:
+            pimly_products = pimly_client.get_products_by_ids([sku])
+            if pimly_products:
+                pimly_data = pimly_products[0]
+                logger.info(f"Retrieved Pimly data for {sku}")
+        except Exception as e:
+            logger.warning(f"Could not get Pimly data for {sku}: {e}")
+
+        # Get Krowne data (if scraper is available)
+        krowne_data = None
+        try:
+            # Note: You'll need to implement or integrate your Krowne scraper here
+            # krowne_scraper = KrowneScraper()
+            # krowne_data = krowne_scraper.scrape_product(sku)
+            logger.info(f"Krowne scraping not yet implemented for {sku}")
+        except Exception as e:
+            logger.warning(f"Could not get Krowne data for {sku}: {e}")
+
+        # Perform detailed comparison
+        product_comparison = mapped_comparator.compare_products(
+            pimly_data=pimly_data,
+            krowne_data=krowne_data,
+            sku=sku
+        )
+
+        # Format for detailed response
+        detailed_result = {
+            'sku': sku,
+            'comparison_summary': {
+                'matches': product_comparison.summary.matches,
+                'mismatches': product_comparison.summary.mismatches,
+                'partial_data': product_comparison.summary.partial_data,
+                'total_fields': product_comparison.summary.total_fields_compared,
+                'overall_match_percentage': product_comparison.summary.overall_match_percentage,
+                'categories_compared': product_comparison.summary.categories_compared
+            },
+            'field_comparisons': [
+                {
+                    'field_name': fc.field_name,
+                    'display_name': fc.display_name,
+                    'category': fc.category,
+                    'salesforce_value': fc.pimly_value,  # For frontend compatibility
+                    'krowne_value': fc.krowne_value,
+                    'is_match': fc.is_match,
+                    'is_mismatch': fc.is_mismatch,
+                    'has_partial_data': fc.has_partial_data,
+                    'field_type': fc.field_type,
+                    'confidence_score': fc.confidence_score,
+                    'notes': fc.notes,
+                    'description': fc.description
+                }
+                for fc in product_comparison.field_comparisons
+            ],
+            'mapped_data': {
+                'pimly': mapped_comparator.mapper.export_mapping(product_comparison.pimly_mapping, format="dict") if product_comparison.pimly_mapping else None,
+                'krowne': mapped_comparator.mapper.export_mapping(product_comparison.krowne_mapping, format="dict") if product_comparison.krowne_mapping else None
+            },
+            'status': product_comparison.status,
+            'errors': product_comparison.errors,
+            'timestamp': product_comparison.summary.comparison_timestamp
+        }
+
+        return jsonify(detailed_result)
+
+    except Exception as e:
+        logger.exception(f"Error getting detailed comparison for {sku}")
+        return jsonify({
+            "error": str(e),
+            "sku": sku,
+            "timestamp": datetime.utcnow().isoformat()
+        }), 500
+
+
+@main.route("/api/compare/batch", methods=["POST", "OPTIONS"])
+def compare_batch_mapped():
+    """Compare multiple products with full data retrieval"""
+    if request.method == "OPTIONS":
+        return '', 200
+
+    try:
+        sf_client = get_authenticated_sf_client()
+        pimly_client = PimlyClient(sf_client)
+        data = request.get_json()
+        
+        if not data or 'skus' not in data:
+            return jsonify({"error": "Request must include 'skus' array"}), 400
+
+        skus = data['skus']
+        if not isinstance(skus, list):
+            return jsonify({"error": "'skus' must be an array"}), 400
+
+        if len(skus) > MAX_PRODUCTS_PER_REQUEST:
+            return jsonify({
+                "error": f"Too many SKUs. Maximum: {MAX_PRODUCTS_PER_REQUEST}"
+            }), 400
+
+        logger.info(f"Starting batch mapped comparison for {len(skus)} SKUs")
+
+        # Get all Pimly data in batch
+        pimly_products = {}
+        try:
+            pimly_data_list = pimly_client.get_products_by_ids(skus)
+            for product in pimly_data_list:
+                # Extract SKU from product data
+                product_sku = (product.get('pimly__SKU__c') or 
+                             product.get('ProductCode') or 
+                             product.get('Name'))
+                if product_sku:
+                    pimly_products[product_sku] = product
+            logger.info(f"Retrieved Pimly data for {len(pimly_products)} products")
+        except Exception as e:
+            logger.error(f"Error retrieving Pimly batch data: {e}")
+
+        # Process each SKU
+        results = []
+        successful_comparisons = 0
+        failed_comparisons = 0
+
+        for sku in skus:
+            try:
+                pimly_data = pimly_products.get(sku)
+                krowne_data = None  # TODO: Implement batch Krowne scraping
+
+                # Perform comparison
+                product_comparison = mapped_comparator.compare_products(
+                    pimly_data=pimly_data,
+                    krowne_data=krowne_data,
+                    sku=sku
+                )
+
+                comparison_result = _format_comparison_result(product_comparison)
+                results.append(comparison_result)
+                successful_comparisons += 1
+
+            except Exception as e:
+                logger.error(f"Error comparing SKU {sku}: {e}")
+                # Add error result
+                results.append({
+                    'sku': sku,
+                    'error': str(e),
+                    'status': 'error',
+                    'salesforce': None,
+                    'krowne': None,
+                    'comparison': {
+                        'mismatches': [],
+                        'matches': [],
+                        'partial_data': [],
+                        'total_fields_compared': 0
+                    }
+                })
+                failed_comparisons += 1
+
+        logger.info(f"Batch comparison completed: {successful_comparisons} successful, {failed_comparisons} failed")
+
+        return jsonify({
+            'results': results,
+            'total': len(results),
+            'successful': successful_comparisons,
+            'failed': failed_comparisons,
+            'success': failed_comparisons == 0,
+            'batch_info': {
+                'requested_skus': len(skus),
+                'processed_skus': len(results),
+                'pimly_data_found': len(pimly_products)
+            },
+            'mapper_info': {
+                "version": "2.0",
+                "comparison_type": "mapped_data_batch",
+                "timestamp": datetime.utcnow().isoformat()
+            },
+            'timestamp': datetime.utcnow().isoformat()
+        })
+
+    except Exception as e:
+        logger.exception("Error in batch mapped comparison")
+        return jsonify({
+            "error": str(e),
+            "type": "batch_comparison_error",
+            "timestamp": datetime.utcnow().isoformat()
+        }), 500
+
+
+@main.route("/api/compare/categories", methods=["GET", "OPTIONS"])
+def get_comparison_categories():
+    """Get available comparison categories and field types"""
+    if request.method == "OPTIONS":
+        return '', 200
+
+    try:
+        categories = {
+            "basic_info": {
+                "description": "Core product information",
+                "fields": ["name", "sku", "series"],
+                "field_types": ["text"]
+            },
+            "features": {
+                "description": "Product features and capabilities",
+                "fields": ["features"],
+                "field_types": ["list"]
+            },
+            "specifications": {
+                "description": "Technical specifications and measurements",
+                "fields": ["dimensions", "performance", "electrical", "mechanical"],
+                "field_types": ["text", "number", "price"]
+            },
+            "certifications": {
+                "description": "Industry certifications and compliance",
+                "fields": ["NSF", "UL", "ETL", "CSA", "ASSE", "IAPMO"],
+                "field_types": ["boolean"]
+            },
+            "media": {
+                "description": "Images and visual content",
+                "fields": ["images"],
+                "field_types": ["list", "url"]
+            },
+            "files": {
+                "description": "Documentation and downloads",
+                "fields": ["spec_sheets", "manuals", "sell_sheets", "brochures", "videos"],
+                "field_types": ["list", "url"]
+            },
+            "related_items": {
+                "description": "Related products and accessories",
+                "fields": ["related_products", "parts_accessories"],
+                "field_types": ["list"]
+            }
+        }
+
+        field_types = {
+            "text": "Text/string values",
+            "number": "Numeric values with tolerance comparison", 
+            "price": "Price values with currency normalization",
+            "boolean": "True/false values",
+            "list": "Arrays/lists with set comparison",
+            "url": "URL/link values"
+        }
+
+        return jsonify({
+            'categories': categories,
+            'field_types': field_types,
+            'mapper_version': "2.0",
+            'timestamp': datetime.utcnow().isoformat()
+        })
+
+    except Exception as e:
+        logger.exception("Error getting comparison categories")
+        return jsonify({"error": str(e)}), 500
+
+
+@main.route("/api/compare/stats", methods=["GET", "OPTIONS"])
+def get_comparison_stats():
+    """Get statistics about comparison capabilities"""
+    if request.method == "OPTIONS":
+        return '', 200
+
+    try:
+        # Get known SKUs count
+        known_skus = extract_known_ids_from_csv() or []
+        
+        stats = {
+            "available_skus": len(known_skus),
+            "supported_categories": 7,
+            "supported_field_types": 6,
+            "comparison_features": {
+                "fuzzy_text_matching": True,
+                "price_tolerance": True,
+                "numeric_tolerance": True,
+                "list_set_comparison": True,
+                "confidence_scoring": True,
+                "batch_processing": True
+            },
+            "max_batch_size": MAX_PRODUCTS_PER_REQUEST,
+            "api_version": "2.0",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+
+        return jsonify(stats)
+
+    except Exception as e:
+        logger.exception("Error getting comparison stats")
+        return jsonify({"error": str(e)}), 500
+
+
+### Helper Functions - Fixed to be synchronous ###
+
+def _compare_single_product_mapped(sku: str, pimly_client: PimlyClient) -> Optional[Dict[str, Any]]:
+    """Compare a single product using the mapped data system"""
+    try:
+        logger.info(f"Starting mapped comparison for SKU: {sku}")
+        
+        # Get Pimly data
+        pimly_data = None
+        try:
+            pimly_products = pimly_client.get_products_by_ids([sku])
+            if pimly_products:
+                pimly_data = pimly_products[0]
+                logger.info(f"Retrieved Pimly data for {sku}")
+        except Exception as e:
+            logger.warning(f"Could not get Pimly data for {sku}: {e}")
+
+        # Get Krowne data (placeholder for now)
+        krowne_data = None
+        # TODO: Implement Krowne scraping integration
+        try:
+            # When you're ready to add Krowne scraping:
+            # krowne_scraper = KrowneScraper()
+            # krowne_data = krowne_scraper.scrape_product(sku)
+            logger.debug(f"Krowne scraping not yet implemented for {sku}")
+        except Exception as e:
+            logger.warning(f"Could not get Krowne data for {sku}: {e}")
+
+        # Perform comparison
+        product_comparison = mapped_comparator.compare_products(
+            pimly_data=pimly_data,
+            krowne_data=krowne_data,
+            sku=sku
+        )
+
+        return _format_comparison_result(product_comparison)
+
+    except Exception as e:
+        logger.error(f"Error in mapped comparison for {sku}: {e}")
+        return None
+
+
+def _format_comparison_result(product_comparison) -> Dict[str, Any]:
+    """Format ProductComparison object for API response"""
+    return {
+        'sku': product_comparison.sku,
+        'salesforce': mapped_comparator.mapper.export_mapping(product_comparison.pimly_mapping, format="dict") if product_comparison.pimly_mapping else None,
+        'krowne': mapped_comparator.mapper.export_mapping(product_comparison.krowne_mapping, format="dict") if product_comparison.krowne_mapping else None,
+        'comparison': {
+            'mismatches': [
+                {
+                    'field': fc.field_name,
+                    'display_name': fc.display_name,
+                    'category': fc.category,
+                    'pimly': fc.pimly_value,
+                    'krowne': fc.krowne_value,
+                    'confidence': fc.confidence_score,
+                    'notes': fc.notes
+                }
+                for fc in product_comparison.field_comparisons if fc.is_mismatch
+            ],
+            'matches': [
+                {
+                    'field': fc.field_name,
+                    'display_name': fc.display_name,
+                    'category': fc.category,
+                    'value': fc.pimly_value or fc.krowne_value,
+                    'confidence': fc.confidence_score
+                }
+                for fc in product_comparison.field_comparisons if fc.is_match
+            ],
+            'partial_data': [
+                {
+                    'field': fc.field_name,
+                    'display_name': fc.display_name,
+                    'category': fc.category,
+                    'pimly': fc.pimly_value,
+                    'krowne': fc.krowne_value,
+                    'notes': fc.notes
+                }
+                for fc in product_comparison.field_comparisons if fc.has_partial_data
+            ],
+            'total_fields_compared': product_comparison.summary.total_fields_compared,
+            'mismatch_count': product_comparison.summary.mismatches,
+            'match_count': product_comparison.summary.matches,
+            'partial_data_count': product_comparison.summary.partial_data,
+            'overall_match_percentage': product_comparison.summary.overall_match_percentage,
+            'categories_compared': product_comparison.summary.categories_compared
+        },
+        'status': product_comparison.status,
+        'errors': product_comparison.errors,
+        'timestamp': product_comparison.summary.comparison_timestamp,
+        # Additional fields for backward compatibility
+        'name': product_comparison.pimly_mapping.name if product_comparison.pimly_mapping else (product_comparison.krowne_mapping.name if product_comparison.krowne_mapping else None),
+        'mapped_data': {
+            'pimly': mapped_comparator.mapper.export_mapping(product_comparison.pimly_mapping, format="dict") if product_comparison.pimly_mapping else None,
+            'krowne': mapped_comparator.mapper.export_mapping(product_comparison.krowne_mapping, format="dict") if product_comparison.krowne_mapping else None
+        }
+    }
+
 ### Misc and Utility Endpoints ###
 
 @main.route('/api/test-proxy', methods=['GET'])
@@ -1015,6 +1172,16 @@ def test_proxy():
 @main.route('/api/health', methods=['GET'])
 def health_check():
     return jsonify({'status': 'healthy', 'service': 'KrowneSync', 'salesforce_configured': bool(current_app.config.get('SALESFORCE_CLIENT_ID')), 'csv_processor': 'enhanced'})
+
+
+
+
+
+
+
+
+
+
 
 # Error handler
 @main.errorhandler(ValueError)
@@ -1029,178 +1196,3 @@ def handle_validation_error(e):
             'Try different validation level'
         ]
     }), 400
-
-
-
-# Add these debug routes to your routes.py file (with correct imports)
-
-@main.route("/api/test-scraper/<sku>", methods=["GET"])
-def test_scraper(sku):
-    """Simple test to see what the scraper returns"""
-    try:
-        logger.info(f"Testing scraper for SKU: {sku}")
-        
-        scraper = KrowneScraper()
-        result = asyncio.run(scraper.get_product_by_sku(sku))
-        
-        return jsonify({
-            "sku": sku,
-            "scraper_result": result,
-            "result_type": str(type(result)),
-            "has_data": result is not None,
-            "result_keys": list(result.keys()) if result and isinstance(result, dict) else None
-        })
-        
-    except Exception as e:
-        logger.error(f"Scraper test error: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@main.route("/api/compare-debug", methods=["POST"])
-def compare_debug():
-    """Debug version of compare that shows raw response"""
-    try:
-        data = request.get_json()
-        logger.info(f"Debug compare request: {data}")
-        
-        # Your existing comparison logic here but with detailed logging
-        sku = data.get('sku') or data.get('search', 'kr-2000')  # Default to kr-2000
-        
-        # Test Salesforce
-        salesforce_data = None
-        try:
-            sf_client = get_authenticated_sf_client()
-            pimly_client = PimlyClient(sf_client)
-            salesforce_data = pimly_client.get_product_by_sku(sku)
-            logger.info(f"Salesforce data type: {type(salesforce_data)}")
-        except Exception as e:
-            logger.error(f"Salesforce error: {e}")
-        
-        # Test Krowne
-        krowne_data = None
-        try:
-            scraper = KrowneScraper()
-            krowne_data = asyncio.run(scraper.get_product_by_sku(sku))
-            logger.info(f"Krowne data type: {type(krowne_data)}")
-            logger.info(f"Krowne data keys: {list(krowne_data.keys()) if krowne_data else None}")
-        except Exception as e:
-            logger.error(f"Krowne error: {e}")
-        
-        # Return raw debug info
-        debug_response = {
-            "request_data": data,
-            "sku": sku,
-            "salesforce_data": salesforce_data,
-            "krowne_data": krowne_data,
-            "salesforce_type": str(type(salesforce_data)),
-            "krowne_type": str(type(krowne_data)),
-            "has_salesforce": salesforce_data is not None,
-            "has_krowne": krowne_data is not None
-        }
-        
-        logger.info(f"Debug response keys: {list(debug_response.keys())}")
-        
-        return jsonify(debug_response)
-        
-    except Exception as e:
-        logger.error(f"Debug compare error: {e}")
-        return jsonify({"error": str(e)}), 500
-
-
-@main.route('/api/krowne/test-property-dispersal/<sku>', methods=['GET'])
-def test_property_dispersal(sku):
-    """Test property dispersal for a specific SKU"""
-    try:
-        # Get raw data from scraper
-        scraper = KrowneScraper()
-        raw_data = asyncio.run(scraper.get_product_by_sku(sku))
-        
-        if not raw_data:
-            return jsonify({'error': 'Product not found'}), 404
-        
-        # Initialize extractor
-        property_extractor = KrownePropertyExtractor()
-        
-        # Get enhanced data
-        enhanced_data = property_extractor.extract_and_disperse_properties(raw_data)
-        
-        # Get detailed report
-        dispersal_report = property_extractor.get_dispersal_report(raw_data, enhanced_data)
-        
-        # Create comparison showing before and after
-        comparison = {
-            'sku': sku,
-            'before': {
-                'properties_count': len(raw_data.get('properties', [])),
-                'direct_fields': [k for k in raw_data.keys() if k != 'properties'],
-                'sample_properties': raw_data.get('properties', [])[:5]  # First 5 properties
-            },
-            'after': {
-                'properties_count': len(enhanced_data.get('properties', [])),
-                'direct_fields': [k for k in enhanced_data.keys() if k != 'properties'],
-                'new_fields': [k for k in enhanced_data.keys() if k not in raw_data],
-                'remaining_properties': enhanced_data.get('properties', [])
-            },
-            'dispersal_report': dispersal_report
-        }
-        
-        return jsonify(comparison)
-        
-    except Exception as e:
-        logger.error(f"Error testing property dispersal: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-    
-# Then update the compareRaw function to use the correct import:
-
-@main.route("/api/compare-raw/<sku>", methods=["GET"])
-def compare_raw(sku):
-    """See what the current compare endpoint returns for a single SKU"""
-    try:
-        logger.info(f"Raw compare test for SKU: {sku}")
-        
-        # Simulate what the frontend sends
-        fake_request_data = {"sku": sku}
-        
-        # Get Salesforce/Pimly data
-        salesforce_data = None
-        try:
-            sf_client = get_authenticated_sf_client()
-            pimly_client = PimlyClient(sf_client)
-            salesforce_data = pimly_client.get_product_by_sku(sku)
-        except Exception as e:
-            logger.warning(f"Could not fetch Salesforce data for {sku}: {str(e)}")
-        
-        # Get Krowne website data
-        krowne_data = None
-        try:
-            krowne_scraper = KrowneScraper()
-            krowne_data = asyncio.run(krowne_scraper.get_product_by_sku(sku))
-        except Exception as e:
-            logger.warning(f"Could not fetch Krowne data for {sku}: {str(e)}")
-        
-        # Calculate mismatches using the correct function
-        mismatches = []
-        if salesforce_data and krowne_data:
-            mismatches = calculate_product_mismatches(salesforce_data, krowne_data)
-        
-        # This is exactly what your current /api/compare should return
-        result = {
-            'sku': sku,
-            'salesforce': salesforce_data,
-            'krowne': krowne_data,
-            'mismatches': mismatches,
-            'timestamp': datetime.utcnow().isoformat()
-        }
-        
-        return jsonify({
-            "current_response_format": result,
-            "krowne_data_preview": {
-                "type": str(type(krowne_data)),
-                "keys": list(krowne_data.keys()) if krowne_data else None,
-                "has_name": krowne_data.get('name') if krowne_data else None,
-                "has_price": krowne_data.get('price') if krowne_data else None
-            }
-        })
-        
-    except Exception as e:
-        logger.error(f"Raw compare error: {e}")
-        return jsonify({"error": str(e)}), 500

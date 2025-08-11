@@ -2,14 +2,14 @@ import logging
 import json
 from typing import List, Dict, Any, Optional
 import requests
+from urllib.parse import urlencode
 
 from .salesforce_client import SalesforceClient
-from .extract_skus import extract_known_ids_from_csv
 
 logger = logging.getLogger(__name__)
 
 class PimlyClient:
-    """Client for interacting with Pimly REST API v2 through Salesforce"""
+    """Enhanced client for interacting with Pimly REST API v2 through Salesforce"""
     
     def __init__(self, salesforce_client: SalesforceClient):
         self.sf_client = salesforce_client
@@ -24,107 +24,187 @@ class PimlyClient:
             "Accept": "application/json"
         }
 
+    def get_products_by_ids(self, 
+                           ids: List[str], 
+                           properties: Optional[List[str]] = None,
+                           context_identifier: Optional[str] = None,
+                           channel_id: Optional[str] = None,
+                           locale_id: Optional[str] = None,
+                           max_batch_size: int = 50) -> List[Dict[str, Any]]:
+        """
+        Retrieve product details from Pimly using REST API v2
+        
+        Args:
+            ids: List of product identifiers (default is Pimly Admin Name)
+            properties: Optional list of specific Pimly Properties to include
+            context_identifier: Field to use as unique key (default: pimly__admin_name__c)
+            channel_id: Pimly Channel context identifier (default: global)
+            locale_id: Pimly Locale context identifier (default: global)
+            max_batch_size: Maximum number of IDs per request (API limit)
+            
+        Returns:
+            List of product dictionaries with requested data
+        """
+        if not ids:
+            logger.warning("No product IDs provided")
+            return []
+        
+        base_url = f"{self.sf_client.instance_url}/services/apexrest/pimly/v2/products"
+        all_products = []
+        
+        # Process IDs in batches to respect API limits
+        for i in range(0, len(ids), max_batch_size):
+            batch_ids = ids[i:i + max_batch_size]
+            
+            try:
+                batch_products = self._fetch_product_batch(
+                    base_url=base_url,
+                    ids=batch_ids,
+                    properties=properties,
+                    context_identifier=context_identifier,
+                    channel_id=channel_id,
+                    locale_id=locale_id
+                )
+                
+                if batch_products:
+                    all_products.extend(batch_products)
+                    logger.info(f"Successfully retrieved {len(batch_products)} products from batch {i//max_batch_size + 1}")
+                else:
+                    logger.warning(f"No products returned for batch {i//max_batch_size + 1} with IDs: {batch_ids[:3]}...")
+                    
+            except Exception as e:
+                logger.error(f"Error fetching batch {i//max_batch_size + 1} with IDs {batch_ids[:3]}...: {str(e)}")
+                # Continue with other batches instead of failing completely
+                continue
+        
+        logger.info(f"Total products retrieved: {len(all_products)} from {len(ids)} requested IDs")
+        return all_products
+
+    def _fetch_product_batch(self, 
+                           base_url: str,
+                           ids: List[str],
+                           properties: Optional[List[str]] = None,
+                           context_identifier: Optional[str] = None,
+                           channel_id: Optional[str] = None,
+                           locale_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Fetch a single batch of products from Pimly API"""
+        
+        # Build query parameters according to API spec
+        params = {
+            "ids": ",".join(ids)  # Comma-separated product identifiers
+        }
+
+        # Add optional parameters if provided
+        if properties:
+            params["properties"] = ",".join(properties)
+        if context_identifier:
+            params["context.identifier"] = context_identifier
+        if channel_id:
+            params["context.channelId"] = channel_id
+        if locale_id:
+            params["context.localeId"] = locale_id
+
+        logger.debug(f"Fetching {len(ids)} products with params: {params}")
+        
+        try:
+            response = requests.get(
+                base_url, 
+                headers=self._get_headers(), 
+                params=params,
+                timeout=30  # Add timeout for reliability
+            )
+
+            # Handle token refresh if needed
+            if response.status_code == 401:
+                logger.info("Access token expired, attempting refresh...")
+                if self.sf_client.refresh_access_token():
+                    logger.info("Token refreshed successfully, retrying request")
+                    response = requests.get(
+                        base_url, 
+                        headers=self._get_headers(), 
+                        params=params,
+                        timeout=30
+                    )
+                else:
+                    raise Exception("Failed to refresh access token")
+
+            # Check for successful response
+            if response.status_code == 200:
+                result = response.json()
+                
+                # Handle different response formats
+                if isinstance(result, list):
+                    return result
+                elif isinstance(result, dict):
+                    # Some APIs wrap results in a data field
+                    return result.get('data', result.get('products', [result]))
+                else:
+                    logger.warning(f"Unexpected response format: {type(result)}")
+                    return []
+                    
+            else:
+                error_msg = f"API request failed with status {response.status_code}"
+                try:
+                    error_detail = response.json()
+                    error_msg += f": {error_detail}"
+                except:
+                    error_msg += f": {response.text[:200]}"
+                
+                logger.error(error_msg)
+                raise Exception(error_msg)
+                
+        except requests.exceptions.Timeout:
+            logger.error(f"Request timeout for batch with {len(ids)} products")
+            raise Exception("Request timeout - try reducing batch size")
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Network error during product fetch: {str(e)}")
+            raise Exception(f"Network error: {str(e)}")
+        except Exception as e:
+            logger.error(f"Unexpected error fetching products: {str(e)}")
+            raise
+
+    def get_products_with_specific_properties(self, 
+                                            ids: List[str], 
+                                            property_names: List[str],
+                                            channel_id: str = "global",
+                                            locale_id: str = "global") -> List[Dict[str, Any]]:
+        """
+        Convenience method to get products with specific properties for a channel/locale
+        
+        Args:
+            ids: Product identifiers
+            property_names: Specific Pimly property names to retrieve
+            channel_id: Channel context (default: global)
+            locale_id: Locale context (default: global)
+        """
+        return self.get_products_by_ids(
+            ids=ids,
+            properties=property_names,
+            channel_id=channel_id,
+            locale_id=locale_id
+        )
+
+    def get_product_by_sku(self, sku: str, **kwargs) -> Dict[str, Any]:
+        """Get a single product by SKU"""
+        products = self.get_products_by_ids([sku], **kwargs)
+        return products[0] if products else {}
+
     def search_products(self, search_term: str, limit: int = 20) -> List[Dict[str, Any]]:
         """
-        Search for products in Pimly using the export/query functionality
-        This creates an export job with a search filter and retrieves the results
+        Search for products in Pimly using SOQL fallback
+        Note: This is a fallback method. For better search, consider using Pimly's search API if available
         """
         try:
-            # First, try to get products by exact SKU match if search term looks like a SKU
-            if search_term and not ' ' in search_term:  # Single word, might be SKU
-                try:
-                    products = self.get_products_by_ids([search_term])
-                    if products:
-                        logger.info(f"Found product by exact SKU match: {search_term}")
-                        return products
-                except Exception as e:
-                    logger.debug(f"No exact SKU match for {search_term}, trying search: {e}")
+            # Escape single quotes for SOQL
+            escaped_term = search_term.replace("'", "\\'")
             
-            # If no exact match, create an export job with search filters
-            export_url = f"{self.sf_client.instance_url}/services/apexrest/pimly/v2/exports"
-            
-            # Create export job with search filter
-            export_payload = {
-                "filetype": "json",
-                "jobType": "all_products",
-                "pimlyRecordType": "ready_to_read_records",
-                "salesforceQueryFilters": f"Name LIKE '%{search_term}%' OR pimly__SKU__c LIKE '%{search_term}%' LIMIT {limit}"
-            }
-            
-            logger.info(f"Creating Pimly export job for search: {search_term}")
-            
-            response = requests.post(
-                export_url, 
-                headers=self._get_headers(), 
-                data=json.dumps(export_payload)
-            )
-            
-            if response.status_code == 401 and self.sf_client.refresh_access_token():
-                logger.info("Session expired, refreshed token, retrying")
-                response = requests.post(
-                    export_url, 
-                    headers=self._get_headers(), 
-                    data=json.dumps(export_payload)
-                )
-            
-            response.raise_for_status()
-            export_result = response.json()
-            
-            # Get the export job ID
-            export_log_id = export_result.get('exportLogId')
-            if not export_log_id:
-                logger.warning("No export job ID returned")
-                return []
-            
-            # Poll the export job status
-            export_status_url = f"{self.sf_client.instance_url}/services/apexrest/pimly/v2/exports/{export_log_id}"
-            
-            # Simple polling mechanism (in production, you'd want async handling)
-            import time
-            max_attempts = 10
-            for attempt in range(max_attempts):
-                time.sleep(1)  # Wait 1 second between checks
-                
-                status_response = requests.get(
-                    export_status_url,
-                    headers=self._get_headers()
-                )
-                
-                if status_response.status_code == 200:
-                    status_data = status_response.json()
-                    job_status = status_data.get('pimly__Job_Status__c')
-                    
-                    if job_status == 'Complete':
-                        # Download the export file
-                        output_url = status_data.get('pimly__Output_URL__c')
-                        if output_url:
-                            file_response = requests.get(output_url)
-                            if file_response.status_code == 200:
-                                products = file_response.json()
-                                return products[:limit] if isinstance(products, list) else []
-                        break
-                    elif job_status == 'Failed':
-                        logger.error(f"Export job failed: {status_data}")
-                        break
-            
-            # Fallback: return empty list if we couldn't get results
-            return []
-            
-        except Exception as e:
-            logger.error(f"Error searching products: {str(e)}")
-            # As a fallback, try to search by getting all products and filtering
-            # This is not ideal but provides some functionality
-            return self._fallback_search(search_term, limit)
-    
-    def _fallback_search(self, search_term: str, limit: int) -> List[Dict[str, Any]]:
-        """Fallback search method using direct product retrieval"""
-        try:
-            # Try to get products using a SOQL query through the generic Salesforce API
             query = f"""
-                SELECT Id, Name, pimly__SKU__c, pimly__Description__c 
+                SELECT Id, Name, pimly__SKU__c, pimly__Description__c, pimly__Admin_Name__c
                 FROM pimly__Product__c 
-                WHERE Name LIKE '%{search_term}%' 
-                   OR pimly__SKU__c LIKE '%{search_term}%'
+                WHERE Name LIKE '%{escaped_term}%' 
+                   OR pimly__SKU__c LIKE '%{escaped_term}%'
+                   OR pimly__Admin_Name__c LIKE '%{escaped_term}%'
+                ORDER BY Name
                 LIMIT {limit}
             """
             
@@ -137,77 +217,36 @@ class PimlyClient:
                         'Id': record.get('Id'),
                         'Name': record.get('Name'),
                         'SKU': record.get('pimly__SKU__c'),
+                        'AdminName': record.get('pimly__Admin_Name__c'),
                         'Description': record.get('pimly__Description__c')
                     })
             
+            logger.info(f"Search for '{search_term}' returned {len(products)} results")
             return products
-        except Exception as e:
-            logger.error(f"Fallback search failed: {str(e)}")
-            return []
-
-    def get_products_by_ids(self, ids: List[str], properties: Optional[List[str]] = None,
-                             context_identifier: Optional[str] = None,
-                             channel_id: Optional[str] = None,
-                             locale_id: Optional[str] = None) -> List[Dict[str, Any]]:
-        """Retrieve product details from Pimly using REST API v2"""
-        if not ids:
-            return []
-        
-        base_url = f"{self.sf_client.instance_url}/services/apexrest/pimly/v2/products"
-        params = {
-            "ids": ",".join(ids[:50])  # Limit to 50 IDs per request
-        }
-
-        if properties:
-            params["properties"] = ",".join(properties)
-        if context_identifier:
-            params["context.identifier"] = context_identifier
-        if channel_id:
-            params["context.channelId"] = channel_id
-        if locale_id:
-            params["context.localeId"] = locale_id
-
-        logger.info(f"Sending REST API v2 request to Pimly for {len(ids)} products")
-        
-        try:
-            response = requests.get(base_url, headers=self._get_headers(), params=params)
-
-            if response.status_code == 401 and self.sf_client.refresh_access_token():
-                logger.info("Session expired, refreshed token, retrying")
-                response = requests.get(base_url, headers=self._get_headers(), params=params)
-
-            response.raise_for_status()
-            return response.json()
-        except Exception as e:
-            logger.error(f"Error getting products by IDs: {str(e)}")
-            return []
-
-    def get_product_by_sku(self, sku: str) -> Dict[str, Any]:
-        """Get a single product by SKU"""
-        products = self.search_products(sku, limit=1)
-        if products:
-            return products[0]
-        
-        # Try direct ID lookup as fallback
-        products = self.get_products_by_ids([sku])
-        return products[0] if products else {}
-
-    def get_all_product_skus(self, limit: int = 3500) -> List[str]:
-        """Get all product SKUs from Pimly"""
-        try:
-            # Use SOQL query to get all SKUs
-            query = f"SELECT pimly__SKU__c FROM pimly__Product__c WHERE pimly__SKU__c != null LIMIT {limit}"
-            result = self.sf_client.query(query)
             
-            skus = []
-            if result and 'records' in result:
-                for record in result['records']:
-                    sku = record.get('pimly__SKU__c')
-                    if sku:
-                        skus.append(sku)
-            
-            logger.info(f"Retrieved {len(skus)} SKUs from Pimly")
-            return skus
         except Exception as e:
-            logger.error(f"Error getting all SKUs: {str(e)}")
+            logger.error(f"Product search failed for term '{search_term}': {str(e)}")
             return []
+
+    def validate_connection(self) -> bool:
+        """Test the connection to Pimly API"""
+        try:
+            # Try to fetch a small batch of products (if any exist)
+            test_url = f"{self.sf_client.instance_url}/services/apexrest/pimly/v2/products"
+            response = requests.get(
+                test_url,
+                headers=self._get_headers(),
+                params={"ids": "test"},  # This should return empty but validate connection
+                timeout=10
+            )
+            
+            if response.status_code in [200, 400]:  # 400 is OK for invalid ID
+                logger.info("Pimly API connection validated successfully")
+                return True
+            else:
+                logger.warning(f"Pimly API validation returned status: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Pimly API connection validation failed: {str(e)}")
+            return False
