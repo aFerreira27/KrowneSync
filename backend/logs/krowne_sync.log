@@ -11981,3 +11981,323 @@ information about how to avoid this problem.
 2025-08-07 09:04:10,857 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
 2025-08-07 09:04:10,862 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:04:10] "GET /api/salesforce/user HTTP/1.1" 200 -
 2025-08-07 09:04:11,183 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:04:11] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-07 09:08:35,444 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:08:35] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 09:08:35,757 - app.routes - INFO - Searching Pimly for: kr-2000
+2025-08-07 09:08:35,758 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 09:08:36,873 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-07 09:08:36,887 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:08:36] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 09:08:36,894 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:08:36] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-07 09:08:36,897 - app.routes - INFO - Compare request data: {'skus': ['kr-2000']}
+2025-08-07 09:08:36,898 - app.routes - INFO - Processing comparison for SKUs: ['kr-2000']
+2025-08-07 09:08:36,903 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 09:08:37,864 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-07 09:08:38,923 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 3 properties
+2025-08-07 09:08:38,927 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 2 fields dispersed, 2 properties remaining
+2025-08-07 09:08:38,938 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 2, 'partial_data': 24, 'no_data': 73, 'completion_percentage': 8.7}
+2025-08-07 09:08:38,948 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:08:38] "POST /api/compare HTTP/1.1" 200 -
+2025-08-07 09:08:39,270 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 09:08:40,312 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-07 09:08:41,362 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:08:41] "GET /api/mapper/compare-detailed/kr-2000 HTTP/1.1" 200 -
+2025-08-07 09:08:41,373 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 09:08:42,358 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-07 09:08:43,421 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 09:08:43] "GET /api/mapper/compare-detailed/kr-2000 HTTP/1.1" 200 -
+2025-08-07 13:40:05,678 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:40:05] "OPTIONS /api/products/skus HTTP/1.1" 200 -
+2025-08-07 13:40:05,681 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:40:05] "OPTIONS /api/products/skus HTTP/1.1" 200 -
+2025-08-07 13:40:06,120 - app.services.extract_skus - INFO - Extracted 3421 IDs from C:\Users\aferreira\OneDrive - Krowne Metal Corporation\Desktop\KrowneSync\backend\uploads\Initial_Import.csv
+2025-08-07 13:40:06,128 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:40:06] "GET /api/products/skus HTTP/1.1" 200 -
+2025-08-07 13:40:06,397 - app.services.extract_skus - INFO - Extracted 3421 IDs from C:\Users\aferreira\OneDrive - Krowne Metal Corporation\Desktop\KrowneSync\backend\uploads\Initial_Import.csv
+2025-08-07 13:40:06,402 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:40:06] "GET /api/products/skus HTTP/1.1" 200 -
+2025-08-07 13:40:06,409 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:40:06] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-07 13:40:06,438 - app.routes - INFO - Compare request data: {'skus': ['1575', '1576', '2157', '2159', '2160', '2163', '2164', '2165', '10-400L', '10-400L-W']}
+2025-08-07 13:40:06,439 - app.routes - INFO - Processing comparison for SKUs: ['1575', '1576', '2157', '2159', '2160', '2163', '2164', '2165', '10-400L', '10-400L-W']
+2025-08-07 13:40:06,446 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:40:06,734 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:40:06] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 13:40:06,737 - app.routes - INFO - Searching Pimly for: kr-2000
+2025-08-07 13:40:06,737 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:40:07,166 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:40:07,168 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:40:07,538 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:40:07,540 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:40:08,471 - app.services.pimly_client - INFO - Found product by exact SKU match: 1575
+2025-08-07 13:40:08,742 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-07 13:40:08,748 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:40:08] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 13:40:09,067 - app.routes - INFO - Compare request data: {'skus': ['kr-2000']}
+2025-08-07 13:40:09,067 - app.routes - INFO - Processing comparison for SKUs: ['kr-2000']
+2025-08-07 13:40:09,071 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:40:09,226 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 2 properties
+2025-08-07 13:40:09,230 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 2 properties remaining
+2025-08-07 13:40:09,241 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 0, 'partial_data': 22, 'no_data': 78, 'completion_percentage': 6.8}
+2025-08-07 13:40:09,245 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:40:09,699 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:40:09,702 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:40:09,715 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:40:09,718 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:40:10,652 - app.services.pimly_client - INFO - Found product by exact SKU match: kr-2000
+2025-08-07 13:40:10,729 - app.services.pimly_client - INFO - Found product by exact SKU match: 1576
+2025-08-07 13:40:17,340 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-07 13:40:17,341 - __main__ - INFO - Debug mode: True
+2025-08-07 13:40:18,671 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.36:5000
+2025-08-07 13:40:18,671 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-07 13:40:18,674 - werkzeug - INFO -  * Restarting with stat
+2025-08-07 13:40:19,694 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-07 13:40:19,694 - __main__ - INFO - Debug mode: True
+2025-08-07 13:40:19,718 - werkzeug - WARNING -  * Debugger is active!
+2025-08-07 13:40:19,722 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-07 13:40:19,820 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:40:19] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-07 13:40:20,131 - app.routes - INFO - Compare request data: {'skus': ['1575', '1576', '2157', '2159', '2160', '2163', '2164', '2165', '10-400L', '10-400L-W']}
+2025-08-07 13:40:20,132 - app.routes - INFO - Processing comparison for SKUs: ['1575', '1576', '2157', '2159', '2160', '2163', '2164', '2165', '10-400L', '10-400L-W']
+2025-08-07 13:40:20,141 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:40:20,802 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:40:20,803 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:40:21,746 - app.services.pimly_client - INFO - Found product by exact SKU match: 1575
+2025-08-07 13:40:22,431 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 2 properties
+2025-08-07 13:40:22,435 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 2 properties remaining
+2025-08-07 13:40:22,449 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 0, 'partial_data': 22, 'no_data': 78, 'completion_percentage': 6.8}
+2025-08-07 13:40:22,454 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:40:23,058 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:40:23,059 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:40:24,061 - app.services.pimly_client - INFO - Found product by exact SKU match: 1576
+2025-08-07 13:40:24,462 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 0 properties
+2025-08-07 13:40:24,462 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 0 properties remaining
+2025-08-07 13:40:24,470 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 0, 'partial_data': 22, 'no_data': 81, 'completion_percentage': 6.8}
+2025-08-07 13:40:24,474 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:40:25,090 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:40:25,091 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:40:26,067 - app.services.pimly_client - INFO - Found product by exact SKU match: 2157
+2025-08-07 13:40:27,553 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 2 properties
+2025-08-07 13:40:27,557 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 2 properties remaining
+2025-08-07 13:40:27,568 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 6, 'mismatches': 1, 'partial_data': 21, 'no_data': 79, 'completion_percentage': 6.8}
+2025-08-07 13:40:27,571 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:40:28,022 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:40:28,024 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:40:28,625 - app.services.pimly_client - INFO - Found product by exact SKU match: 2159
+2025-08-07 13:40:29,076 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 0 properties
+2025-08-07 13:40:29,076 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 0 properties remaining
+2025-08-07 13:40:29,085 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 0, 'partial_data': 22, 'no_data': 81, 'completion_percentage': 6.8}
+2025-08-07 13:40:29,089 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:40:29,858 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:40:29,859 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:40:30,461 - app.services.pimly_client - INFO - Found product by exact SKU match: 2160
+2025-08-07 13:40:31,925 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 2 properties
+2025-08-07 13:40:31,930 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 2 properties remaining
+2025-08-07 13:40:31,939 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 6, 'mismatches': 1, 'partial_data': 21, 'no_data': 79, 'completion_percentage': 6.8}
+2025-08-07 13:40:31,942 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:40:32,411 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:40:32,411 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:40:33,372 - app.services.pimly_client - INFO - Found product by exact SKU match: 2163
+2025-08-07 13:40:34,858 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 2 properties
+2025-08-07 13:40:34,862 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 2 properties remaining
+2025-08-07 13:40:34,874 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 6, 'mismatches': 1, 'partial_data': 21, 'no_data': 79, 'completion_percentage': 6.8}
+2025-08-07 13:40:34,878 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:40:35,493 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:40:35,497 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:40:36,405 - app.services.pimly_client - INFO - Found product by exact SKU match: 2164
+2025-08-07 13:40:36,848 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 0 properties
+2025-08-07 13:40:36,848 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 0 properties remaining
+2025-08-07 13:40:36,857 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 0, 'partial_data': 22, 'no_data': 81, 'completion_percentage': 6.8}
+2025-08-07 13:40:36,860 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:40:37,506 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:40:37,507 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:40:38,086 - app.services.pimly_client - INFO - Found product by exact SKU match: 2165
+2025-08-07 13:40:38,501 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 0 properties
+2025-08-07 13:40:38,501 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 0 properties remaining
+2025-08-07 13:40:38,511 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 0, 'partial_data': 22, 'no_data': 81, 'completion_percentage': 6.8}
+2025-08-07 13:40:38,514 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:40:39,220 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:40:39,221 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:40:40,909 - app.services.pimly_client - INFO - Found product by exact SKU match: 10-400L
+2025-08-07 13:40:42,057 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 18 properties
+2025-08-07 13:40:42,075 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 22 fields dispersed, 7 properties remaining
+2025-08-07 13:40:42,086 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 13, 'mismatches': 4, 'partial_data': 27, 'no_data': 59, 'completion_percentage': 16.5}
+2025-08-07 13:40:42,090 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:40:42,555 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:40:42,556 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:40:43,564 - app.services.pimly_client - INFO - Found product by exact SKU match: 10-400L-W
+2025-08-07 13:40:44,708 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 13 properties
+2025-08-07 13:40:44,718 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 22 fields dispersed, 2 properties remaining
+2025-08-07 13:40:44,731 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 9, 'mismatches': 5, 'partial_data': 30, 'no_data': 59, 'completion_percentage': 13.6}
+2025-08-07 13:40:44,757 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:40:44] "POST /api/compare HTTP/1.1" 200 -
+2025-08-07 13:41:00,486 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:41:00] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 13:41:00,492 - app.routes - INFO - Searching Pimly for: 12-801L
+2025-08-07 13:41:00,493 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:41:01,134 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:41:01,135 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:41:01,845 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 13:41:01,851 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:41:01] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 13:41:02,168 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:41:02] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-07 13:41:02,482 - app.routes - INFO - Compare request data: {'skus': ['12-801L']}
+2025-08-07 13:41:02,482 - app.routes - INFO - Processing comparison for SKUs: ['12-801L']
+2025-08-07 13:41:02,487 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:41:02,963 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:41:02,964 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:41:03,643 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 13:41:04,803 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 18 properties
+2025-08-07 13:41:04,819 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 22 fields dispersed, 7 properties remaining
+2025-08-07 13:41:04,831 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 15, 'mismatches': 2, 'partial_data': 26, 'no_data': 60, 'completion_percentage': 16.5}
+2025-08-07 13:41:04,842 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:41:04] "POST /api/compare HTTP/1.1" 200 -
+2025-08-07 13:41:04,869 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:41:05,468 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:41:05,470 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:41:06,530 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 13:41:07,717 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:41:07] "GET /api/mapper/compare-detailed/12-801L HTTP/1.1" 200 -
+2025-08-07 13:41:08,039 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:41:08,726 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:41:08,727 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:41:09,464 - app.services.pimly_client - INFO - Found product by exact SKU match: 12-801L
+2025-08-07 13:41:10,616 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:41:10] "GET /api/mapper/compare-detailed/12-801L HTTP/1.1" 200 -
+2025-08-07 13:47:27,553 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:47:27] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 13:47:27,867 - app.routes - INFO - Searching Pimly for: Hs-70
+2025-08-07 13:47:27,870 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:47:28,572 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:47:28,574 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:47:29,761 - app.services.pimly_client - INFO - Found product by exact SKU match: Hs-70
+2025-08-07 13:47:29,787 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:47:29] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 13:47:29,798 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:47:29] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-07 13:47:29,803 - app.routes - INFO - Compare request data: {'skus': ['Hs-70']}
+2025-08-07 13:47:29,803 - app.routes - INFO - Processing comparison for SKUs: ['Hs-70']
+2025-08-07 13:47:29,809 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:47:30,689 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:47:30,691 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:47:31,727 - app.services.pimly_client - INFO - Found product by exact SKU match: Hs-70
+2025-08-07 13:47:32,514 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 10 properties
+2025-08-07 13:47:32,525 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 10 fields dispersed, 3 properties remaining
+2025-08-07 13:47:32,535 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 3, 'partial_data': 23, 'no_data': 72, 'completion_percentage': 9.7}
+2025-08-07 13:47:32,546 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:47:32] "POST /api/compare HTTP/1.1" 200 -
+2025-08-07 13:47:32,859 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:47:33,536 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:47:33,538 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:47:34,667 - app.services.pimly_client - INFO - Found product by exact SKU match: Hs-70
+2025-08-07 13:47:35,456 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:47:35] "GET /api/mapper/compare-detailed/Hs-70 HTTP/1.1" 200 -
+2025-08-07 13:47:35,466 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:47:36,141 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:47:36,142 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:47:37,091 - app.services.pimly_client - INFO - Found product by exact SKU match: Hs-70
+2025-08-07 13:47:37,879 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:47:37] "GET /api/mapper/compare-detailed/Hs-70 HTTP/1.1" 200 -
+2025-08-07 13:48:54,315 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:48:54] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 13:48:54,620 - app.routes - INFO - Searching Pimly for: Hs-68
+2025-08-07 13:48:54,621 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:48:55,404 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:48:55,405 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:48:56,373 - app.services.pimly_client - INFO - Found product by exact SKU match: Hs-68
+2025-08-07 13:48:56,381 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:48:56] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-07 13:48:56,386 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:48:56] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-07 13:48:56,391 - app.routes - INFO - Compare request data: {'skus': ['Hs-68']}
+2025-08-07 13:48:56,391 - app.routes - INFO - Processing comparison for SKUs: ['Hs-68']
+2025-08-07 13:48:56,396 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:48:57,037 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:48:57,039 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:48:57,956 - app.services.pimly_client - INFO - Found product by exact SKU match: Hs-68
+2025-08-07 13:48:58,740 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 11 properties
+2025-08-07 13:48:58,752 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 10 fields dispersed, 4 properties remaining
+2025-08-07 13:48:58,762 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 6, 'mismatches': 3, 'partial_data': 22, 'no_data': 72, 'completion_percentage': 8.7}
+2025-08-07 13:48:58,776 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:48:58] "POST /api/compare HTTP/1.1" 200 -
+2025-08-07 13:48:59,095 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:48:59,807 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:48:59,808 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:49:00,693 - app.services.pimly_client - INFO - Found product by exact SKU match: Hs-68
+2025-08-07 13:49:01,498 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:49:01] "GET /api/mapper/compare-detailed/Hs-68 HTTP/1.1" 200 -
+2025-08-07 13:49:01,507 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-07 13:49:02,175 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-07 13:49:02,177 - app.services.pimly_client - INFO - Session expired, refreshed token, retrying
+2025-08-07 13:49:02,842 - app.services.pimly_client - INFO - Found product by exact SKU match: Hs-68
+2025-08-07 13:49:03,608 - werkzeug - INFO - 127.0.0.1 - - [07/Aug/2025 13:49:03] "GET /api/mapper/compare-detailed/Hs-68 HTTP/1.1" 200 -
+2025-08-11 08:16:01,230 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-11 08:16:01,231 - __main__ - INFO - Debug mode: True
+2025-08-11 08:16:02,576 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.27:5000
+2025-08-11 08:16:02,576 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-11 08:16:02,578 - werkzeug - INFO -  * Restarting with stat
+2025-08-11 08:16:03,682 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-11 08:16:03,684 - __main__ - INFO - Debug mode: True
+2025-08-11 08:16:03,709 - werkzeug - WARNING -  * Debugger is active!
+2025-08-11 08:16:03,714 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-11 08:16:10,624 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:10] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-08-11 08:16:10,895 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:10] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-11 08:16:10,895 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:10] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-11 08:16:11,456 - app.services.salesforce_client - ERROR - Error getting user info: 403 Client Error: Forbidden for url: https://krownemetalcorp.my.salesforce.com/services/oauth2/userinfo
+2025-08-11 08:16:12,016 - app.services.salesforce_client - INFO - Successfully refreshed access token
+2025-08-11 08:16:12,186 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-11 08:16:12,191 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:12] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-11 08:16:12,197 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:12] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-11 08:16:12,407 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-11 08:16:12,412 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:12] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-11 08:16:12,795 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-11 08:16:12,800 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:12] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-11 08:16:13,119 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:13] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-11 08:16:13,324 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-11 08:16:13,329 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:13] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-11 08:16:13,367 - app.services.krowne_cms_service - INFO - Session expired due to timeout
+2025-08-11 08:16:13,371 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:13] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-11 08:16:13,431 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:13] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-11 08:16:17,962 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:17] "OPTIONS /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-11 08:16:17,965 - app.services.krowne_cms_service - INFO - Attempting Krowne CMS authentication for user: lmahler
+2025-08-11 08:16:18,479 - app.services.krowne_cms_service - INFO - Authentication likely successful - large response content
+2025-08-11 08:16:18,526 - app.services.krowne_cms_service - WARNING - Could not extract detailed user info: 'str' object has no attribute 'keys'
+2025-08-11 08:16:18,526 - app.services.krowne_cms_service - INFO - Krowne CMS authentication successful for user: lmahler
+2025-08-11 08:16:18,527 - app.routes - INFO - Krowne login successful for user: lmahler
+2025-08-11 08:16:18,531 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:18] "POST /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-11 08:16:22,418 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:22] "OPTIONS /api/products/skus HTTP/1.1" 200 -
+2025-08-11 08:16:22,419 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:22] "OPTIONS /api/products/skus HTTP/1.1" 200 -
+2025-08-11 08:16:22,846 - app.services.extract_skus - INFO - Extracted 3421 IDs from C:\Users\aferreira\OneDrive - Krowne Metal Corporation\Desktop\KrowneSync\backend\uploads\Initial_Import.csv
+2025-08-11 08:16:22,851 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:22] "GET /api/products/skus HTTP/1.1" 200 -
+2025-08-11 08:16:23,080 - app.services.extract_skus - INFO - Extracted 3421 IDs from C:\Users\aferreira\OneDrive - Krowne Metal Corporation\Desktop\KrowneSync\backend\uploads\Initial_Import.csv
+2025-08-11 08:16:23,084 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:23] "GET /api/products/skus HTTP/1.1" 200 -
+2025-08-11 08:16:23,090 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:23] "OPTIONS /api/compare HTTP/1.1" 200 -
+2025-08-11 08:16:23,167 - app.routes - INFO - Compare request data: {'skus': ['1575', '1576', '2157', '2159', '2160', '2163', '2164', '2165', '10-400L', '10-400L-W']}
+2025-08-11 08:16:23,167 - app.routes - INFO - Processing comparison for SKUs: ['1575', '1576', '2157', '2159', '2160', '2163', '2164', '2165', '10-400L', '10-400L-W']
+2025-08-11 08:16:23,179 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-11 08:16:24,493 - app.services.pimly_client - INFO - Found product by exact SKU match: 1575
+2025-08-11 08:16:25,195 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 2 properties
+2025-08-11 08:16:25,199 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 2 properties remaining
+2025-08-11 08:16:25,208 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 0, 'partial_data': 22, 'no_data': 78, 'completion_percentage': 6.8}
+2025-08-11 08:16:25,211 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-11 08:16:26,179 - app.services.pimly_client - INFO - Found product by exact SKU match: 1576
+2025-08-11 08:16:26,610 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 0 properties
+2025-08-11 08:16:26,610 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 0 properties remaining
+2025-08-11 08:16:26,619 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 0, 'partial_data': 22, 'no_data': 81, 'completion_percentage': 6.8}
+2025-08-11 08:16:26,621 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-11 08:16:27,465 - app.services.pimly_client - INFO - Found product by exact SKU match: 2157
+2025-08-11 08:16:28,928 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 2 properties
+2025-08-11 08:16:28,932 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 2 properties remaining
+2025-08-11 08:16:28,939 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 6, 'mismatches': 1, 'partial_data': 21, 'no_data': 79, 'completion_percentage': 6.8}
+2025-08-11 08:16:28,941 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-11 08:16:30,156 - app.services.pimly_client - INFO - Found product by exact SKU match: 2159
+2025-08-11 08:16:30,555 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 0 properties
+2025-08-11 08:16:30,556 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 0 properties remaining
+2025-08-11 08:16:30,562 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 0, 'partial_data': 22, 'no_data': 81, 'completion_percentage': 6.8}
+2025-08-11 08:16:30,564 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-11 08:16:31,364 - app.services.pimly_client - INFO - Found product by exact SKU match: 2160
+2025-08-11 08:16:32,911 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 2 properties
+2025-08-11 08:16:32,915 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 2 properties remaining
+2025-08-11 08:16:32,923 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 6, 'mismatches': 1, 'partial_data': 21, 'no_data': 79, 'completion_percentage': 6.8}
+2025-08-11 08:16:32,925 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-11 08:16:33,784 - app.services.pimly_client - INFO - Found product by exact SKU match: 2163
+2025-08-11 08:16:35,296 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 2 properties
+2025-08-11 08:16:35,300 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 2 properties remaining
+2025-08-11 08:16:35,307 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 6, 'mismatches': 1, 'partial_data': 21, 'no_data': 79, 'completion_percentage': 6.8}
+2025-08-11 08:16:35,309 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-11 08:16:36,232 - app.services.pimly_client - INFO - Found product by exact SKU match: 2164
+2025-08-11 08:16:36,624 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 0 properties
+2025-08-11 08:16:36,624 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 0 properties remaining
+2025-08-11 08:16:36,631 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 0, 'partial_data': 22, 'no_data': 81, 'completion_percentage': 6.8}
+2025-08-11 08:16:36,634 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-11 08:16:37,430 - app.services.pimly_client - INFO - Found product by exact SKU match: 2165
+2025-08-11 08:16:37,837 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 0 properties
+2025-08-11 08:16:37,837 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 0 fields dispersed, 0 properties remaining
+2025-08-11 08:16:37,846 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 7, 'mismatches': 0, 'partial_data': 22, 'no_data': 81, 'completion_percentage': 6.8}
+2025-08-11 08:16:37,848 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-11 08:16:38,888 - app.services.pimly_client - INFO - Found product by exact SKU match: 10-400L
+2025-08-11 08:16:40,168 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 18 properties
+2025-08-11 08:16:40,184 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 22 fields dispersed, 7 properties remaining
+2025-08-11 08:16:40,193 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 13, 'mismatches': 4, 'partial_data': 27, 'no_data': 59, 'completion_percentage': 16.5}
+2025-08-11 08:16:40,196 - app.services.pimly_client - INFO - Sending REST API v2 request to Pimly for 1 products
+2025-08-11 08:16:41,213 - app.services.pimly_client - INFO - Found product by exact SKU match: 10-400L-W
+2025-08-11 08:16:42,342 - app.services.krowne_property_extractor - INFO - Starting property dispersal for 13 properties
+2025-08-11 08:16:42,349 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 22 fields dispersed, 2 properties remaining
+2025-08-11 08:16:42,357 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 9, 'mismatches': 5, 'partial_data': 30, 'no_data': 59, 'completion_percentage': 13.6}
+2025-08-11 08:16:42,382 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:42] "POST /api/compare HTTP/1.1" 200 -
