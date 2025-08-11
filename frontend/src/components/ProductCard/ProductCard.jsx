@@ -236,7 +236,7 @@ const ProductCard = ({ productData, onSync }) => {
                     <th className="field-header"></th>
                     <th className="source-header pimly-header">
                       <img
-                        src="/pimly-logo.svg"
+                        src="/pimly-logo.png"
                         alt="Pimly"
                         className="source-logo"
                       />

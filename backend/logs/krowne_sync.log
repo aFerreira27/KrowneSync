@@ -13818,3 +13818,120 @@ werkzeug.exceptions.UnsupportedMediaType: 415 Unsupported Media Type: Did not at
 2025-08-11 14:51:36,989 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:51:36] "[33mOPTIONS /api/api/krowne/admin/search/12-801L HTTP/1.1[0m" 404 -
 2025-08-11 14:51:37,014 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:51:37] "[33mGET /krowne-logo.svg HTTP/1.1[0m" 404 -
 2025-08-11 14:51:37,016 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:51:37] "[33mGET /pimly-logo.svg HTTP/1.1[0m" 404 -
+2025-08-11 14:56:51,443 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-11 14:56:51,444 - __main__ - INFO - Debug mode: True
+2025-08-11 14:56:52,758 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.27:5000
+2025-08-11 14:56:52,758 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-11 14:56:52,761 - werkzeug - INFO -  * Restarting with stat
+2025-08-11 14:56:53,846 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-11 14:56:53,846 - __main__ - INFO - Debug mode: True
+2025-08-11 14:56:53,862 - werkzeug - WARNING -  * Debugger is active!
+2025-08-11 14:56:53,867 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-11 14:56:59,223 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:56:59] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-11 14:56:59,224 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:56:59] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-11 14:56:59,794 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-11 14:56:59,799 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:56:59] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-11 14:56:59,813 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:56:59] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-11 14:57:00,034 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-11 14:57:00,039 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:00] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-11 14:57:00,370 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-11 14:57:00,376 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:00] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-11 14:57:00,701 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:00] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-11 14:57:00,905 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-11 14:57:00,911 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:00] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-11 14:57:04,140 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:04] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-11 14:57:04,148 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:04] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-11 14:57:09,408 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:09] "OPTIONS /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-11 14:57:09,715 - app.services.krowne_cms_service - INFO - Attempting Krowne CMS authentication for user: lmahler
+2025-08-11 14:57:10,145 - app.services.krowne_cms_service - INFO - Authentication likely successful - large response content
+2025-08-11 14:57:10,193 - app.services.krowne_cms_service - WARNING - Could not extract detailed user info: 'str' object has no attribute 'keys'
+2025-08-11 14:57:10,194 - app.services.krowne_cms_service - INFO - Krowne CMS authentication successful for user: lmahler
+2025-08-11 14:57:10,195 - app.routes - INFO - Krowne login successful for user: lmahler
+2025-08-11 14:57:10,199 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:10] "POST /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-11 14:57:20,604 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:20] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-11 14:57:20,606 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:20] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-11 14:57:20,863 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-11 14:57:20,869 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:20] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-11 14:57:20,881 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:20] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-11 14:57:21,406 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-11 14:57:21,412 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:21] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-11 14:57:21,433 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-11 14:57:21,438 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:21] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-11 14:57:21,655 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-11 14:57:21,661 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:21] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-11 14:57:21,726 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:21] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-11 14:57:21,978 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:21] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-11 14:57:22,171 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:22] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-11 14:57:22,380 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:22] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-11 14:57:30,962 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:30] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-11 14:57:30,965 - app.routes - INFO - Searching Pimly for: 12-801l
+2025-08-11 14:57:32,142 - app.services.pimly_client - INFO - Successfully retrieved 1 products from batch 1
+2025-08-11 14:57:32,142 - app.services.pimly_client - INFO - Total products retrieved: 1 from 1 requested IDs
+2025-08-11 14:57:32,148 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:32] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-11 14:57:32,465 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:32] "OPTIONS /api/products/map/12-801l HTTP/1.1" 200 -
+2025-08-11 14:57:33,788 - app.services.pimly_client - INFO - Successfully retrieved 1 products from batch 1
+2025-08-11 14:57:33,788 - app.services.pimly_client - INFO - Total products retrieved: 1 from 1 requested IDs
+2025-08-11 14:57:33,788 - app.services.product_data_mapper - INFO - Processing Pimly data with 20 fields
+2025-08-11 14:57:33,789 - app.services.product_data_mapper - INFO - Mapped Pimly data: name='12-801L - Silver Series 8" Center Wall Mount Faucet with 6" Wide Gooseneck Spout', sku='12-801L', features=2, specs=0
+2025-08-11 14:57:33,793 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:33] "GET /api/products/map/12-801l HTTP/1.1" 200 -
+2025-08-11 14:57:34,790 - app.services.pimly_client - INFO - Successfully retrieved 1 products from batch 1
+2025-08-11 14:57:34,790 - app.services.pimly_client - INFO - Total products retrieved: 1 from 1 requested IDs
+2025-08-11 14:57:34,791 - app.services.product_data_mapper - INFO - Processing Pimly data with 20 fields
+2025-08-11 14:57:34,791 - app.services.product_data_mapper - INFO - Mapped Pimly data: name='12-801L - Silver Series 8" Center Wall Mount Faucet with 6" Wide Gooseneck Spout', sku='12-801L', features=2, specs=0
+2025-08-11 14:57:34,795 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:34] "GET /api/products/map/12-801l HTTP/1.1" 200 -
+2025-08-11 14:57:34,808 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:34] "OPTIONS /api/products/compare/12-801l HTTP/1.1" 200 -
+2025-08-11 14:57:36,725 - app.services.pimly_client - INFO - Successfully retrieved 1 products from batch 1
+2025-08-11 14:57:36,725 - app.services.pimly_client - INFO - Total products retrieved: 1 from 1 requested IDs
+2025-08-11 14:57:36,732 - app.routes - WARNING - Could not fetch Krowne data for comparison of SKU 12-801l: HTTPSConnectionPool(host='krowne.com12-801l', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000021101A5DA50>: Failed to resolve 'krowne.com12-801l' ([Errno 11001] getaddrinfo failed)"))
+2025-08-11 14:57:36,732 - app.services.product_data_mapper - INFO - Processing Pimly data with 20 fields
+2025-08-11 14:57:36,733 - app.services.product_data_mapper - INFO - Mapped Pimly data: name='12-801L - Silver Series 8" Center Wall Mount Faucet with 6" Wide Gooseneck Spout', sku='12-801L', features=2, specs=0
+2025-08-11 14:57:36,733 - app.services.mapped_data_comparator - INFO - Successfully mapped Pimly data for SKU: 12-801l
+2025-08-11 14:57:36,741 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:36] "GET /api/products/compare/12-801l HTTP/1.1" 200 -
+2025-08-11 14:57:37,060 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:37] "[33mOPTIONS /api/api/krowne/admin/search/12-801l HTTP/1.1[0m" 404 -
+2025-08-11 14:57:37,079 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:37] "[33mGET /pimly-logo.png HTTP/1.1[0m" 404 -
+2025-08-11 14:57:37,388 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:57:37] "[33mGET /krowne-logo.svg HTTP/1.1[0m" 404 -
+2025-08-11 14:58:17,405 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:17] "[33mGET /pimly-logo.png HTTP/1.1[0m" 404 -
+2025-08-11 14:58:17,406 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:17] "[33mGET /krowne-logo.svg HTTP/1.1[0m" 404 -
+2025-08-11 14:58:37,055 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:37] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-11 14:58:37,367 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:37] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-11 14:58:37,605 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-11 14:58:37,611 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:37] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-11 14:58:37,864 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-11 14:58:37,869 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:37] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-11 14:58:37,932 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:37] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-11 14:58:38,135 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-11 14:58:38,140 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:38] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-11 14:58:38,179 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:38] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-11 14:58:38,189 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:38] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-11 14:58:38,596 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:38] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-11 14:58:38,743 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-11 14:58:38,748 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:38] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-11 14:58:38,854 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:38] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-11 14:58:42,081 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:42] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-11 14:58:42,390 - app.routes - INFO - Searching Pimly for: 12-801L
+2025-08-11 14:58:43,413 - app.services.pimly_client - INFO - Successfully retrieved 1 products from batch 1
+2025-08-11 14:58:43,413 - app.services.pimly_client - INFO - Total products retrieved: 1 from 1 requested IDs
+2025-08-11 14:58:43,420 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:43] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-11 14:58:43,733 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:43] "OPTIONS /api/products/map/12-801L HTTP/1.1" 200 -
+2025-08-11 14:58:44,925 - app.services.pimly_client - INFO - Successfully retrieved 1 products from batch 1
+2025-08-11 14:58:44,925 - app.services.pimly_client - INFO - Total products retrieved: 1 from 1 requested IDs
+2025-08-11 14:58:44,925 - app.services.product_data_mapper - INFO - Processing Pimly data with 20 fields
+2025-08-11 14:58:44,925 - app.services.product_data_mapper - INFO - Mapped Pimly data: name='12-801L - Silver Series 8" Center Wall Mount Faucet with 6" Wide Gooseneck Spout', sku='12-801L', features=2, specs=0
+2025-08-11 14:58:44,930 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:44] "GET /api/products/map/12-801L HTTP/1.1" 200 -
+2025-08-11 14:58:46,634 - app.services.pimly_client - INFO - Successfully retrieved 1 products from batch 1
+2025-08-11 14:58:46,634 - app.services.pimly_client - INFO - Total products retrieved: 1 from 1 requested IDs
+2025-08-11 14:58:46,634 - app.services.product_data_mapper - INFO - Processing Pimly data with 20 fields
+2025-08-11 14:58:46,634 - app.services.product_data_mapper - INFO - Mapped Pimly data: name='12-801L - Silver Series 8" Center Wall Mount Faucet with 6" Wide Gooseneck Spout', sku='12-801L', features=2, specs=0
+2025-08-11 14:58:46,638 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:46] "GET /api/products/map/12-801L HTTP/1.1" 200 -
+2025-08-11 14:58:46,652 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:46] "OPTIONS /api/products/compare/12-801L HTTP/1.1" 200 -
+2025-08-11 14:58:47,533 - app.services.pimly_client - INFO - Successfully retrieved 1 products from batch 1
+2025-08-11 14:58:47,533 - app.services.pimly_client - INFO - Total products retrieved: 1 from 1 requested IDs
+2025-08-11 14:58:47,550 - app.routes - WARNING - Could not fetch Krowne data for comparison of SKU 12-801L: HTTPSConnectionPool(host='krowne.com12-801l', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000021101A6D350>: Failed to resolve 'krowne.com12-801l' ([Errno 11001] getaddrinfo failed)"))
+2025-08-11 14:58:47,551 - app.services.product_data_mapper - INFO - Processing Pimly data with 20 fields
+2025-08-11 14:58:47,551 - app.services.product_data_mapper - INFO - Mapped Pimly data: name='12-801L - Silver Series 8" Center Wall Mount Faucet with 6" Wide Gooseneck Spout', sku='12-801L', features=2, specs=0
+2025-08-11 14:58:47,551 - app.services.mapped_data_comparator - INFO - Successfully mapped Pimly data for SKU: 12-801L
+2025-08-11 14:58:47,561 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:47] "GET /api/products/compare/12-801L HTTP/1.1" 200 -
+2025-08-11 14:58:47,886 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 14:58:47] "[33mOPTIONS /api/api/krowne/admin/search/12-801L HTTP/1.1[0m" 404 -
