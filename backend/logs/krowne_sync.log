@@ -12301,3 +12301,20 @@ information about how to avoid this problem.
 2025-08-11 08:16:42,349 - app.services.krowne_property_extractor - INFO - Property dispersal complete: 22 fields dispersed, 2 properties remaining
 2025-08-11 08:16:42,357 - app.routes - INFO -    Summary: {'total_fields': 103, 'matches': 9, 'mismatches': 5, 'partial_data': 30, 'no_data': 59, 'completion_percentage': 13.6}
 2025-08-11 08:16:42,382 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 08:16:42] "POST /api/compare HTTP/1.1" 200 -
+2025-08-11 09:04:17,097 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-11 09:04:17,098 - __main__ - INFO - Debug mode: True
+2025-08-11 10:08:47,936 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-11 10:08:47,937 - __main__ - INFO - Debug mode: True
+2025-08-11 10:08:49,251 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.27:5000
+2025-08-11 10:08:49,251 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-11 10:08:49,253 - werkzeug - INFO -  * Restarting with stat
+2025-08-11 10:08:50,255 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-11 10:08:50,256 - __main__ - INFO - Debug mode: True
+2025-08-11 10:08:50,270 - werkzeug - WARNING -  * Debugger is active!
+2025-08-11 10:08:50,274 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-11 10:08:54,168 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 10:08:54] "OPTIONS /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-11 10:08:54,476 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-08-11 10:08:54,479 - werkzeug - INFO - 127.0.0.1 - - [11/Aug/2025 10:08:54] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
