@@ -38,3 +38,5 @@ coverage/
 venv/
 
 flask_sessions/
+
+Output/

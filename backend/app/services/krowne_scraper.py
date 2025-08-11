@@ -10,7 +10,7 @@ BASEURL = 'https://www.krowne.com/'
 class KrowneScraper:
     @staticmethod
     def parseSite(sku):
-        response = requests.get(BASEURL + sku)
+        response = requests.get(BASEURL + "/"+sku)
         site = BeautifulSoup(response.content, 'html.parser')
         return site
 

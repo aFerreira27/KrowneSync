@@ -16,7 +16,7 @@ from app.services.extract_skus import extract_known_ids_from_csv
 from app.services.product_data_mapper import ProductDataMapper
 from app.services.mapped_data_comparator import MappedDataComparator
 
-BASEURL = "https://krowne.com"
+BASEURL = "https://krowne.com/"
 
 main = Blueprint('main', __name__)
 
@@ -644,7 +644,7 @@ def search_cms_admin_product(sku):
         
         # Use existing session data
         session_data = krowne_auth.get('session_data', {})
-        if not admin_scraper.use_existing_session(session_data):
+        if not admin_scraper.verify_session(session_data):
             # Session expired, need to re-authenticate
             return jsonify({
                 "error": "CMS session expired, please re-authenticate",
@@ -653,7 +653,9 @@ def search_cms_admin_product(sku):
         
         # Search for the product
         search_result = admin_scraper.search_product_by_sku(sku)
-        
+        logger.info(f"Searching CMS admin for SKU: {sku}")
+        logger.info(f"Search result: {search_result}")
+
         if search_result:
             logger.info(f"✅ CMS admin search successful for SKU: {sku}")
             return jsonify({
@@ -700,7 +702,7 @@ def get_cms_admin_product_details(record_number):
         
         # Use existing session data
         session_data = krowne_auth.get('session_data', {})
-        if not admin_scraper.use_existing_session(session_data):
+        if not admin_scraper.verify_session(session_data):
             return jsonify({
                 "error": "CMS session expired, please re-authenticate",
                 "requires_auth": True
@@ -752,7 +754,7 @@ def get_cms_admin_product_by_sku(sku):
         
         # Use existing session data
         session_data = krowne_auth.get('session_data', {})
-        if not admin_scraper.use_existing_session(session_data):
+        if not admin_scraper.verify_session(session_data):
             return jsonify({
                 "error": "CMS session expired, please re-authenticate",
                 "requires_auth": True
@@ -829,7 +831,7 @@ def get_cms_admin_products_batch():
         
         # Use existing session data
         session_data = krowne_auth.get('session_data', {})
-        if not admin_scraper.use_existing_session(session_data):
+        if not admin_scraper.verify_session(session_data):
             return jsonify({
                 "error": "CMS session expired, please re-authenticate",
                 "requires_auth": True

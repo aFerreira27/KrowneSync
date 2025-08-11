@@ -661,7 +661,7 @@ async scrapeKrowneProduct(sku) {
         throw new Error('SKU is required to scrape Krowne product.');
     }
 
-    return this.request(`/api/krowne/admin/search/${encodeURIComponent(sku)}`);
+    return this.request(`/api/krowne/scrape-product/${encodeURIComponent(sku)}`);
 }
 
   // ===== CMS ADMIN METHODS =====

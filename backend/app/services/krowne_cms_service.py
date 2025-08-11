@@ -11,7 +11,7 @@ class KrowneCMSService:
     """Service for interacting with Krowne CMS Admin panel"""
     
     def __init__(self, base_url: str = "https://krowne.com"):
-        self.base_url = base_url
+        self.base_url = base_url.rstrip('/') + '/'
         self.admin_url = f"{base_url}/cmsAdmin/admin.php"
         self.session_timeout = timedelta(hours=24)
         
@@ -448,6 +448,205 @@ class KrowneCMSService:
         except Exception as e:
             self.logger.error(f"Error fetching user data: {str(e)}")
             return None
+    
+    def getRecNumFromSKU(self, sku: str) -> Optional[str]:
+        """
+        Search for a product by SKU and extract the Record Number from the results.
+        Returns the Record Number if found, None otherwise.
+        """
+        try:
+            if not sku:
+                return None
+            
+            session = requests.Session()
+            session.headers.update(self.default_headers)
+            
+            # First, get the search form to extract CSRF token
+            search_page_url = urljoin(self.admin_url, '?menu=product')
+            response = session.get(search_page_url, timeout=10)
+            
+            if response.status_code != 200:
+                self.logger.error(f"Failed to load search page: HTTP {response.status_code}")
+                return None
+            
+            # Parse the page to get CSRF token
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            csrf_token = None
+            csrf_input = soup.find('input', {'name': '_CSRFToken'})
+            if csrf_input:
+                csrf_token = csrf_input.get('value')
+            
+            if not csrf_token:
+                self.logger.error("Could not find CSRF token")
+                return None
+            
+            # Prepare search form data
+            form_data = {
+                '_CSRFToken': csrf_token,
+                'menu': 'product',
+                '_defaultAction': 'list',
+                'page': '1',
+                'search': '1',
+                'sku_query': sku,
+                'perPage': '25'
+            }
+            
+            # Submit the search form
+            search_url = urljoin(self.admin_url, '?')
+            response = session.post(search_url, data=form_data, timeout=10)
+            
+            if response.status_code != 200:
+                self.logger.error(f"Search request failed: HTTP {response.status_code}")
+                return None
+            
+            # Parse the search results
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # Find the results table
+            table = soup.find('table', {'class': 'data'})
+            if not table:
+                self.logger.warning(f"No results table found for SKU: {sku}")
+                return None
+            
+            # Look for the product row in the table body
+            tbody = table.find('tbody')
+            if not tbody:
+                self.logger.warning(f"No table body found for SKU: {sku}")
+                return None
+            
+            # Find the row containing the SKU
+            for row in tbody.find_all('tr'):
+                cells = row.find_all('td')
+                if len(cells) >= 6:  # Ensure we have enough columns
+                    # The SKU is typically in the 6th column (index 5)
+                    sku_cell = cells[5]
+                    if sku_cell and sku_cell.get_text(strip=True) == sku:
+                        # The Record Number is in the 5th column (index 4)
+                        record_num_cell = cells[4]
+                        if record_num_cell:
+                            record_num = record_num_cell.get_text(strip=True)
+                            self.logger.info(f"Found Record Number {record_num} for SKU {sku}")
+                            return record_num
+            
+            # Alternative approach: look for hidden input with record number
+            record_inputs = soup.find_all('input', {'name': '_recordNum'})
+            if record_inputs:
+                # If there's only one result, use that record number
+                if len(record_inputs) == 1:
+                    record_num = record_inputs[0].get('value')
+                    self.logger.info(f"Found Record Number {record_num} for SKU {sku}")
+                    return record_num
+            
+            self.logger.warning(f"No matching product found for SKU: {sku}")
+            return None
+            
+        except Exception as e:
+            self.logger.error(f"Error searching for SKU {sku}: {str(e)}")
+            return None
+
+
+    def search_product_by_sku(self, sku: str) -> Optional[Dict[str, Any]]:
+        """Search for a product by SKU in Krowne CMS"""
+        try:
+            if not sku:
+                self.logger.warning("SKU is required for product search")
+                return None
+            
+            # First get the record number for this SKU
+            recNum = self.getRecNumFromSKU(sku)
+            logger = logging.getLogger(__name__)
+            self.logger.info(f"Searching for SKU: {sku}, Record Number: {recNum}")
+
+            if not recNum:
+                self.logger.warning(f"Could not find record number for SKU: {sku}")
+                return None
+            
+            session = requests.Session()
+            session.headers.update(self.default_headers)
+
+            # Make a request to view the specific product record
+            view_url = urljoin(self.admin_url, f'?menu=product&action=view&num={recNum}')
+            response = session.get(view_url, timeout=10)
+            
+            if response.status_code == 200:
+                # Parse the response to extract product details
+                from bs4 import BeautifulSoup
+                soup = BeautifulSoup(response.text, 'html.parser')
+                
+                product_info = {}
+                product_info['record_number'] = recNum
+                product_info['sku'] = sku
+                
+                # Extract product details using the form-group structure
+                form_groups = soup.find_all('div', class_='form-group')
+                
+                for group in form_groups:
+                    label_element = group.find('div', class_='control-label')
+                    value_element = group.find('div', class_='col-sm-10')
+                    
+                    if label_element and value_element:
+                        label = label_element.get_text(strip=True)
+                        # Extract the actual text content, skipping HTML comments
+                        value_spans = value_element.find_all('span')
+                        if len(value_spans) >= 2:
+                            # The actual value is between the first and last span
+                            value_text = value_element.get_text(strip=True)
+                            # Remove the help text if it exists (usually after the second span)
+                            if len(value_spans) > 2:
+                                help_text = value_spans[-1].get_text(strip=True)
+                                if help_text and help_text in value_text:
+                                    value_text = value_text.replace(help_text, '').strip()
+                            
+                            # Clean up the value by removing empty spans content
+                            for span in value_spans[:-1]:  # Skip the last span (help text)
+                                span_text = span.get_text(strip=True)
+                                if span_text:
+                                    value_text = value_text.replace(span_text, '').strip()
+                        else:
+                            value_text = value_element.get_text(strip=True)
+                        
+                        # Store the extracted data with clean field names
+                        field_name = self._clean_field_name(label)
+                        if value_text and value_text.strip():
+                            product_info[field_name] = value_text
+                
+                # Extract categories from the categories table
+                categories = []
+                category_table = soup.find('table', {'data-table': 'product_category'})
+                if category_table:
+                    category_rows = category_table.find('tbody').find_all('tr') if category_table.find('tbody') else []
+                    for row in category_rows:
+                        cells = row.find_all('td')
+                        if len(cells) >= 2:
+                            category_text = cells[1].get_text(strip=True)
+                            # Remove the external link icon text
+                            if category_text:
+                                categories.append(category_text)
+                
+                if categories:
+                    product_info['categories'] = categories
+                
+                return product_info
+            
+            self.logger.error(f"Failed to view product record {recNum}: HTTP {response.status_code}")
+            return None
+            
+        except Exception as e:
+            self.logger.error(f"Error searching product by SKU {sku}: {str(e)}")
+            return None
+
+    def _clean_field_name(self, label: str) -> str:
+        """Convert form labels to clean field names"""
+        # Convert to lowercase and replace spaces with underscores
+        clean_name = label.lower().replace(' ', '_').replace('(', '').replace(')', '').replace('&', 'and')
+        # Remove special characters
+        clean_name = ''.join(c for c in clean_name if c.isalnum() or c == '_')
+        # Remove multiple underscores
+        while '__' in clean_name:
+            clean_name = clean_name.replace('__', '_')
+        return clean_name.strip('_')
 
 
 # Helper function for testing

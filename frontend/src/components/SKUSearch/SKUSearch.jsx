@@ -76,7 +76,7 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
 
       // Try to scrape Krowne data if available
       try {
-        const krowneResponse = await api.scrapeKrowneProduct(skuToSearch);
+        const krowneResponse = await api.searchCMSAdminProduct(skuToSearch);
         if (krowneResponse && Object.keys(krowneResponse).length > 0) {
           krowneData = krowneResponse;
           console.log('✅ Krowne data retrieved:', krowneData);
