@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import ConnectionStatus from './components/ConnectionStatus';
+import ConnectionStatus from './components/ConnectionStatus/ConnectionStatus';
 import SKUSearch from './components/SKUSearch/SKUSearch';
 import SyncTable from './components/SyncTable/SyncTable';
 import api from './services/api';

@@ -43,7 +43,7 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
       console.log('Searching for SKU:', skuToSearch);
       
       // First, try to search Pimly for the product
-      const searchResults = await api.searchPimlyProducts(skuToSearch, 1);
+      const searchResults = await api.getProductBySKU(skuToSearch);
       console.log('Pimly search results:', searchResults);
 
       let pimlyProduct = null;

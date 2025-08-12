@@ -76,22 +76,9 @@ class APIService {
   }
 
 
-  // Pimly Operations (via Salesforce)
-  async getPimlyProducts(options = {}) {
-    const params = new URLSearchParams(options);
-    return this.request(`/pimly/products?${params}`);
-  }
-
-  async searchPimlyProducts(searchTerm, limit = 20) {
-    return this.request('/pimly/search', {
-      method: 'POST',
-      body: JSON.stringify({ search: searchTerm, limit }),
-    });
-  }
-
   // Get product by SKU (from Pimly/Salesforce)
   async getProductBySKU(sku) {
-    return this.request(`/products/${encodeURIComponent(sku)}`);
+    return this.request(`/pimly/products/${encodeURIComponent(sku)}`);
   }
 
   // Krowne Product Scraping

@@ -12,6 +12,7 @@ from app.services.salesforce_client import SalesforceClient
 from app.services.pimly_client import PimlyClient
 from app.services.krowne_scraper import KrowneScraper
 from app.services.extract_skus import extract_known_ids_from_csv
+from app.services.format_pimly import format_pimly_data
 
 BASEURL = "https://krowne.com/"
 
@@ -19,9 +20,6 @@ main = Blueprint('main', __name__)
 
 # Configure logging
 logger = logging.getLogger(__name__)
-
-krowne_scraper = KrowneScraper()
-
 
 def get_authenticated_sf_client():
     """Helper function to get authenticated Salesforce client"""
@@ -517,6 +515,33 @@ def scrape_krowne_product(sku):
         logger.error(f"Error scraping Krowne product {sku}: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+### Format Data Endpoints ###
+@main.route("/api/products/format", methods=["POST", "OPTIONS"])
+def format_product_data_endpoint():
+    if request.method == "OPTIONS":
+        return jsonify({}), 200
+    
+    try:
+        # Get JSON data from request
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({"error": "No JSON data provided"}), 400
+        
+        # Format the product data
+        formatted_data = format_pimly_data(data)
+        
+        return jsonify({
+            "success": True,
+            "data": formatted_data
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
 ### Comparison Endpoints ###
 @main.route("/api/products/compare/<sku>", methods=["GET"]) 
 def compare_product_data(sku):
@@ -524,11 +549,10 @@ def compare_product_data(sku):
     try:
         sf_client = get_authenticated_sf_client()
         pimly_client = PimlyClient(sf_client)
-        krowne_scraper = KrowneScraper()
-        
+                
         # Get data from both sources
         pimly_data = pimly_client.get_product_by_sku(sku)
-        krowne_data = None
+        krowne_data = scrape_krowne_product(sku)
         
         try:
             scrape_krowne_product(sku)
@@ -538,8 +562,8 @@ def compare_product_data(sku):
         # Format for response (keeping backward compatibility)
         response = {
             'sku': sku,
-            'salesforce': pimly_data,  # Keep existing structure
-            'krowne': krowne_data,
+            'salesforce': format_pimly_data(pimly_data),  # Keep existing structure
+            'krowne': (krowne_data),
             'raw_data': {  # Add raw data section
                 'pimly': pimly_data,
                 'krowne': krowne_data
