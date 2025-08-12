@@ -37,7 +37,7 @@ coverage/
 
 venv/
 
-flask_sessions/
+flask_session/
 
 Output/
 
