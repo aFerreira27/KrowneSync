@@ -47,7 +47,7 @@ const ConnectionStatus = ({
         </div>
         <div className="connection-info connected">
           <span className="status-dot active"></span>
-          <span className="user-info">Ready (Server-side scraping)</span>
+          <span className="user-info">Ready</span>
         </div>
       </div>
     </div>

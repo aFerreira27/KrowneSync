@@ -1,4 +1,4 @@
-/* ProductCard.css - Refactored for Pimly/Krowne Comparison */
+/* ProductCard.css - Fixed Table Header Layout */
 
 .product-card-container {
   max-width: 1200px;
@@ -127,15 +127,24 @@ input:checked + .toggle-slider:before {
   user-select: none;
 }
 
-/* Comparison Table */
+/* FIXED Comparison Table */
 .comparison-table-container {
   padding: 0;
   overflow-x: auto;
+  min-width: 100%;
 }
 
 .comparison-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
+  min-width: 700px; /* Increased minimum width */
+}
+
+/* FIXED: Ensure proper table display */
+.comparison-table,
+.comparison-table * {
+  box-sizing: border-box;
 }
 
 .comparison-table thead {
@@ -145,16 +154,34 @@ input:checked + .toggle-slider:before {
   z-index: 10;
 }
 
-.source-header {
+.comparison-table thead tr {
+  display: table-row !important; /* Force table-row display */
+}
+
+.comparison-table th {
+  display: table-cell !important; /* Force table-cell display */
+  vertical-align: middle;
+  border: 1px solid #dee2e6;
   padding: 15px;
   font-weight: 600;
   text-align: center;
-  border-bottom: 2px solid #dee2e6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+}
+
+/* Field header (left column) */
+.field-header {
+  width: 200px;
+  max-width: 200px;
+  background: #6c757d;
+  color: white;
+  text-align: left;
+}
+
+/* FIXED: Source headers - removed conflicting flex properties */
+.source-header {
   min-width: 200px;
+  max-width: 250px;
+  white-space: nowrap;
+  position: relative;
 }
 
 .pimly-header {
@@ -167,25 +194,36 @@ input:checked + .toggle-slider:before {
   color: #e65100;
 }
 
-.source-logo {
+/* FIXED: Logo and text layout using inline elements */
+.source-header .source-logo {
+  display: inline-block;
   height: 24px;
-  width: auto;
+  width: 24px;
+  vertical-align: middle;
+  margin-right: 8px;
+  object-fit: contain;
 }
 
-.field-header {
-  width: 200px;
-  padding: 15px;
-  background: #6c757d;
-  color: white;
-  font-weight: 600;
-  text-align: left;
+.source-header span {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Table body styling */
+.comparison-table tbody tr {
+  display: table-row !important;
+}
+
+.comparison-table td {
+  display: table-cell !important;
+  padding: 12px 15px;
+  border: 1px solid #dee2e6;
+  vertical-align: top;
 }
 
 /* Table Rows */
 .comparison-row td {
-  padding: 12px 15px;
   border-bottom: 1px solid #dee2e6;
-  vertical-align: top;
 }
 
 .field-name {
@@ -195,14 +233,18 @@ input:checked + .toggle-slider:before {
   position: sticky;
   left: 0;
   z-index: 5;
+  width: 200px;
+  max-width: 200px;
 }
 
 .pimly-value {
   background: #f0f8ff;
+  min-width: 200px;
 }
 
 .krowne-value {
   background: #fff8f0;
+  min-width: 200px;
 }
 
 /* Mismatch Highlighting */
@@ -362,27 +404,6 @@ input:checked + .toggle-slider:before {
   color: #333;
 }
 
-/* Syntax highlighting for JSON */
-.json-content .json-key {
-  color: #a71d5d;
-}
-
-.json-content .json-string {
-  color: #183691;
-}
-
-.json-content .json-number {
-  color: #0086b3;
-}
-
-.json-content .json-boolean {
-  color: #0086b3;
-}
-
-.json-content .json-null {
-  color: #969896;
-}
-
 /* Sync Section */
 .sync-section {
   padding: 20px;
@@ -418,90 +439,6 @@ input:checked + .toggle-slider:before {
   background: #6c757d;
   cursor: not-allowed;
   opacity: 0.6;
-}
-
-/* Loading State */
-.loading-spinner {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: white;
-  animation: spin 0.8s linear infinite;
-  margin-right: 8px;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .product-header-bar {
-    flex-direction: column;
-  }
-  
-  .sku-section {
-    flex: 1;
-    border-right: none;
-    border-bottom: 1px solid #90caf9;
-  }
-  
-  .comparison-table {
-    font-size: 14px;
-  }
-  
-  .source-header {
-    min-width: 150px;
-    padding: 10px;
-  }
-  
-  .comparison-row td {
-    padding: 8px 10px;
-  }
-  
-  .dev-tabs {
-    flex-direction: column;
-  }
-  
-  .dev-tab {
-    border-bottom: 1px solid #dee2e6;
-  }
-}
-
-/* Error and Warning States */
-.error-message {
-  background: #f8d7da;
-  color: #721c24;
-  padding: 12px;
-  border-radius: 6px;
-  margin: 10px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.warning-message {
-  background: #fff3cd;
-  color: #856404;
-  padding: 12px;
-  border-radius: 6px;
-  margin: 10px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.success-message {
-  background: #d4edda;
-  color: #155724;
-  padding: 12px;
-  border-radius: 6px;
-  margin: 10px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .no-data-message {
@@ -543,11 +480,52 @@ input:checked + .toggle-slider:before {
   border-radius: 4px;
 }
 
+/* Responsive Design */
+@media (max-width: 768px) {
+  .product-header-bar {
+    flex-direction: column;
+  }
+  
+  .sku-section {
+    flex: 1;
+    border-right: none;
+    border-bottom: 1px solid #90caf9;
+  }
+  
+  .comparison-table {
+    font-size: 14px;
+    min-width: 500px;
+  }
+  
+  .source-header {
+    min-width: 150px;
+    max-width: 180px;
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .source-header .source-logo {
+    height: 20px;
+    width: 20px;
+  }
+  
+  .comparison-row td {
+    padding: 8px 10px;
+  }
+  
+  .dev-tabs {
+    flex-direction: column;
+  }
+  
+  .dev-tab {
+    border-bottom: 1px solid #dee2e6;
+  }
+}
+
 /* Print Styles */
 @media print {
   .dev-mode-toggle-container,
-  .sync-section,
-  .search-section {
+  .sync-section {
     display: none;
   }
   

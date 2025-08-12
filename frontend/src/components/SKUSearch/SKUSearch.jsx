@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ProductCard from '../ProductCard/ProductCard';
 import api from '../../services/api';
+import "./SKUSearch.css";
 
 const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
   const [sku, setSku] = useState(searchedSKU || '');
@@ -46,7 +47,6 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
       console.log('Pimly search results:', searchResults);
 
       let pimlyProduct = null;
-      let mappedData = null;
       let krowneData = null;
       let comparison = null;
 
@@ -54,29 +54,11 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
       if (searchResults.products && searchResults.products.length > 0) {
         pimlyProduct = searchResults.products[0];
         console.log('Found Pimly product:', pimlyProduct);
-
-        // Try to get mapped data using the new mapping system
-        try {
-          const mappingResponse = await api.mapProductData(skuToSearch);
-          mappedData = mappingResponse.mapped_data;
-          console.log('✅ Mapped data retrieved:', mappedData);
-        } catch (mappingError) {
-          console.warn('Could not get mapped data:', mappingError.message);
-        }
-
-        // Try to get detailed comparison using the new system
-        try {
-          const detailedComparison = await api.getDetailedProductComparison(skuToSearch);
-          comparison = detailedComparison;
-          console.log('✅ Detailed comparison retrieved:', detailedComparison);
-        } catch (comparisonError) {
-          console.warn('Could not get detailed comparison:', comparisonError.message);
-        }
       }
 
       // Try to scrape Krowne data if available
       try {
-        const krowneResponse = await api.searchCMSAdminProduct(skuToSearch);
+        const krowneResponse = await api.scrapeKrowneProduct(skuToSearch);
         if (krowneResponse && Object.keys(krowneResponse).length > 0) {
           krowneData = krowneResponse;
           console.log('✅ Krowne data retrieved:', krowneData);
@@ -140,11 +122,10 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
         },
         status: status,
         mismatches: mismatches,
-        mapped_data: mappedData,
         // Additional display properties
-        name: mappedData?.name || pimlyProduct?.Name || krowneData?.name || skuToSearch,
-        price: mappedData?.specifications?.List_Price || pimlyProduct?.ListPrice || krowneData?.price,
-        description: mappedData?.specifications?.Product_Description || pimlyProduct?.Description || krowneData?.description
+        name:  pimlyProduct?.Name || krowneData?.name || skuToSearch,
+        price: pimlyProduct?.ListPrice || krowneData?.price,
+        description: pimlyProduct?.Description || krowneData?.description
       };
 
       console.log('✅ Final structured product data:', structuredProductData);
