@@ -44,19 +44,7 @@ def format_pimly_data(raw_data: Dict[str, Any]) -> Dict[str, Any]:
     # Extract features
     features_value = get_property_value('Features')
     features = features_value if features_value else ''
-    
-    # Product description and ERP description could also be considered features
-    product_desc = get_property_value('Product_Description')
-    erp_desc = get_property_value('ERP_Description')
-    
-    # Build comprehensive features section
-    features_dict = {}
-    if features:
-        features_dict['Features'] = features
-    if product_desc and product_desc != features:
-        features_dict['Product Description'] = product_desc
-    if erp_desc and erp_desc != product_desc and erp_desc != features:
-        features_dict['ERP Description'] = erp_desc
+
     
     # Extract specifications (physical, performance, and technical specs)
     spec_fields = [
@@ -298,12 +286,13 @@ def format_pimly_data(raw_data: Dict[str, Any]) -> Dict[str, Any]:
         'SKU': admin_name,
         'Series': series,
         'List Price': list_price,
-        'Features': features_dict if features_dict else features,
+        'Features': features_value,
         'Specifications': specifications,
         'Certifications': cleaned_certifications,
         'Warranty': get_property_value('Warranty'),
         'Links': links,
         'Related Products': relatedProducts.get('Related Products', []),
+        'Parts & Accessories': relatedProducts.get('Parts & Accessories', []),
         'Miscellaneous': misc
     }
     

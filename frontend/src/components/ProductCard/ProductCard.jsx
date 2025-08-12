@@ -46,6 +46,21 @@ const ProductCard = ({ productData, onSync }) => {
       if (upperValue === 'TRUE' || upperValue === 'YES') return 'boolean_true';
       if (upperValue === 'FALSE' || upperValue === 'NO') return 'boolean_false';
       
+      // Handle fractions and mixed numbers (e.g., "8 1/2", "8-1/2", "1/2")
+      const fractionMatch = value.match(/(\d+)[\s\-]?(\d+)\/(\d+)/); // Mixed numbers like "8 1/2" or "8-1/2"
+      const simpleFractionMatch = value.match(/^(\d+)\/(\d+)$/); // Simple fractions like "1/2"
+      
+      if (fractionMatch) {
+        const whole = parseInt(fractionMatch[1]);
+        const numerator = parseInt(fractionMatch[2]);
+        const denominator = parseInt(fractionMatch[3]);
+        return whole + (numerator / denominator);
+      } else if (simpleFractionMatch) {
+        const numerator = parseInt(simpleFractionMatch[1]);
+        const denominator = parseInt(simpleFractionMatch[2]);
+        return numerator / denominator;
+      }
+      
       // If it's a string that looks like a price, normalize it
       const priceMatch = value.match(/[\d.,]+/);
       if (priceMatch) {
