@@ -15574,3 +15574,101 @@ Execute time: 0.28 seconds
 2025-08-11 17:02:08,508 - __main__ - INFO - Debug mode: True
 2025-08-11 17:02:08,523 - werkzeug - WARNING -  * Debugger is active!
 2025-08-11 17:02:08,527 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-12 08:12:17,625 - werkzeug - INFO -  * Detected change in 'C:\\Users\\aferreira\\OneDrive - Krowne Metal Corporation\\Desktop\\KrowneSync\\backend\\app\\services\\krowne_cms_service.py', reloading
+2025-08-12 08:12:17,770 - werkzeug - INFO -  * Restarting with stat
+2025-08-12 08:12:18,999 - __main__ - ERROR - Failed to start application: expected an indented block after function definition on line 452 (krowne_cms_service.py, line 453)
+2025-08-12 08:24:15,286 - __main__ - ERROR - Failed to start application: View function mapping is overwriting an existing endpoint function: main.scrape_krowne_product
+2025-08-12 08:24:32,977 - __main__ - ERROR - Failed to start application: View function mapping is overwriting an existing endpoint function: main.scrape_krowne_product
+2025-08-12 08:25:34,892 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-12 08:25:34,892 - __main__ - INFO - Debug mode: True
+2025-08-12 08:25:36,212 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.27:5000
+2025-08-12 08:25:36,213 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-08-12 08:25:36,214 - werkzeug - INFO -  * Restarting with stat
+2025-08-12 08:25:37,207 - __main__ - INFO - Starting KrowneSync backend on 0.0.0.0:5000
+2025-08-12 08:25:37,208 - __main__ - INFO - Debug mode: True
+2025-08-12 08:25:37,223 - werkzeug - WARNING -  * Debugger is active!
+2025-08-12 08:25:37,227 - werkzeug - INFO -  * Debugger PIN: 117-175-968
+2025-08-12 08:25:52,158 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:25:52] "OPTIONS /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-12 08:25:52,477 - app.services.salesforce_client - INFO - Generated authorization URL for Salesforce OAuth with PKCE
+2025-08-12 08:25:52,483 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:25:52] "POST /api/auth/salesforce/initiate HTTP/1.1" 200 -
+2025-08-12 08:32:45,388 - app.routes - INFO - === SALESFORCE OAUTH CALLBACK STARTED ===
+2025-08-12 08:32:45,825 - app.services.salesforce_client - INFO - Successfully exchanged authorization code for tokens
+2025-08-12 08:32:46,109 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-12 08:32:46,110 - app.routes - INFO - User info: Unknown
+2025-08-12 08:32:46,110 - app.routes - INFO - === SALESFORCE OAUTH CALLBACK COMPLETED SUCCESSFULLY ===
+2025-08-12 08:32:46,116 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:32:46] "[32mGET /api/auth/callback/salesforce?code=aPrxgWiFBAr4qtp34JqEomTF_5MaKHVNpnDXZSkNZDBNPyrnlEChCL_Nfr7nPNcoxscqfZ9JLQ%3D%3D&state=dmwS2ddnnfvi3UG7zbmM3jAt3FMcD8UvH8AWKju_XYQ HTTP/1.1[0m" 302 -
+2025-08-12 08:32:46,935 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:32:46] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-12 08:32:46,939 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:32:46] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-12 08:32:46,944 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:32:46] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-12 08:32:47,164 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-12 08:32:47,169 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:32:47] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-12 08:32:47,197 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:32:47] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-12 08:32:47,380 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-12 08:32:47,385 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:32:47] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-12 08:32:47,727 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-12 08:32:47,732 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:32:47] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-12 08:32:47,743 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:32:47] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-12 08:32:47,932 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-12 08:32:47,938 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:32:47] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-12 08:32:48,274 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-12 08:32:48,279 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:32:48] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-12 08:32:48,924 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-12 08:32:48,930 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:32:48] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-12 08:32:51,535 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:32:51] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-12 08:32:51,846 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:32:51] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-12 08:32:52,097 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:32:52] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-12 08:33:51,972 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:33:51] "OPTIONS /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-12 08:33:51,976 - app.services.krowne_cms_service - INFO - Attempting Krowne CMS authentication for user: lmahler
+2025-08-12 08:33:52,503 - app.services.krowne_cms_service - INFO - Authentication likely successful - large response content
+2025-08-12 08:33:52,550 - app.services.krowne_cms_service - WARNING - Could not extract detailed user info: 'str' object has no attribute 'keys'
+2025-08-12 08:33:52,551 - app.services.krowne_cms_service - INFO - Krowne CMS authentication successful for user: lmahler
+2025-08-12 08:33:52,552 - app.routes - INFO - Krowne login successful for user: lmahler
+2025-08-12 08:33:52,556 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:33:52] "POST /api/auth/krowne/login HTTP/1.1" 200 -
+2025-08-12 08:33:55,919 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:33:55] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-12 08:33:56,222 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:33:56] "OPTIONS /api/salesforce/status HTTP/1.1" 200 -
+2025-08-12 08:33:56,558 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-12 08:33:56,563 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:33:56] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-12 08:33:56,807 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-12 08:33:56,812 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:33:56] "GET /api/salesforce/status HTTP/1.1" 200 -
+2025-08-12 08:33:56,878 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:33:56] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-12 08:33:57,126 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:33:57] "OPTIONS /api/salesforce/user HTTP/1.1" 200 -
+2025-08-12 08:33:57,421 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-12 08:33:57,426 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:33:57] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-12 08:33:57,437 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:33:57] "OPTIONS /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-12 08:33:57,672 - app.services.salesforce_client - INFO - Retrieved user info for: Dan Hetrick
+2025-08-12 08:33:57,677 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:33:57] "GET /api/salesforce/user HTTP/1.1" 200 -
+2025-08-12 08:33:57,847 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:33:57] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-12 08:33:57,952 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:33:57] "GET /api/auth/krowne/status HTTP/1.1" 200 -
+2025-08-12 08:34:02,708 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:34:02] "OPTIONS /api/pimly/search HTTP/1.1" 200 -
+2025-08-12 08:34:03,025 - app.routes - INFO - Searching Pimly for: 12-801L
+2025-08-12 08:34:04,270 - app.services.pimly_client - INFO - Successfully retrieved 1 products from batch 1
+2025-08-12 08:34:04,270 - app.services.pimly_client - INFO - Total products retrieved: 1 from 1 requested IDs
+2025-08-12 08:34:04,278 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:34:04] "POST /api/pimly/search HTTP/1.1" 200 -
+2025-08-12 08:34:04,290 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:34:04] "OPTIONS /api/products/map/12-801L HTTP/1.1" 200 -
+2025-08-12 08:34:05,329 - app.services.pimly_client - INFO - Successfully retrieved 1 products from batch 1
+2025-08-12 08:34:05,330 - app.services.pimly_client - INFO - Total products retrieved: 1 from 1 requested IDs
+2025-08-12 08:34:05,330 - app.services.product_data_mapper - INFO - Processing Pimly data with 20 fields
+2025-08-12 08:34:05,330 - app.services.product_data_mapper - INFO - Mapped Pimly data: name='12-801L - Silver Series 8" Center Wall Mount Faucet with 6" Wide Gooseneck Spout', sku='12-801L', features=2, specs=0
+2025-08-12 08:34:05,334 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:34:05] "GET /api/products/map/12-801L HTTP/1.1" 200 -
+2025-08-12 08:34:06,759 - app.services.pimly_client - INFO - Successfully retrieved 1 products from batch 1
+2025-08-12 08:34:06,759 - app.services.pimly_client - INFO - Total products retrieved: 1 from 1 requested IDs
+2025-08-12 08:34:06,759 - app.services.product_data_mapper - INFO - Processing Pimly data with 20 fields
+2025-08-12 08:34:06,760 - app.services.product_data_mapper - INFO - Mapped Pimly data: name='12-801L - Silver Series 8" Center Wall Mount Faucet with 6" Wide Gooseneck Spout', sku='12-801L', features=2, specs=0
+2025-08-12 08:34:06,764 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:34:06] "GET /api/products/map/12-801L HTTP/1.1" 200 -
+2025-08-12 08:34:07,079 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:34:07] "OPTIONS /api/products/compare/12-801L HTTP/1.1" 200 -
+2025-08-12 08:34:07,997 - app.services.pimly_client - INFO - Successfully retrieved 1 products from batch 1
+2025-08-12 08:34:07,997 - app.services.pimly_client - INFO - Total products retrieved: 1 from 1 requested IDs
+2025-08-12 08:34:08,960 - app.services.product_data_mapper - INFO - Processing Pimly data with 20 fields
+2025-08-12 08:34:08,961 - app.services.product_data_mapper - INFO - Mapped Pimly data: name='12-801L - Silver Series 8" Center Wall Mount Faucet with 6" Wide Gooseneck Spout', sku='12-801L', features=2, specs=0
+2025-08-12 08:34:08,961 - app.services.mapped_data_comparator - INFO - Successfully mapped Pimly data for SKU: 12-801L
+2025-08-12 08:34:08,961 - app.services.mapped_data_comparator - INFO - Successfully mapped Krowne data for SKU: 12-801L
+2025-08-12 08:34:08,970 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:34:08] "GET /api/products/compare/12-801L HTTP/1.1" 200 -
+2025-08-12 08:34:08,982 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:34:08] "OPTIONS /api/krowne/admin/search/12-801L HTTP/1.1" 200 -
+2025-08-12 08:34:09,304 - app.services.krowne_cms_service - INFO - Searching for product with SKU: 12-801L
+2025-08-12 08:34:09,568 - app.services.krowne_cms_service - WARNING - No results table found for SKU: 12-801L
+2025-08-12 08:34:09,569 - app.services.krowne_cms_service - WARNING - Could not find record number for SKU: 12-801L
+2025-08-12 08:34:09,569 - app.routes - WARNING - Product not found in Krowne CMS for SKU: 12-801L
+2025-08-12 08:34:09,574 - werkzeug - INFO - 127.0.0.1 - - [12/Aug/2025 08:34:09] "[33mGET /api/krowne/admin/search/12-801L HTTP/1.1[0m" 404 -

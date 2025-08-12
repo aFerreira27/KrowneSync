@@ -602,84 +602,140 @@ def get_product_by_sku(sku):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-### Krowne Scraper Routes ###
-@main.route("/api/krowne/scrape-product/<sku>", methods=["GET", "OPTIONS"])
-def scrape_krowne_product(sku):
-    """Scrape product data from Krowne public website"""
-    if request.method == "OPTIONS":
-        return '', 200
+# ### Krowne Scraper Routes ###
+# @main.route("/api/krowne/scrape-product/<sku>", methods=["GET", "OPTIONS"])
+# def scrape_krowne_product(sku):
+#     """Scrape product data from Krowne public website"""
+#     if request.method == "OPTIONS":
+#         return '', 200
     
-    try:
-        krowne_scraper = KrowneScraper()
-        product_data = krowne_scraper.scrapeSite(BASEURL, sku)
+#     try:
+#         krowne_scraper = KrowneScraper()
+#         product_data = krowne_scraper.scrapeSite(BASEURL, sku)
         
-        if product_data:
-            logger.info(f"✅ Successfully scraped Krowne data for SKU: {sku}")
-            return jsonify(product_data)
-        else:
-            logger.warning(f"⚠️ No data found on Krowne website for SKU: {sku}")
-            return jsonify({"error": f"Product {sku} not found on Krowne website"}), 404
+#         if product_data:
+#             logger.info(f"✅ Successfully scraped Krowne data for SKU: {sku}")
+#             return jsonify(product_data)
+#         else:
+#             logger.warning(f"⚠️ No data found on Krowne website for SKU: {sku}")
+#             return jsonify({"error": f"Product {sku} not found on Krowne website"}), 404
             
-    except Exception as e:
-        logger.error(f"Error scraping Krowne product {sku}: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+#     except Exception as e:
+#         logger.error(f"Error scraping Krowne product {sku}: {str(e)}")
+#         return jsonify({"error": str(e)}), 500
     
-### Krowne CMS Product Routes ###
-@main.route("/api/krowne/admin/search/<sku>", methods=["GET"])
-def search_cms_admin_product(sku):
+def format_cms_admin_data(raw_cms_data: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Search for a product in the CMS admin panel by SKU
+    Format raw CMS admin data into a standardized structure
     """
     try:
-        # Check if user is authenticated with Krowne CMS
+        formatted = {
+            "basic_info": {},
+            "admin_metadata": {},
+            "form_fields": {},
+            "display_sections": {},
+            "extracted_specs": {},
+            "images": [],
+            "files": [],
+            "urls": []
+        }
+        
+        # Extract basic info
+        basic_fields = ['sku', 'name', 'record_number']
+        for field in basic_fields:
+            if field in raw_cms_data:
+                formatted["basic_info"][field] = raw_cms_data[field]
+        
+        # Admin-specific metadata (everything else goes here)
+        formatted["admin_metadata"] = raw_cms_data.copy()
+        
+        # Extract specifications from various sources
+        specs = {}
+        for key, value in raw_cms_data.items():
+            if any(spec_term in key.lower() for spec_term in ['spec', 'dimension', 'weight', 'material', 'finish']):
+                specs[key] = value
+        
+        formatted["extracted_specs"] = specs
+        
+        # Extract URLs and images from all data
+        all_values = []
+        
+        def collect_values(obj):
+            if isinstance(obj, dict):
+                for value in obj.values():
+                    collect_values(value)
+            elif isinstance(obj, list):
+                for item in obj:
+                    collect_values(item)
+            elif isinstance(obj, str):
+                all_values.append(obj)
+        
+        collect_values(raw_cms_data)
+        
+        # Find URLs and images
+        for value in all_values:
+            if isinstance(value, str) and value.startswith('http'):
+                if any(ext in value.lower() for ext in ['.jpg', '.jpeg', '.png', '.gif', '.webp']):
+                    formatted["images"].append(value)
+                elif any(ext in value.lower() for ext in ['.pdf', '.doc', '.docx', '.zip']):
+                    formatted["files"].append(value)
+                else:
+                    formatted["urls"].append(value)
+        
+        # Remove duplicates
+        formatted["images"] = list(set(formatted["images"]))
+        formatted["files"] = list(set(formatted["files"]))
+        formatted["urls"] = list(set(formatted["urls"]))
+        
+        return formatted
+        
+    except Exception as e:
+        logger.error(f"Error formatting CMS admin data: {str(e)}")
+        return {"error": f"Formatting error: {str(e)}"}
+
+
+### Krowne CMS Product Routes ###
+
+@main.route("/api/krowne/admin/search/<sku>", methods=["GET"])
+def get_krowne_product(sku):
+    """Get product details from Krowne CMS by SKU"""
+    try:
+        # Check if user is authenticated with Krowne
         krowne_auth = session.get('krowne_auth')
         if not krowne_auth or not krowne_auth.get('authenticated'):
             return jsonify({
-                "error": "Not authenticated with Krowne CMS admin panel",
-                "requires_auth": True
+                'error': 'Not authenticated with Krowne CMS',
+                'result': None,
+                'sku': sku
             }), 401
         
-        # Initialize the admin scraper
-        admin_scraper = KrowneCMSService()
-        
-        # Use existing session data
+        # Get session data for authenticated requests
         session_data = krowne_auth.get('session_data', {})
-        if not admin_scraper.verify_session(session_data):
-            # Session expired, need to re-authenticate
-            return jsonify({
-                "error": "CMS session expired, please re-authenticate",
-                "requires_auth": True
-            }), 401
         
-        # Search for the product
-        search_result = admin_scraper.search_product_by_sku(sku)
-        logger.info(f"Searching CMS admin for SKU: {sku}")
-        logger.info(f"Search result: {search_result}")
-
-        if search_result:
-            logger.info(f"✅ CMS admin search successful for SKU: {sku}")
+        # Use the existing search_product_by_sku method with session data
+        product_info = krowne_cms_service.search_product_by_sku(sku, session_data)
+        
+        if product_info:
+            logger.info(f"Successfully retrieved Krowne product for SKU: {sku}")
             return jsonify({
-                "success": True,
-                "sku": sku,
-                "search_result": search_result,
-                "found": True
+                'result': product_info,
+                'sku': sku,
+                'success': True
             })
         else:
-            logger.warning(f"⚠️ SKU not found in CMS admin: {sku}")
+            logger.warning(f"Product not found in Krowne CMS for SKU: {sku}")
             return jsonify({
-                "success": True,
-                "sku": sku,
-                "search_result": None,
-                "found": False,
-                "message": f"SKU {sku} not found in CMS admin panel"
-            })
+                'error': f'Product not found for SKU: {sku}',
+                'result': None,
+                'sku': sku
+            }), 404
             
     except Exception as e:
-        logger.exception(f"Error searching CMS admin for SKU {sku}")
+        logger.error(f"Error getting Krowne product for SKU {sku}: {str(e)}", exc_info=True)
         return jsonify({
-            "error": str(e),
-            "success": False,
-            "sku": sku
+            'error': str(e),
+            'result': None,
+            'sku': sku
         }), 500
 
 
@@ -697,19 +753,16 @@ def get_cms_admin_product_details(record_number):
                 "requires_auth": True
             }), 401
         
-        # Initialize the admin scraper
-        admin_scraper = KrowneCMSService()
-        
         # Use existing session data
         session_data = krowne_auth.get('session_data', {})
-        if not admin_scraper.verify_session(session_data):
+        if not krowne_cms_service.verify_session(session_data):
             return jsonify({
                 "error": "CMS session expired, please re-authenticate",
                 "requires_auth": True
             }), 401
         
-        # Get product details
-        product_details = admin_scraper.get_product_by_record_number(record_number)
+        # Get product details using the service method
+        product_details = krowne_cms_service.get_product_by_record_number(record_number, session_data)
         
         if product_details:
             logger.info(f"✅ CMS admin product details retrieved for record: {record_number}")
@@ -735,6 +788,52 @@ def get_cms_admin_product_details(record_number):
         }), 500
 
 
+@main.route('/api/krowne/scrape-product', methods=['POST'])
+def scrape_krowne_product():
+    """Scrape product details from Krowne CMS"""
+    try:
+        data = request.get_json()
+        sku = data.get('sku')
+        
+        if not sku:
+            return jsonify({'error': 'SKU is required', 'result': None}), 400
+        
+        # Check authentication
+        krowne_auth = session.get('krowne_auth')
+        if not krowne_auth or not krowne_auth.get('authenticated'):
+            return jsonify({
+                'error': 'Not authenticated with Krowne CMS',
+                'result': None,
+                'sku': sku
+            }), 401
+        
+        session_data = krowne_auth.get('session_data', {})
+        
+        # Search for the product
+        product_info = krowne_cms_service.search_product_by_sku(sku, session_data)
+        
+        if product_info:
+            return jsonify({
+                'result': product_info,
+                'sku': sku,
+                'success': True
+            })
+        else:
+            return jsonify({
+                'error': f'Product not found for SKU: {sku}',
+                'result': None,
+                'sku': sku
+            }), 404
+            
+    except Exception as e:
+        logger.error(f"Error scraping Krowne product: {str(e)}", exc_info=True)
+        return jsonify({
+            'error': str(e),
+            'result': None,
+            'sku': request.get_json().get('sku') if request.get_json() else None
+        }), 500
+
+
 @main.route("/api/krowne/admin/sku/<sku>", methods=["GET"])
 def get_cms_admin_product_by_sku(sku):
     """
@@ -749,19 +848,16 @@ def get_cms_admin_product_by_sku(sku):
                 "requires_auth": True
             }), 401
         
-        # Initialize the admin scraper
-        admin_scraper = KrowneCMSService()
-        
         # Use existing session data
         session_data = krowne_auth.get('session_data', {})
-        if not admin_scraper.verify_session(session_data):
+        if not krowne_cms_service.verify_session(session_data):
             return jsonify({
                 "error": "CMS session expired, please re-authenticate",
                 "requires_auth": True
             }), 401
         
-        # Get complete product data
-        product_data = admin_scraper.get_product_by_sku(sku)
+        # Get complete product data using the service method
+        product_data = krowne_cms_service.get_product_by_sku(sku, session_data)
         
         if product_data:
             logger.info(f"✅ Complete CMS admin data retrieved for SKU: {sku}")
@@ -774,10 +870,9 @@ def get_cms_admin_product_by_sku(sku):
                 "formatted_data": format_cms_admin_data(product_data),
                 "metadata": {
                     "record_number": product_data.get('record_number'),
-                    "admin_url": product_data.get('detail_metadata', {}).get('admin_url'),
-                    "fields_count": len(product_data.get('admin_fields', {})),
-                    "form_fields_count": len(product_data.get('form_data', {})),
-                    "sections_count": len(product_data.get('sections', {}))
+                    "fields_count": len(product_data),
+                    "has_categories": bool(product_data.get('categories')),
+                    "extracted_at": datetime.now().isoformat()
                 }
             }
             
@@ -809,7 +904,6 @@ def get_cms_admin_products_batch():
     Get multiple products from CMS admin by SKU list
     """
     try:
-        # Check authentication
         krowne_auth = session.get('krowne_auth')
         if not krowne_auth or not krowne_auth.get('authenticated'):
             return jsonify({
@@ -826,12 +920,9 @@ def get_cms_admin_products_batch():
         if len(skus) > 50:  # Limit batch size
             return jsonify({"error": "Maximum 50 SKUs allowed per batch"}), 400
         
-        # Initialize the admin scraper
-        admin_scraper = KrowneCMSService()
-        
         # Use existing session data
         session_data = krowne_auth.get('session_data', {})
-        if not admin_scraper.verify_session(session_data):
+        if not krowne_cms_service.verify_session(session_data):
             return jsonify({
                 "error": "CMS session expired, please re-authenticate",
                 "requires_auth": True
@@ -842,7 +933,7 @@ def get_cms_admin_products_batch():
         
         for sku in skus:
             try:
-                product_data = admin_scraper.get_product_by_sku(sku)
+                product_data = krowne_cms_service.get_product_by_sku(sku, session_data)
                 
                 if product_data:
                     formatted_data = {
@@ -884,95 +975,6 @@ def get_cms_admin_products_batch():
             "error": str(e),
             "success": False
         }), 500
-
-
-def format_cms_admin_data(raw_cms_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Format raw CMS admin data into a standardized structure
-    """
-    try:
-        formatted = {
-            "basic_info": {},
-            "admin_metadata": {},
-            "form_fields": {},
-            "display_sections": {},
-            "extracted_specs": {},
-            "images": [],
-            "files": [],
-            "urls": []
-        }
-        
-        # Extract basic info
-        basic_fields = ['sku', 'name', 'record_number']
-        for field in basic_fields:
-            if field in raw_cms_data:
-                formatted["basic_info"][field] = raw_cms_data[field]
-        
-        # Admin-specific metadata
-        admin_fields = raw_cms_data.get('admin_fields', {})
-        formatted["admin_metadata"] = admin_fields.copy()
-        
-        # Form data
-        form_data = raw_cms_data.get('form_data', {})
-        formatted["form_fields"] = form_data.copy()
-        
-        # Display sections
-        sections = raw_cms_data.get('sections', {})
-        formatted["display_sections"] = sections.copy()
-        
-        # Extract specifications from various sources
-        specs = {}
-        
-        # From form fields
-        for key, value in form_data.items():
-            if any(spec_term in key.lower() for spec_term in ['spec', 'dimension', 'weight', 'material', 'finish']):
-                specs[key] = value
-        
-        # From sections
-        for section_name, section_data in sections.items():
-            if 'spec' in section_name.lower() or 'dimension' in section_name.lower():
-                specs.update(section_data)
-        
-        formatted["extracted_specs"] = specs
-        
-        # Extract URLs and images from all data
-        all_values = []
-        
-        def collect_values(obj):
-            if isinstance(obj, dict):
-                for value in obj.values():
-                    collect_values(value)
-            elif isinstance(obj, list):
-                for item in obj:
-                    collect_values(item)
-            elif isinstance(obj, str):
-                all_values.append(value)
-        
-        collect_values(raw_cms_data)
-        
-        # Find URLs and images
-        for value in all_values:
-            if isinstance(value, str):
-                if value.startswith('http'):
-                    if any(ext in value.lower() for ext in ['.jpg', '.jpeg', '.png', '.gif', '.webp']):
-                        formatted["images"].append(value)
-                    elif any(ext in value.lower() for ext in ['.pdf', '.doc', '.docx', '.zip']):
-                        formatted["files"].append(value)
-                    else:
-                        formatted["urls"].append(value)
-        
-        # Remove duplicates
-        formatted["images"] = list(set(formatted["images"]))
-        formatted["files"] = list(set(formatted["files"]))
-        formatted["urls"] = list(set(formatted["urls"]))
-        
-        return formatted
-        
-    except Exception as e:
-        logger.error(f"Error formatting CMS admin data: {str(e)}")
-        return {"error": f"Formatting error: {str(e)}"}
-
-
 ### Enhanced comparison route that includes CMS admin data ###
 
 @main.route("/api/products/compare-enhanced/<sku>", methods=["GET"])
