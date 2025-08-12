@@ -40,3 +40,9 @@ venv/
 flask_sessions/
 
 Output/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
