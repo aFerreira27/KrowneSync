@@ -237,7 +237,36 @@ def search_pimly_products():
     except Exception as e:
         logger.error(f"Error searching Pimly: {str(e)}")
         return jsonify({"error": str(e)}), 500
+@main.route("/api/pimly/products/<sku>", methods=["GET", "OPTIONS"])
+def get_pimly_product_by_sku(sku):
+    """
+    Get a specific product by SKU from Pimly
+    """
+    if request.method == "OPTIONS":
+        return '', 200
 
+    try:
+        sf_client = get_authenticated_sf_client()
+        pimly_client = PimlyClient(sf_client)
+
+        # Validate SKU
+        if not sku or not isinstance(sku, str):
+            return jsonify({"error": "Invalid SKU provided"}), 400
+
+        logger.info(f"Fetching product from Pimly for SKU: {sku}")
+
+        # Fetch product by SKU
+        product = pimly_client.get_product_by_sku(sku)
+        
+        if not product:
+            return jsonify({"error": f"Product with SKU {sku} not found"}), 404
+        
+        return jsonify(product)
+    
+    except Exception as e:
+        logger.error(f"Error fetching product by SKU {sku}: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+    
 BATCH_SIZE = int(os.environ.get("PIMLY_BATCH_SIZE", 50))
 MAX_PRODUCTS_PER_REQUEST = int(os.environ.get("MAX_PRODUCTS_PER_REQUEST", 4000))
 
@@ -515,6 +544,17 @@ def scrape_krowne_product(sku):
         logger.error(f"Error scraping Krowne product {sku}: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+# Add a helper function to get raw data without Flask Response wrapper
+def get_krowne_product_data(sku):
+    """Get Krowne product data as raw dict (not Flask Response)"""
+    try:
+        krowne_scraper = KrowneScraper()
+        product_data = krowne_scraper.scrapeSite(BASEURL, sku)
+        return product_data
+    except Exception as e:
+        logger.error(f"Error getting Krowne product data for {sku}: {str(e)}")
+        return None
+
 ### Format Data Endpoints ###
 @main.route("/api/products/format", methods=["POST", "OPTIONS"])
 def format_product_data_endpoint():
@@ -543,34 +583,40 @@ def format_product_data_endpoint():
         }), 500
 
 ### Comparison Endpoints ###
-@main.route("/api/products/compare/<sku>", methods=["GET"]) 
+@main.route("/api/products/compare/<sku>", methods=["GET", "OPTIONS"]) 
 def compare_product_data(sku):
     """Enhanced product comparison with raw data included"""
+    if request.method == "OPTIONS":
+        return '', 200
+    
     try:
         sf_client = get_authenticated_sf_client()
         pimly_client = PimlyClient(sf_client)
                 
         # Get data from both sources
         pimly_data = pimly_client.get_product_by_sku(sku)
-        krowne_data = scrape_krowne_product(sku)
+        # Use the helper function instead of calling the route directly
+        krowne_data = get_krowne_product_data(sku)
         
-        try:
-            scrape_krowne_product(sku)
-        except Exception as e:
-            logger.warning(f"Could not fetch Krowne data for comparison of SKU {sku}: {e}")
+        logger.info(f"Comparing data for SKU: {sku}")
+        
+        # Handle case where krowne_data is None
+        if krowne_data is None:
+            krowne_data = {"error": f"Product {sku} not found on Krowne website"}
         
         # Format for response (keeping backward compatibility)
         response = {
             'sku': sku,
             'salesforce': format_pimly_data(pimly_data),  # Keep existing structure
-            'krowne': (krowne_data),
+            'krowne': krowne_data,
             'raw_data': {  # Add raw data section
                 'pimly': pimly_data,
                 'krowne': krowne_data
             }
         }
         
-        return jsonify(response)
+        logger.info(f"Comparison data for SKU {sku}: {response}")
+        return jsonify(response), 200
         
     except Exception as e:
         logger.exception(f"Error comparing product data for SKU {sku}")

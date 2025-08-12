@@ -40,7 +40,7 @@ def format_pimly_data(raw_data: Dict[str, Any]) -> Dict[str, Any]:
     
     # Extract series
     series = get_property_value('Series') or ''
-    
+    list_price = get_property_value('List_Price') or ''
     # Extract features
     features_value = get_property_value('Features')
     features = features_value if features_value else ''
@@ -155,7 +155,6 @@ def format_pimly_data(raw_data: Dict[str, Any]) -> Dict[str, Any]:
         # Compatibility and Features
         'Gas_System_Compatibility',
         'Beverage_Compatibility_Options',
-        'ADA_Compliance',
         'Brakes',
         'Cold_Plate',
         'Heat_Recovery',
@@ -178,6 +177,7 @@ def format_pimly_data(raw_data: Dict[str, Any]) -> Dict[str, Any]:
         'ETL_Certification',
         'NSF_Certification',
         'UL_Certification',
+        'ADA_Compliance',
         'CEC_Listed_Certification',
         'Massachusetts_Listed_Certification',
         'IAMPO_Certification'
@@ -222,8 +222,10 @@ def format_pimly_data(raw_data: Dict[str, Any]) -> Dict[str, Any]:
     if main_asset.get('pimly__URL__c'):
         links['Main Image'] = main_asset['pimly__URL__c']
     
+    
+
     # Related products links
-    related_products = {}
+    relatedProducts = {}
     for related_group in raw_data.get('relatedProducts', []):
         group_name = related_group.get('propertyName', '')
         products = related_group.get('products', [])
@@ -236,11 +238,8 @@ def format_pimly_data(raw_data: Dict[str, Any]) -> Dict[str, Any]:
                     'image_url': product.get('mainImageUrl', ''),
                     'pimly_id': product.get('pimlyId', '')
                 })
-            related_products[group_name] = product_info
-    
-    if related_products:
-        links['Related Products'] = related_products
-    
+            relatedProducts[group_name] = product_info
+
     # Extract miscellaneous information (pricing, shipping, codes, etc.)
     misc_fields = [
         # Product Identification
@@ -251,7 +250,6 @@ def format_pimly_data(raw_data: Dict[str, Any]) -> Dict[str, Any]:
         'Product_Status',
         
         # Pricing
-        'List_Price',
         'MAP_Price',
         'Case_Price',
         'Restock_Fee',
@@ -302,12 +300,14 @@ def format_pimly_data(raw_data: Dict[str, Any]) -> Dict[str, Any]:
     # Build the final formatted data structure
     formatted_data = {
         'Name': name,
-        'Admin Name': admin_name,
+        'SKU': admin_name,
         'Series': series,
+        'List Price': list_price,
         'Features': features_dict if features_dict else features,
         'Specifications': specifications,
         'Certifications': cleaned_certifications,
         'Links': links,
+        'Related Products': relatedProducts,
         'Miscellaneous': misc
     }
     

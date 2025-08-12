@@ -48,80 +48,35 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
 
       let pimlyProduct = null;
       let krowneData = null;
-      let comparison = null;
-
-      // Handle Pimly product data
-      if (searchResults.products && searchResults.products.length > 0) {
-        pimlyProduct = searchResults.products[0];
-        console.log('Found Pimly product:', pimlyProduct);
-      }
-
-      // Try to scrape Krowne data if available
-      try {
-        const krowneResponse = await api.scrapeKrowneProduct(skuToSearch);
-        if (krowneResponse && Object.keys(krowneResponse).length > 0) {
-          krowneData = krowneResponse;
-          console.log('✅ Krowne data retrieved:', krowneData);
-        }
-      } catch (krowneError) {
-        console.warn('Could not scrape Krowne data:', krowneError.message);
-      }
-
-      // If we have no data from either source, try the old comparison system as fallback
-      if (!pimlyProduct && !krowneData) {
-        try {
-          console.log('🔄 Trying fallback comparison system...');
-          const fallbackComparison = await api.compareSingleProduct(skuToSearch);
-          
-          if (fallbackComparison?.results?.length > 0) {
-            const result = fallbackComparison.results[0];
-            pimlyProduct = result.salesforce;
-            krowneData = result.krowne;
-            comparison = result.comparison;
-            console.log('✅ Fallback comparison successful:', result);
-          }
-        } catch (fallbackError) {
-          console.warn('Fallback comparison also failed:', fallbackError.message);
-        }
-      }
+      let pimlyRaw = null;
+      let krowneRaw = null;
+      
+      const result = await api.compareSingleProduct(skuToSearch);
+      pimlyProduct = result.salesforce;
+      krowneData = result.krowne;
+      pimlyRaw = result.raw_data.pimly_data;
+      krowneRaw = result.raw_data.krowne_data;
 
       // Determine product status
       let status = 'not_found';
       if (pimlyProduct && krowneData) {
-        if (comparison?.mismatch_count > 0) {
-          status = 'mismatches_found';
-        } else if (comparison?.match_count > 0) {
-          status = 'data_matches';
-        } else {
-          status = 'found_both';
-        }
+        status = 'found_both';
       } else if (pimlyProduct && !krowneData) {
         status = 'missing_from_krowne';
       } else if (!pimlyProduct && krowneData) {
         status = 'missing_from_salesforce';
       }
 
-      // Extract mismatches for sync functionality
-      const mismatches = comparison?.field_comparisons?.filter(field => field.is_mismatch) || 
-                        comparison?.mismatches || 
-                        [];
-
       // Structure the product data for ProductCard
       const structuredProductData = {
         sku: skuToSearch,
         salesforce: pimlyProduct,
         krowne: krowneData,
-        comparison: comparison?.comparison_summary || comparison || {
-          mismatches: mismatches,
-          matches: comparison?.field_comparisons?.filter(field => field.is_match) || [],
-          partial_data: comparison?.field_comparisons?.filter(field => field.has_partial_data) || [],
-          total_fields_compared: comparison?.field_comparisons?.length || 0,
-          mismatch_count: mismatches.length,
-          match_count: comparison?.field_comparisons?.filter(field => field.is_match)?.length || 0,
-          partial_data_count: comparison?.field_comparisons?.filter(field => field.has_partial_data)?.length || 0
+        raw_data: {
+          pimly: pimlyRaw,
+          krowne: krowneRaw
         },
         status: status,
-        mismatches: mismatches,
         // Additional display properties
         name:  pimlyProduct?.Name || krowneData?.name || skuToSearch,
         price: pimlyProduct?.ListPrice || krowneData?.price,

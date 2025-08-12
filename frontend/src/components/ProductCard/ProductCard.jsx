@@ -109,11 +109,11 @@ const ProductCard = ({ productData, onSync }) => {
   const getFieldsToCompare = () => {
     const fields = [
       { key: "name", label: "Name", pimly: "Name", krowne: "name" },
-      { key: "series", label: "Series", pimly: "Series__c", krowne: "series" },
+      { key: "series", label: "Series", pimly: "Series", krowne: "series" },
       {
         key: "price",
         label: "List Price",
-        pimly: "ListPrice__c",
+        pimly: "ListPrice",
         krowne: "price",
       },
       {
@@ -135,10 +135,16 @@ const ProductCard = ({ productData, onSync }) => {
         krowne: "certifications",
       },
       {
-        key: "files",
+        key: "links",
         label: "Files & Links",
         pimly: "Files__c",
         krowne: "files",
+      },
+      {
+        key: "relatedProducts",
+        label: "Related Products",
+        pimly: "Related_Products__c",
+        krowne: "related_products",
       },
     ];
     return fields;
@@ -180,7 +186,7 @@ const ProductCard = ({ productData, onSync }) => {
     return null;
   }
 
-  const sku = productData.sku || productData.SKU || productData.Id || "12-801L";
+  const sku = productData.sku || productData.SKU || productData.Id;
   const productName =
     pimlyData?.Name ||
     pimlyData?.name ||
@@ -193,9 +199,6 @@ const ProductCard = ({ productData, onSync }) => {
     status: productData.comparison?.status || productData.status || "unknown",
     hasPimly: !!pimlyData,
     hasKrowne: !!krowneData,
-    hasMappedData: !!mappedData,
-    hasComparison: !!(productData.comparison || mappedData),
-    mismatchCount: productData.comparison?.mismatch_count || 0,
   };
 
   console.log("ProductCard Debug:", debugInfo);
@@ -240,7 +243,7 @@ const ProductCard = ({ productData, onSync }) => {
                         alt="Pimly"
                         className="source-logo"
                       />
-                      <span>Pimly</span>
+                      <span>Pimly (Salesforce) </span>
                     </th>
                     <th className="source-header krowne-header">
                       <img
@@ -248,7 +251,7 @@ const ProductCard = ({ productData, onSync }) => {
                         alt="Krowne"
                         className="source-logo"
                       />
-                      <span>KROWNE</span>
+                      <span>Krowne.com</span>
                     </th>
                   </tr>
                 </thead>
@@ -290,12 +293,7 @@ const ProductCard = ({ productData, onSync }) => {
               >
                 Krowne Raw JSON
               </button>
-              <button
-                className={`dev-tab ${activeTab === "mapped" ? "active" : ""}`}
-                onClick={() => setActiveTab("mapped")}
-              >
-                Mapped Data
-              </button>
+
             </div>
 
             <div className="json-viewer">
@@ -313,13 +311,7 @@ const ProductCard = ({ productData, onSync }) => {
                     : "No Krowne data available"}
                 </pre>
               )}
-              {activeTab === "mapped" && (
-                <pre className="json-content">
-                  {mappedData
-                    ? JSON.stringify(mappedData, null, 2)
-                    : "No mapped data available"}
-                </pre>
-              )}
+
             </div>
 
             {/* Debug Info in Dev Mode */}
