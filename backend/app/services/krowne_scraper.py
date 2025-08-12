@@ -121,11 +121,12 @@ class KrowneScraper:
                         value = cells[1].get_text(strip=True)
                         if key and value:
                             # Store in specifications dict
-                            product_data['krowne']['specifications'][key] = value
-                            
-                            # Also store series separately if found
                             if key.lower() == 'series':
                                 product_data['krowne']['series'] = value
+                            else:
+                                product_data['krowne']['specifications'][key] = value
+                            
+                            
         
         # Extract ALL certifications dynamically
         certs_section = soup.find('h3', string='CERTIFICATIONS')

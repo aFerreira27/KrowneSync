@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./ProductCard.css";
+import { FIELD_MAPPINGS, findCanonicalField } from "./fieldMappings";
 
 const ProductCard = ({ productData, onSync }) => {
   const [devMode, setDevMode] = useState(false);
@@ -8,6 +9,7 @@ const ProductCard = ({ productData, onSync }) => {
   const [krowneData, setKrowneData] = useState(null);
   const [mappedData, setMappedData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [expandedFields, setExpandedFields] = useState({});
 
   useEffect(() => {
     if (productData) {
@@ -17,7 +19,7 @@ const ProductCard = ({ productData, onSync }) => {
       // For comparison endpoint responses
       if (productData.raw_data) {
         setPimlyData(
-          productData.raw_data.pimly || productData.salesforce || null
+          productData.salesforce || null
         );
         setKrowneData(
           productData.raw_data.krowne || productData.krowne || null
@@ -35,19 +37,337 @@ const ProductCard = ({ productData, onSync }) => {
     setDevMode(!devMode);
   };
 
+  const normalizeForComparison = (value) => {
+    if (value === null || value === undefined) return null;
+    
+    // Handle boolean-like strings first
+    if (typeof value === 'string') {
+      const upperValue = value.toUpperCase().trim();
+      if (upperValue === 'TRUE' || upperValue === 'YES') return 'boolean_true';
+      if (upperValue === 'FALSE' || upperValue === 'NO') return 'boolean_false';
+      
+      // If it's a string that looks like a price, normalize it
+      const priceMatch = value.match(/[\d.,]+/);
+      if (priceMatch) {
+        const numericValue = parseFloat(priceMatch[0].replace(/,/g, ''));
+        if (!isNaN(numericValue)) {
+          return numericValue;
+        }
+      }
+      // For non-price strings, normalize case and whitespace
+      return value.toLowerCase().trim();
+    }
+    
+    // Handle actual boolean values
+    if (typeof value === 'boolean') return value ? 'boolean_true' : 'boolean_false';
+    
+    // For numbers, return as-is
+    if (typeof value === 'number') return value;
+    
+    // For arrays, sort them before stringifying for comparison
+    if (Array.isArray(value)) {
+      const sortedArray = [...value].sort((a, b) => {
+        // Handle different data types in arrays
+        const aStr = String(a).toLowerCase().trim();
+        const bStr = String(b).toLowerCase().trim();
+        return aStr.localeCompare(bStr);
+      });
+      return JSON.stringify(sortedArray);
+    }
+    
+    // For objects, stringify for comparison
+    return JSON.stringify(value);
+  };
+
+  // Helper function to check if values match
+  const valuesMatch = (value1, value2) => {
+    const normalized1 = normalizeForComparison(value1);
+    const normalized2 = normalizeForComparison(value2);
+    return normalized1 === normalized2;
+  };
+
+  // Helper function to normalize structured data using field mappings
+  const normalizeStructuredData = (data, fieldCategory) => {
+    if (!data || !FIELD_MAPPINGS[fieldCategory]) return {};
+    
+    // If data is a string, try to parse it as JSON
+    let parsedData = data;
+    if (typeof data === 'string') {
+      try {
+        parsedData = JSON.parse(data);
+      } catch {
+        return { value: data };
+      }
+    }
+    
+    // If data is not an object, return as simple value
+    if (typeof parsedData !== 'object' || Array.isArray(parsedData)) {
+      return Array.isArray(parsedData) ? parseStructuredData(parsedData) : { value: parsedData };
+    }
+    
+    // Normalize field names using mappings and handle multiple values for same canonical field
+    const normalizedData = {};
+    
+    for (const [actualKey, value] of Object.entries(parsedData)) {
+      const canonicalKey = findCanonicalField(fieldCategory, actualKey);
+      
+      if (canonicalKey) {
+        // If canonical key already exists, combine values
+        if (normalizedData[canonicalKey]) {
+          // If both are objects, merge them
+          if (typeof normalizedData[canonicalKey] === 'object' && typeof value === 'object') {
+            normalizedData[canonicalKey] = { ...normalizedData[canonicalKey], ...value };
+          } else if (Array.isArray(normalizedData[canonicalKey])) {
+            // If existing is array, add new value
+            normalizedData[canonicalKey].push(value);
+          } else {
+            // Convert to array with both values
+            normalizedData[canonicalKey] = [normalizedData[canonicalKey], value];
+          }
+        } else {
+          // Add array sorting for consistent comparison
+          if (Array.isArray(value)) {
+            normalizedData[canonicalKey] = [...value].sort((a, b) => {
+              const aStr = String(a).toLowerCase().trim();
+              const bStr = String(b).toLowerCase().trim(); 
+              return aStr.localeCompare(bStr);
+            });
+          } else {
+            normalizedData[canonicalKey] = value;
+          }
+        }
+      } else {
+        // Use original key if no mapping found
+        const finalKey = actualKey.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_');
+        if (Array.isArray(value)) {
+          normalizedData[finalKey] = [...value].sort((a, b) => {
+            const aStr = String(a).toLowerCase().trim();
+            const bStr = String(b).toLowerCase().trim(); 
+            return aStr.localeCompare(bStr);
+          });
+        } else {
+          normalizedData[finalKey] = value;
+        }
+      }
+    }
+    
+    return normalizedData;
+  };
+
+  // Helper function to parse structured data into subfields
+  const parseStructuredData = (data, fieldKey = null) => {
+    if (!data) return {};
+    
+    // Special handling for Related Products
+    if (fieldKey === 'relatedProducts') {
+      if (typeof data === 'string') {
+        try {
+          // Split by newlines and parse each JSON object
+          const lines = data.split('\n').filter(line => line.trim());
+          const products = [];
+          
+          for (const line of lines) {
+            try {
+              const product = JSON.parse(line);
+              // Extract admin_name for Pimly objects, sku for Krowne objects
+              if (product.admin_name) {
+                products.push(product.admin_name);
+              } else if (product.sku) {
+                products.push(product.sku);
+              }
+            } catch (e) {
+              // Skip invalid JSON lines
+            }
+          }
+          
+          return products.length > 0 ? { products: products.sort() } : {};
+        } catch (e) {
+          return { value: data };
+        }
+      }
+    }
+    
+    // If data is a string, try to parse it as JSON
+    if (typeof data === 'string') {
+      try {
+        const parsed = JSON.parse(data);
+        return typeof parsed === 'object' ? parsed : { value: data };
+      } catch {
+        // If not valid JSON, treat as plain text
+        return { value: data };
+      }
+    }
+    
+    // If data is already an object, return as is
+    if (typeof data === 'object' && !Array.isArray(data)) {
+      return data;
+    }
+    
+    // If data is an array, convert to indexed object
+    if (Array.isArray(data)) {
+      const result = {};
+      data.forEach((item, index) => {
+        if (typeof item === 'object') {
+          Object.keys(item).forEach(key => {
+            const fieldKey = `${key}_${index + 1}`;
+            result[fieldKey] = item[key];
+          });
+        } else {
+          result[`item_${index + 1}`] = item;
+        }
+      });
+      return result;
+    }
+    
+    return { value: data };
+  };
+
+  // Updated renderSubfields function
+  const renderSubfields = (pimlyData, krowneData, fieldKey) => {
+    // For Related Products, use special parsing
+    if (fieldKey === 'relatedProducts') {
+      const pimlySubfields = parseStructuredData(pimlyData, fieldKey);
+      const krowneSubfields = parseStructuredData(krowneData, fieldKey);
+      
+      // Merge all unique keys from both sources
+      const allKeys = new Set([
+        ...Object.keys(pimlySubfields),
+        ...Object.keys(krowneSubfields)
+      ]);
+      
+      const sortedKeys = Array.from(allKeys).sort();
+      
+      if (sortedKeys.length === 0) {
+        return {
+          pimly: <span className="null-value">—</span>,
+          krowne: <span className="null-value">—</span>
+        };
+      }
+
+      const renderSide = (subfields) => (
+        <div className="subfield-container">
+          {sortedKeys.map((key) => {
+            const pimlyValue = pimlySubfields[key];
+            const krowneValue = krowneSubfields[key];
+            const subfieldMatches = valuesMatch(pimlyValue, krowneValue);
+            
+            return (
+              <div key={key} className={`subfield-item ${subfieldMatches ? 'subfield-match' : 'subfield-mismatch'}`}>
+                <span className="subfield-label">{key.replace(/_/g, ' ')}:</span>
+                <span className="subfield-value">
+                  {subfields[key] !== undefined 
+                    ? renderValue(subfields[key]) 
+                    : <span className="null-value">—</span>
+                  }
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      );
+
+      return {
+        pimly: renderSide(pimlySubfields),
+        krowne: renderSide(krowneSubfields)
+      };
+    }
+    
+    // Determine field category based on the field key for other fields
+    let fieldCategory = 'specifications'; // default
+    if (fieldKey === 'certifications') fieldCategory = 'certifications';
+    if (fieldKey === 'links') fieldCategory = 'links';
+    
+    // Normalize data using field mappings for other fields
+    const pimlySubfields = normalizeStructuredData(pimlyData, fieldCategory);
+    const krowneSubfields = normalizeStructuredData(krowneData, fieldCategory);
+    
+    // Merge all unique keys from both sources
+    const allKeys = new Set([
+      ...Object.keys(pimlySubfields),
+      ...Object.keys(krowneSubfields)
+    ]);
+    
+    const sortedKeys = Array.from(allKeys).sort();
+    
+    if (sortedKeys.length === 0) {
+      return {
+        pimly: <span className="null-value">—</span>,
+        krowne: <span className="null-value">—</span>
+      };
+    }
+
+    // If both sides have only a single 'value' field, render as simple values
+    if (sortedKeys.length === 1 && sortedKeys[0] === 'value') {
+      return {
+        pimly: renderValue(pimlySubfields.value),
+        krowne: renderValue(krowneSubfields.value)
+      };
+    }
+
+    const renderSide = (subfields) => (
+      <div className="subfield-container">
+        {sortedKeys.map((key) => {
+          const pimlyValue = pimlySubfields[key];
+          const krowneValue = krowneSubfields[key];
+          const subfieldMatches = valuesMatch(pimlyValue, krowneValue);
+          
+          return (
+            <div key={key} className={`subfield-item ${subfieldMatches ? 'subfield-match' : 'subfield-mismatch'}`}>
+              <span className="subfield-label">{key.replace(/_/g, ' ')}:</span>
+              <span className="subfield-value">
+                {subfields[key] !== undefined 
+                  ? renderValue(subfields[key]) 
+                  : <span className="null-value">—</span>
+                }
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    );
+
+    return {
+      pimly: renderSide(pimlySubfields),
+      krowne: renderSide(krowneSubfields)
+    };
+  };
+
   const renderComparisonRow = (field, pimlyValue, krowneValue) => {
-    const valuesMatch =
-      JSON.stringify(pimlyValue) === JSON.stringify(krowneValue);
+    const fieldValuesMatch = valuesMatch(pimlyValue, krowneValue);
     const hasValues = pimlyValue !== null || krowneValue !== null;
 
     if (!hasValues) return null;
 
+    const hasSubfields = field.hasSubfields;
+
+    if (hasSubfields) {
+      const subfieldResults = renderSubfields(pimlyValue, krowneValue, field.key);
+      
+      return (
+        <tr
+          key={field.key}
+          className={`comparison-row ${fieldValuesMatch ? "match" : "mismatch"} subfield-row`}
+        >
+          <td className="field-name">
+            {field.label}
+            <span className="subfield-indicator">📋</span>
+          </td>
+          <td className="pimly-value">
+            {subfieldResults.pimly}
+          </td>
+          <td className="krowne-value">
+            {subfieldResults.krowne}
+          </td>
+        </tr>
+      );
+    }
+
     return (
       <tr
-        key={field}
-        className={`comparison-row ${valuesMatch ? "match" : "mismatch"}`}
+        key={field.key}
+        className={`comparison-row ${fieldValuesMatch ? "match" : "mismatch"}`}
       >
-        <td className="field-name">{field}</td>
+        <td className="field-name">{field.label}</td>
         <td className="pimly-value">{renderValue(pimlyValue)}</td>
         <td className="krowne-value">{renderValue(krowneValue)}</td>
       </tr>
@@ -108,43 +428,63 @@ const ProductCard = ({ productData, onSync }) => {
 
   const getFieldsToCompare = () => {
     const fields = [
-      { key: "name", label: "Name", pimly: "Name", krowne: "name" },
-      { key: "series", label: "Series", pimly: "Series", krowne: "series" },
+      { key: "name", label: "Name", pimly: "Name", krowne: "name", hasSubfields: false },
+      { key: "series", label: "Series", pimly: "Series", krowne: "series", hasSubfields: false },
       {
         key: "price",
         label: "List Price",
-        pimly: "ListPrice",
+        pimly: "List Price",
         krowne: "price",
+        hasSubfields: false
       },
       {
         key: "features",
         label: "Features",
-        pimly: "Features__c",
+        pimly: "Features",
         krowne: "features",
+        hasSubfields: false
       },
       {
         key: "specifications",
         label: "Specifications",
         pimly: "Specifications__c",
         krowne: "specifications",
+        hasSubfields: true
       },
       {
         key: "certifications",
         label: "Certifications",
         pimly: "Certifications__c",
         krowne: "certifications",
+        hasSubfields: true
+      },
+      {
+        key: "warranty",
+        label: "Warranty",
+        pimly: "Warranty",
+        krowne: "warranty",
+        hasSubfields: false
       },
       {
         key: "links",
         label: "Files & Links",
         pimly: "Files__c",
         krowne: "files",
+        hasSubfields: true
       },
       {
         key: "relatedProducts",
         label: "Related Products",
-        pimly: "Related_Products__c",
+        pimly: "Related Products",
         krowne: "related_products",
+        hasSubfields: false
+      },
+      {
+        key: "miscellaneous",
+        label: "Miscellaneous",
+        pimly: "Miscellaneous",
+        krowne: "miscellaneous",
+        hasSubfields: false
       },
     ];
     return fields;
@@ -258,7 +598,7 @@ const ProductCard = ({ productData, onSync }) => {
                 <tbody>
                   {getFieldsToCompare().map((field) =>
                     renderComparisonRow(
-                      field.label,
+                      field,
                       extractPimlyValue(field),
                       extractKrowneValue(field)
                     )

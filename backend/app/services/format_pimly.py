@@ -35,12 +35,12 @@ def format_pimly_data(raw_data: Dict[str, Any]) -> Dict[str, Any]:
         return field_name.replace('_', ' ').replace('(', ' (').replace('  ', ' ').strip()
     
     # Extract basic information
-    name = raw_data.get('name', '')
+    name = get_property_value('Product_Description')
     admin_name = raw_data.get('adminName', '')
     
     # Extract series
     series = get_property_value('Series') or ''
-    list_price = get_property_value('List_Price') or ''
+    list_price = get_property_value('List_Price')
     # Extract features
     features_value = get_property_value('Features')
     features = features_value if features_value else ''
@@ -112,8 +112,7 @@ def format_pimly_data(raw_data: Dict[str, Any]) -> Dict[str, Any]:
         'Glycol_Lines',
         'Beverage_Lines',
         'Caster_Quantity',
-        'Pallet_Quantity',
-        'Case_Quantity',
+
         
         # Dimensions and Sizes
         'Interior_Diameter_(in.)',
@@ -197,12 +196,7 @@ def format_pimly_data(raw_data: Dict[str, Any]) -> Dict[str, Any]:
     
     # Extract links and assets
     links = {}
-    
-    # Website link
-    website_link = get_property_value('Website_Link')
-    if website_link:
-        links['Website'] = website_link
-    
+
     # Digital assets
     asset_links = {}
     for asset_group in raw_data.get('digitalAssets', []):
@@ -259,13 +253,13 @@ def format_pimly_data(raw_data: Dict[str, Any]) -> Dict[str, Any]:
         'Case_Dimensions_(in.)',
         'Shipping_Dimensions',
         'Freight_Class',
+        'Pallet_Quantity',
+        'Case_Quantity',
         
         # Product Information
         'Division',
         'Family',
         'Country_of_Origin',
-        'Warranty',
-        'California_Prop_Warning',
         
         # Internal/Special
         'INTERNAL_ONLY_PRODUCT',
@@ -276,6 +270,7 @@ def format_pimly_data(raw_data: Dict[str, Any]) -> Dict[str, Any]:
         'AQ_Description',
         'FAQs',
         'IssuesSolutions'
+        'Website_Link'
     ]
     
     misc = get_property_values(misc_fields)
@@ -306,8 +301,9 @@ def format_pimly_data(raw_data: Dict[str, Any]) -> Dict[str, Any]:
         'Features': features_dict if features_dict else features,
         'Specifications': specifications,
         'Certifications': cleaned_certifications,
+        'Warranty': get_property_value('Warranty'),
         'Links': links,
-        'Related Products': relatedProducts,
+        'Related Products': relatedProducts.get('Related Products', []),
         'Miscellaneous': misc
     }
     
