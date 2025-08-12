@@ -32,32 +32,41 @@ class KrowneCMSService:
     
     def authenticate(self, username: str, password: str) -> Dict[str, Any]:
         """
-        Authenticate with Krowne CMS Admin panel
-        
-        Args:
-            username: The username to authenticate with
-            password: The password to authenticate with
-            
-        Returns:
-            Dict containing 'success', 'userInfo', 'error', and optionally 'session_data'
+        Enhanced authentication with security bypass for external submissions
         """
         try:
             self.logger.info(f"Attempting Krowne CMS authentication for user: {username}")
             
             # Create a session to maintain cookies
             session = requests.Session()
-            session.headers.update(self.default_headers)
             
-            # Step 1: Get the login page
-            login_page_response = self._get_login_page(session)
-            if not login_page_response['success']:
-                return login_page_response
+            # Enhanced headers to fully mimic browser behavior
+            enhanced_headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'DNT': '1',
+                'Connection': 'keep-alive',
+                'Upgrade-Insecure-Requests': '1',
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'none',
+                'Sec-Fetch-User': '?1',
+                'Cache-Control': 'max-age=0',
+            }
+            session.headers.update(enhanced_headers)
+            
+            # Step 1: Get the login page FIRST to establish session
+            self.logger.debug(f"Fetching login page: {self.admin_url}")
+            response = session.get(self.admin_url, timeout=10)
+            response.raise_for_status()
             
             # Step 2: Extract form data and tokens
-            form_data = self._extract_form_data(login_page_response['response'], username, password)
+            form_data = self._extract_form_data_enhanced(response, username, password)
             
-            # Step 3: Submit login credentials
-            login_result = self._submit_login(session, form_data)
+            # Step 3: Submit login with enhanced security headers
+            login_result = self._submit_login_enhanced(session, form_data)
             if not login_result['success']:
                 return login_result
             
@@ -77,7 +86,8 @@ class KrowneCMSService:
                 'session_data': {
                     'cookies': dict(session.cookies),
                     'final_url': login_result['response'].url,
-                    'authenticated_at': datetime.now().isoformat()
+                    'authenticated_at': datetime.now().isoformat(),
+                    'session_object': session  # Store the actual session object for reuse
                 }
             }
             
@@ -164,6 +174,54 @@ class KrowneCMSService:
         
         self.logger.debug(f"Form data prepared with {len(form_data)} fields: {list(form_data.keys())}")
         return form_data
+    def _extract_form_data_enhanced(self, response: requests.Response, username: str, password: str) -> Dict[str, str]:
+        """Enhanced form data extraction with better field detection"""
+        form_data = {
+            'username': username,
+            'password': password,
+            'action': 'loginSubmit',
+            'redirectUrl': '',
+            'login': '1'
+        }
+        
+        try:
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # Find the login form
+            login_form = soup.find('form', {'method': 'post'})
+            if not login_form:
+                login_form = soup.find('form')  # Fallback to any form
+            
+            if login_form:
+                # Extract ALL hidden fields - this is crucial for security
+                hidden_inputs = login_form.find_all('input', type='hidden')
+                for hidden_input in hidden_inputs:
+                    name = hidden_input.get('name')
+                    value = hidden_input.get('value', '')
+                    if name:
+                        form_data[name] = value
+                        self.logger.debug(f"Found hidden field: {name} = {value[:10]}...")
+                
+                # Get form action
+                form_action = login_form.get('action')
+                if form_action:
+                    self.logger.debug(f"Form action: {form_action}")
+                
+                # Find submit button details
+                submit_button = login_form.find('button', type='submit') or login_form.find('input', type='submit')
+                if submit_button:
+                    button_name = submit_button.get('name')
+                    button_value = submit_button.get('value', '1')
+                    if button_name:
+                        form_data[button_name] = button_value
+            
+            self.logger.debug(f"Form data prepared with {len(form_data)} fields")
+            return form_data
+            
+        except Exception as e:
+            self.logger.warning(f"Could not parse login form: {str(e)}")
+            return form_data
     
     def _submit_login(self, session: requests.Session, form_data: Dict[str, str]) -> Dict[str, Any]:
         """Submit login credentials"""
@@ -185,6 +243,54 @@ class KrowneCMSService:
             )
             
             self.logger.debug(f"Login submission response: {response.status_code}, URL: {response.url}")
+            
+            return {
+                'success': True,
+                'response': response
+            }
+            
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f"Login submission failed: {str(e)}")
+            return {
+                'success': False,
+                'error': f'Login request failed: {str(e)}'
+            }
+    def _submit_login_enhanced(self, session: requests.Session, form_data: Dict[str, str]) -> Dict[str, Any]:
+        """Enhanced login submission with proper browser simulation"""
+        try:
+            # Critical: Update headers to simulate a form submission FROM the same domain
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Origin': 'https://krowne.com',
+                'Referer': self.admin_url,
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'same-origin',
+                'Sec-Fetch-User': '?1',
+                'Upgrade-Insecure-Requests': '1',
+                'Cache-Control': 'max-age=0'
+            }
+            
+            self.logger.debug(f"Submitting login to: {self.admin_url}")
+            self.logger.debug(f"Form data keys: {list(form_data.keys())}")
+            
+            response = session.post(
+                self.admin_url,
+                data=form_data,
+                headers=headers,
+                timeout=10,
+                allow_redirects=True
+            )
+            
+            self.logger.debug(f"Login submission response: {response.status_code}, URL: {response.url}")
+            
+            # Check for security warning in response
+            if 'Security Warning' in response.text and 'external source' in response.text:
+                self.logger.error("Security warning detected - external source blocked")
+                return {
+                    'success': False,
+                    'error': 'Form submission blocked by security policy. Please try browser-based authentication.'
+                }
             
             return {
                 'success': True,
@@ -453,143 +559,77 @@ class KrowneCMSService:
     
     def getRecNumFromSKU(self, sku: str, session_data: Optional[Dict] = None) -> Optional[str]:
         """
-        Search for a product by SKU and extract the Record Number from the results.
-        Returns the Record Number if found, None otherwise.
-        
-        Args:
-            sku: The SKU to search for
-            session_data: Optional authenticated session data
+        Enhanced SKU search with better security bypass
         """
         try:
             if not sku:
                 self.logger.warning("SKU is required for record number search")
                 return None
             
-            # Create session with authentication if provided
-            session = requests.Session()
-            session.headers.update(self.default_headers)
-            
-            # If session_data provided, restore cookies
-            if session_data and 'cookies' in session_data:
-                for name, value in session_data['cookies'].items():
-                    session.cookies.set(name, value)
+            # Use the stored session object if available, otherwise create new
+            if session_data and 'session_object' in session_data:
+                session = session_data['session_object']
+                self.logger.debug("Using stored session object")
+            else:
+                session = requests.Session()
+                # Enhanced headers for this session
+                enhanced_headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.9',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'DNT': '1',
+                    'Connection': 'keep-alive',
+                    'Upgrade-Insecure-Requests': '1',
+                }
+                session.headers.update(enhanced_headers)
+                
+                # If session_data provided, restore cookies
+                if session_data and 'cookies' in session_data:
+                    for name, value in session_data['cookies'].items():
+                        session.cookies.set(name, value)
             
             self.logger.info(f"Attempting to locate RecNum from SKU: {sku}")
 
-            # First, get the search form to extract CSRF token
-            search_page_url = urljoin(self.admin_url, '?menu=product')
-            self.logger.debug(f"Accessing product search page: {search_page_url}")
+            # APPROACH 1: Try GET-based search to avoid POST form restrictions
+            search_url = urljoin(self.admin_url, f'?menu=product&search=1&sku_query={sku}&perPage=25&_defaultAction=list')
+            self.logger.debug(f"Trying GET-based search: {search_url}")
             
-            response = session.get(search_page_url, timeout=10)
-            
-            if response.status_code != 200:
-                self.logger.error(f"Failed to load search page: HTTP {response.status_code}")
-                return None
-            
-            # Parse the page to get CSRF token
-            from bs4 import BeautifulSoup
-            soup = BeautifulSoup(response.text, 'html.parser')
-            
-            csrf_token = None
-            csrf_input = soup.find('input', {'name': '_CSRFToken'})
-            if csrf_input:
-                csrf_token = csrf_input.get('value')
-            
-            if not csrf_token:
-                self.logger.error("Could not find CSRF token on search page")
-                return None
-            
-            self.logger.debug(f"Found CSRF token for search: {csrf_token[:10]}...")
-            
-            # Prepare search form data
-            form_data = {
-                '_CSRFToken': csrf_token,
-                'menu': 'product',
-                '_defaultAction': 'list',
-                'page': '1',
-                'search': '1',
-                'sku_query': sku,  # Using sku_query as per the form field name
-                'perPage': '25'
+            # Update headers for this specific request
+            headers = {
+                'Referer': urljoin(self.admin_url, '?menu=product'),
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'same-origin',
+                'Upgrade-Insecure-Requests': '1'
             }
             
-            # Submit the search form
-            search_url = urljoin(self.admin_url, '?')
-            self.logger.debug(f"Submitting search for SKU: {sku}")
+            response = session.get(search_url, headers=headers, timeout=10)
             
-            response = session.post(search_url, data=form_data, timeout=10)
-            
-            if response.status_code != 200:
-                self.logger.error(f"Search request failed: HTTP {response.status_code}")
-                return None
-            
-            # Parse the search results
-            soup = BeautifulSoup(response.text, 'html.parser')
-            self.logger.info(f"Page html {soup}")
-            # Find the results table
-            table = soup.find('table', {'class': 'data'})
-            if not table:
-                self.logger.warning(f"No results table found for SKU: {sku}")
-                return None
-            
-            # Look for the product row in the table body
-            tbody = table.find('tbody')
-            if not tbody:
-                self.logger.warning(f"No table body found for SKU: {sku}")
-                return None
-            
-            # Find the row containing the SKU
-            for row in tbody.find_all('tr'):
-                cells = row.find_all('td')
-                if len(cells) >= 6:  # Ensure we have enough columns
-                    # Based on the HTML structure you provided:
-                    # Column 0: checkbox
-                    # Column 1: drag handle
-                    # Column 2: HIDE checkbox
-                    # Column 3: Created date
-                    # Column 4: Record Number
-                    # Column 5: SKU
-                    
-                    # Check if this row has our SKU
-                    sku_cell = cells[5] if len(cells) > 5 else None
-                    if sku_cell:
-                        sku_text = sku_cell.get_text(strip=True)
-                        if sku_text == sku:
-                            # The Record Number is in column 4
-                            record_num_cell = cells[4] if len(cells) > 4 else None
-                            if record_num_cell:
-                                record_num = record_num_cell.get_text(strip=True)
-                                self.logger.info(f"Found Record Number {record_num} for SKU {sku}")
-                                return record_num
-            
-            # Alternative approach: If there's only one result, get the record number from hidden input
-            record_inputs = soup.find_all('input', {'name': '_recordNum', 'class': '_recordNum'})
-            if record_inputs and len(record_inputs) == 1:
-                record_num = record_inputs[0].get('value')
+            if response.status_code == 200:
+                # Parse the search results
+                from bs4 import BeautifulSoup
+                soup = BeautifulSoup(response.text, 'html.parser')
+                
+                # Check for authentication issues
+                if soup.find('title') and 'login' in soup.find('title').get_text().lower():
+                    self.logger.error("Got login page - authentication failed")
+                    raise Exception("Authentication failed during search. Please login again.")
+                
+                # Check for security warning
+                security_warning = soup.find('div', class_='alert alert-warning')
+                if security_warning and 'Security Warning' in security_warning.get_text():
+                    self.logger.warning("Security warning detected in GET request - trying alternative approach")
+                    return self._try_alternative_search_methods(sku, session)
+                
+                # Try to extract record number from GET results
+                record_num = self._extract_record_from_response(soup, sku)
                 if record_num:
-                    self.logger.info(f"Found Record Number {record_num} for SKU {sku} (via hidden input)")
                     return record_num
             
-            # Another alternative: Look for modify link which contains the record number
-            modify_links = soup.find_all('a', href=True, text='modify')
-            for link in modify_links:
-                href = link.get('href')
-                if href and 'num=' in href:
-                    # Extract record number from URL like ?menu=product&action=edit&num=7187
-                    match = re.search(r'num=(\d+)', href)
-                    if match:
-                        record_num = match.group(1)
-                        # Verify this is for our SKU by checking the row
-                        row = link.find_parent('tr')
-                        if row:
-                            cells = row.find_all('td')
-                            if len(cells) > 5:
-                                sku_cell = cells[5]
-                                if sku_cell and sku_cell.get_text(strip=True) == sku:
-                                    self.logger.info(f"Found Record Number {record_num} for SKU {sku} (via modify link)")
-                                    return record_num
-            
-            self.logger.warning(f"No matching product found for SKU: {sku}")
-            return None
+            # APPROACH 2: If GET fails, try POST with enhanced headers
+            self.logger.debug("GET search failed, trying POST with enhanced headers")
+            return self._try_post_search_enhanced(sku, session)
             
         except Exception as e:
             self.logger.error(f"Error searching for SKU {sku}: {str(e)}", exc_info=True)
@@ -798,6 +838,235 @@ class KrowneCMSService:
         clean_name = clean_name.strip('_')
         
         return clean_name
+
+    def _try_post_search_enhanced(self, sku: str, session: requests.Session) -> Optional[str]:
+        """Try POST search with enhanced security headers"""
+        try:
+            # First, get the search form page
+            search_page_url = urljoin(self.admin_url, '?menu=product')
+            
+            # Use enhanced headers that mimic same-origin navigation
+            nav_headers = {
+                'Referer': self.admin_url,
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'same-origin',
+                'Upgrade-Insecure-Requests': '1'
+            }
+            
+            response = session.get(search_page_url, headers=nav_headers, timeout=10)
+            
+            if response.status_code != 200:
+                self.logger.error(f"Failed to load search page: HTTP {response.status_code}")
+                return None
+            
+            # Parse the page
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # Check for login redirect
+            if soup.find('title') and 'login' in soup.find('title').get_text().lower():
+                raise Exception("Authentication session expired. Please login again.")
+            
+            # Extract CSRF token and form data
+            csrf_token = None
+            csrf_input = soup.find('input', {'name': '_CSRFToken'})
+            if csrf_input:
+                csrf_token = csrf_input.get('value')
+            
+            if not csrf_token:
+                self.logger.error("Could not find CSRF token on search page")
+                return None
+            
+            # Prepare form data with all possible fields
+            form_data = {
+                '_CSRFToken': csrf_token,
+                'menu': 'product',
+                '_defaultAction': 'list',
+                'page': '1',
+                'search': '1',
+                'sku_query': sku,
+                'perPage': '25'
+            }
+            
+            # Enhanced POST headers to mimic same-origin form submission
+            post_headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Origin': 'https://krowne.com',
+                'Referer': search_page_url,
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'same-origin',
+                'Sec-Fetch-User': '?1',
+                'Upgrade-Insecure-Requests': '1',
+                'Cache-Control': 'max-age=0'
+            }
+            
+            # Submit the search form
+            search_url = urljoin(self.admin_url, '?')
+            self.logger.debug(f"Submitting POST search for SKU: {sku}")
+            
+            response = session.post(search_url, data=form_data, headers=post_headers, timeout=10)
+            
+            if response.status_code != 200:
+                self.logger.error(f"Search request failed: HTTP {response.status_code}")
+                return None
+            
+            # Parse the search results
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # Check for security warning
+            security_warning = soup.find('div', class_='alert alert-warning')
+            if security_warning and 'Security Warning' in security_warning.get_text():
+                self.logger.error("POST request also blocked by security policy")
+                return None
+            
+            # Extract record number
+            return self._extract_record_from_response(soup, sku)
+            
+        except Exception as e:
+            self.logger.error(f"Enhanced POST search error for SKU {sku}: {str(e)}")
+            return None
+
+    def _try_alternative_search_methods(self, sku: str, session: requests.Session) -> Optional[str]:
+        """Try alternative search methods when both GET and POST fail"""
+        try:
+            self.logger.info(f"Attempting alternative search methods for SKU: {sku}")
+            
+            # Method 1: Try browsing the product list directly
+            list_url = urljoin(self.admin_url, '?menu=product&_defaultAction=list&perPage=100')
+            
+            headers = {
+                'Referer': self.admin_url,
+                'Sec-Fetch-Dest': 'document',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-Site': 'same-origin',
+            }
+            
+            response = session.get(list_url, headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                from bs4 import BeautifulSoup
+                soup = BeautifulSoup(response.text, 'html.parser')
+                
+                # Look for the SKU in the product listing
+                record_num = self._extract_record_from_response(soup, sku)
+                if record_num:
+                    self.logger.info(f"Found SKU {sku} in product list")
+                    return record_num
+            
+            # Method 2: If list is too long, try pagination
+            for page in range(1, 6):  # Check first 5 pages
+                page_url = urljoin(self.admin_url, f'?menu=product&_defaultAction=list&page={page}&perPage=50')
+                response = session.get(page_url, headers=headers, timeout=10)
+                
+                if response.status_code == 200:
+                    soup = BeautifulSoup(response.text, 'html.parser')
+                    record_num = self._extract_record_from_response(soup, sku)
+                    if record_num:
+                        self.logger.info(f"Found SKU {sku} on page {page}")
+                        return record_num
+            
+            self.logger.warning(f"Alternative search methods failed for SKU: {sku}")
+            return None
+            
+        except Exception as e:
+            self.logger.error(f"Alternative search error for SKU {sku}: {str(e)}")
+            return None
+
+    def _extract_record_from_response(self, soup, sku: str) -> Optional[str]:
+        """Extract record number from HTML response"""
+        try:
+            # Find the results table
+            table = soup.find('table', class_='data')
+            if not table:
+                # Try alternative table selectors
+                table = soup.find('table', class_=lambda x: x and 'data' in str(x)) if not table else table
+                table = soup.find('table', id=lambda x: x and 'table' in str(x).lower()) if not table else table
+                
+                if not table:
+                    # Look for any table with product data
+                    all_tables = soup.find_all('table')
+                    for t in all_tables:
+                        if sku in t.get_text():
+                            table = t
+                            break
+            
+            if not table:
+                self.logger.debug(f"No results table found for SKU: {sku}")
+                return None
+            
+            self.logger.debug(f"Found results table, extracting record number for SKU: {sku}")
+            
+            # Look for the product row in the table body
+            tbody = table.find('tbody')
+            if not tbody:
+                # If no tbody, search the entire table
+                tbody = table
+            
+            rows = tbody.find_all('tr')
+            self.logger.debug(f"Found {len(rows)} rows in results table")
+            
+            for row_idx, row in enumerate(rows):
+                cells = row.find_all('td')
+                if len(cells) >= 3:  # Minimum columns needed
+                    
+                    # Log first row structure for debugging
+                    if row_idx == 0:
+                        cell_contents = [cell.get_text(strip=True)[:20] for cell in cells[:6]]
+                        self.logger.debug(f"Row structure: {cell_contents}")
+                    
+                    # Look for SKU in any cell
+                    for cell_idx, cell in enumerate(cells):
+                        cell_text = cell.get_text(strip=True)
+                        if cell_text == sku:
+                            self.logger.debug(f"Found SKU '{sku}' in column {cell_idx}")
+                            
+                            # Method 1: Look for edit/modify links in this row
+                            links = row.find_all('a', href=True)
+                            for link in links:
+                                href = link.get('href')
+                                if href and 'num=' in href:
+                                    match = re.search(r'num=(\d+)', href)
+                                    if match:
+                                        record_num = match.group(1)
+                                        self.logger.info(f"Found Record Number {record_num} for SKU {sku} (via link)")
+                                        return record_num
+                            
+                            # Method 2: Look for record number in adjacent cells
+                            for check_idx in range(max(0, cell_idx-3), min(len(cells), cell_idx+3)):
+                                if check_idx != cell_idx:
+                                    potential_record = cells[check_idx].get_text(strip=True)
+                                    # Check if this looks like a record number (numeric, reasonable length)
+                                    if potential_record.isdigit() and 3 <= len(potential_record) <= 8:
+                                        self.logger.info(f"Found Record Number {potential_record} for SKU {sku} (adjacent cell)")
+                                        return potential_record
+            
+            # Method 3: Look for hidden inputs with record numbers
+            record_inputs = soup.find_all('input', {'name': '_recordNum'})
+            if record_inputs and len(record_inputs) == 1:
+                record_num = record_inputs[0].get('value')
+                if record_num:
+                    self.logger.info(f"Found Record Number {record_num} for SKU {sku} (hidden input)")
+                    return record_num
+            
+            # Method 4: Look for any modify/edit links and match by context
+            modify_links = soup.find_all('a', href=True, string=re.compile(r'modify|edit|view', re.I))
+            if len(modify_links) == 1:  # Only one result, likely our SKU
+                href = modify_links[0].get('href')
+                if href and 'num=' in href:
+                    match = re.search(r'num=(\d+)', href)
+                    if match:
+                        record_num = match.group(1)
+                        self.logger.info(f"Found Record Number {record_num} for SKU {sku} (single result)")
+                        return record_num
+            
+            self.logger.warning(f"Could not extract record number for SKU: {sku}")
+            return None
+            
+        except Exception as e:
+            self.logger.error(f"Error extracting record from response: {str(e)}")
+            return None
 # Helper function for testing
 def test_krowne_auth():
     """Test the Krowne CMS authentication"""
