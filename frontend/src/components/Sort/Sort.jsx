@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import CategoryGrid from './CategoryGrid';
+import CategoryPopup from './CategoryPopup';
 import './Sort.css';
 
 const CATEGORIES = [
@@ -62,18 +64,157 @@ const CATEGORIES = [
 ];
 
 function Sort({ salesforceAuth, onSelectCategory }) {
-  const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchFilter, setSearchFilter] = useState('');
-  const [sortOrder, setSortOrder] = useState('alphabetical'); // 'alphabetical' or 'popular'
+  const [sortOrder, setSortOrder] = useState('alphabetical');
+  const [selectedCategoryPopup, setSelectedCategoryPopup] = useState(null);
+  const [categoryStats, setCategoryStats] = useState({});
+  const [statsLoading, setStatsLoading] = useState(false);
+  const [syncHistory, setSyncHistory] = useState([]);
+
+  // Load sync history and calculate category stats
+  useEffect(() => {
+    if (salesforceAuth.authenticated) {
+      loadSyncData();
+    }
+  }, [salesforceAuth.authenticated]);
+
+  const loadSyncData = async () => {
+    setStatsLoading(true);
+    try {
+      // Fetch sync history from backend
+      const response = await fetch('/api/sync/history');
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSyncHistory(data.data || []);
+        
+        // Calculate stats per category
+        const stats = calculateCategoryStats(data.data || []);
+        setCategoryStats(stats);
+      }
+    } catch (error) {
+      console.error('Error loading sync data:', error);
+    }
+    setStatsLoading(false);
+  };
+
+  const calculateCategoryStats = (syncData) => {
+    const stats = {};
+    
+    // Initialize all categories
+    CATEGORIES.forEach(category => {
+      stats[category] = {
+        total: 0,
+        recent: 0,
+        old: 0,
+        never: 0,
+        syncing: 0,
+        products: []
+      };
+    });
+
+    // Process sync history data
+    syncData.forEach(record => {
+      // Determine category from product data or default to Unsorted
+      const category = record.category || 'Unsorted';
+      
+      if (stats[category]) {
+        stats[category].total++;
+        stats[category].products.push(record);
+        
+        // Determine sync status based on last_sync_date
+        if (record.status === 'pending') {
+          stats[category].syncing++;
+        } else if (!record.last_sync_date) {
+          stats[category].never++;
+        } else {
+          const lastSync = new Date(record.last_sync_date);
+          const daysSinceSync = (Date.now() - lastSync) / (1000 * 60 * 60 * 24);
+          
+          if (daysSinceSync < 7) {
+            stats[category].recent++;
+          } else if (daysSinceSync < 30) {
+            stats[category].old++;
+          } else {
+            stats[category].never++;
+          }
+        }
+      }
+    });
+
+    return stats;
+  };
 
   // Format category name for display
   const formatCategoryName = (category) => {
     let formatted = category.replace(/_/g, ' ').replace(/&/g, '&');
-    
     // Shorten "Parts & Accessories" to "P&A" for display only
     formatted = formatted.replace(/Parts & Accessories/g, 'P&A');
-    
     return formatted;
+  };
+
+  // Get icon for category
+  const getCategoryIcon = (category) => {
+    const iconMap = {
+      'Unsorted': '📦',
+      'Sinks': '🚿',
+      'Faucets': '🚰',
+      'Refrigeration': '❄️',
+      'Storage_Cabinets': '🗄️',
+      'Workstations': '🏢',
+      'Bar_Sinks': '🍻',
+      'Liquor_Display_Units': '🥃',
+      'Bottle_Coolers': '🍺',
+      'Ice_Bin': '🧊',
+      'Glass_Chiller': '🥶',
+      'Glass_Washer': '🫧',
+      'Dispensing_Faucets': '🚰',
+      'Beverage_Dispensing_Kits': '🥤',
+      'Beverage_Dispensing_Parts_&_Accessories': '🔧',
+      'Direct_Draw_Cooler': '🍺',
+      'Mug_FrosterFreezers': '🥶',
+      'Towers': '🏗️',
+      'Soda_Gun_Holders': '🔫',
+      'Mixology_Kits': '🍸',
+      'Trunk_Lines': '🔗',
+      'Plumbing_Parts_&_Accessories': '🔧',
+      'Remote_Spouts': '💧',
+      'Spouts': '💧',
+      'Pre-Rinse_Units': '🚿',
+      'Utility_Faucet_&_Pot_Filler': '🚰',
+      'Electronic_Sensor_Faucets': '📡',
+      'Krowne_Home_Faucets': '🏠',
+      'Drains': '🕳️',
+      'Drainboards': '📋',
+      'Drainers_&_Rinsers': '💧',
+      'Mop_Floor_Sinks': '🧽',
+      'HydroSift_Water_Filters': '💧',
+      'Gas_Connectors': '⛽',
+      'Gas_System': '⛽',
+      'Gas_Connector_Parts_&_Accessories': '🔧',
+      'Regulator_Panels': '🎛️',
+      'Power_Packs': '🔋',
+      'Air_Switches': '💨',
+      'Unit_Parts_&_Accessories': '🔧',
+      'Foodservice_Parts_&_Accessories': '🔧',
+      'Casters': '🛞',
+      'Locking_Covers': '🔒',
+      'Perforated_Inserts': '🕳️',
+      'Dump_Sink_Stations': '🗑️',
+      'Specialized_Underbar_Stations': '🏪',
+      'Speed_Units': '⚡',
+      'Pass_Thru_Units': '↔️',
+      'Dry_Storage_Cabinets': '📦',
+      'Trash_Chute': '🗑️',
+      'Robotic_Bartenders': '🤖',
+      'Hose_Reels': '🌀',
+      'Soap_Dispensers': '🧼',
+      'Pet_Grooming': '🐕',
+      'Vinyl_Wrap': '🎨',
+      'Alchemy': '⚗️',
+      'MoveWell': '🏃‍♂️'
+    };
+    return iconMap[category] || '📦';
   };
 
   // Filter categories based on search
@@ -84,32 +225,113 @@ function Sort({ salesforceAuth, onSelectCategory }) {
   // Sort categories based on selected order
   const sortedCategories = [...filteredCategories].sort((a, b) => {
     if (sortOrder === 'alphabetical') {
-      // Keep 'Unsorted' at the top even in alphabetical order
       if (a === 'Unsorted') return -1;
       if (b === 'Unsorted') return 1;
       return formatCategoryName(a).localeCompare(formatCategoryName(b));
     }
-    // For 'popular', keep original order (Unsorted will be first)
     return CATEGORIES.indexOf(a) - CATEGORIES.indexOf(b);
   });
 
   const handleCategoryClick = (category) => {
-    setSelectedCategory(category);
+    setSelectedCategoryPopup(category);
+  };
+
+  const handleViewProducts = (category) => {
+    setSelectedCategoryPopup(null);
     if (onSelectCategory) {
       onSelectCategory(category);
     }
   };
 
-  const clearSelection = () => {
-    setSelectedCategory(null);
-    setSearchFilter('');
+  const handleExportCategory = async (category) => {
+    const stats = categoryStats[category];
+    if (!stats || !stats.products) return;
+
+    // Create CSV content
+    const csvContent = [
+      ['SKU', 'Product Name', 'Last Sync', 'Status', 'Sync Count'],
+      ...stats.products.map(p => [
+        p.sku,
+        p.product_name || '',
+        p.last_sync_date || 'Never',
+        p.status || 'unknown',
+        p.sync_count || 0
+      ])
+    ].map(row => row.join(',')).join('\n');
+
+    // Download CSV
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${category}_products_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    setSelectedCategoryPopup(null);
+  };
+
+  const handleSyncCategory = async (category) => {
+    const stats = categoryStats[category];
+    if (!stats || !stats.products) return;
+
+    // Get products that need syncing (old or never synced)
+    const productsToSync = stats.products.filter(p => {
+      if (!p.last_sync_date) return true;
+      const daysSinceSync = (Date.now() - new Date(p.last_sync_date)) / (1000 * 60 * 60 * 24);
+      return daysSinceSync > 7;
+    });
+
+    if (productsToSync.length === 0) {
+      alert('All products in this category are up to date!');
+      return;
+    }
+
+    // Update stats to show syncing
+    setCategoryStats(prev => ({
+      ...prev,
+      [category]: {
+        ...prev[category],
+        syncing: productsToSync.length
+      }
+    }));
+
+    // Sync products
+    for (const product of productsToSync) {
+      try {
+        await fetch('/api/sync/record', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sku: product.sku,
+            status: 'pending',
+            details: { category, triggered_by: 'category_sync' }
+          })
+        });
+      } catch (error) {
+        console.error(`Error syncing ${product.sku}:`, error);
+      }
+    }
+
+    // Reload data after sync
+    setTimeout(() => {
+      loadSyncData();
+    }, 2000);
+
+    setSelectedCategoryPopup(null);
+  };
+
+  const closePopup = () => {
+    setSelectedCategoryPopup(null);
   };
 
   return (
     <div className="sort-container">
       <div className="sort-header">
         <h2 className="sort-title">Product Categories</h2>
-        <p className="sort-subtitle">Browse products by category</p>
+        <p className="sort-subtitle">Browse products by category with real-time sync status</p>
       </div>
 
       {!salesforceAuth.authenticated && (
@@ -120,7 +342,6 @@ function Sort({ salesforceAuth, onSelectCategory }) {
       )}
 
       <div className="sort-controls">
-        {/* Main controls row */}
         <div className="main-controls">
           <div className="search-box">
             <input
@@ -151,194 +372,35 @@ function Sort({ salesforceAuth, onSelectCategory }) {
         <span className="stats-text">
           Showing {sortedCategories.length} of {CATEGORIES.length} categories
         </span>
-        <div className="stats-right">
-          {selectedCategory && (
-            <span onClick={clearSelection} className="selected-indicator">
-              Selected: {formatCategoryName(selectedCategory)} ✕
-            </span>
-          )}
-        </div>
-      </div>
-
-      <div className="categories-grid">
-        {sortedCategories.length === 0 ? (
-          <div className="no-results">
-            <span className="no-results-icon">📦</span>
-            <h3>No categories found</h3>
-            <p>Try adjusting your search terms</p>
-          </div>
-        ) : (
-          sortedCategories.map((category, index) => (
-            <div
-              key={category}
-              className={`category-card ${selectedCategory === category ? 'selected' : ''} ${
-                !salesforceAuth.authenticated ? 'disabled' : ''
-              }`}
-              onClick={() => salesforceAuth.authenticated && handleCategoryClick(category)}
-              tabIndex={salesforceAuth.authenticated ? 0 : -1}
-              onKeyDown={(e) => {
-                if (salesforceAuth.authenticated && (e.key === 'Enter' || e.key === ' ')) {
-                  e.preventDefault();
-                  handleCategoryClick(category);
-                }
-              }}
-            >
-              <div className="category-icon">
-                {getCategoryIcon(category)}
-              </div>
-              <div className="category-info">
-                <h3 className="category-name">{formatCategoryName(category)}</h3>
-              </div>
-              <div className="category-arrow">→</div>
-            </div>
-          ))
+        {statsLoading && (
+          <span className="loading-stats">
+            🔄 Loading sync status...
+          </span>
         )}
       </div>
 
-      {selectedCategory && (
-        <div className="selected-category-actions">
-          <h3>Actions for {formatCategoryName(selectedCategory)}</h3>
-          <div className="action-buttons">
-            <button className="action-btn primary">
-              View Products
-            </button>
-            <button className="action-btn secondary">
-              Export Category
-            </button>
-            <button className="action-btn secondary">
-              Sync Category
-            </button>
-          </div>
-        </div>
-      )}
+      <CategoryGrid
+        categories={sortedCategories}
+        salesforceAuth={salesforceAuth}
+        onCategoryClick={handleCategoryClick}
+        formatCategoryName={formatCategoryName}
+        getCategoryIcon={getCategoryIcon}
+        categoryStats={categoryStats}
+      />
+
+      <CategoryPopup
+        category={selectedCategoryPopup}
+        isOpen={!!selectedCategoryPopup}
+        onClose={closePopup}
+        formatCategoryName={formatCategoryName}
+        getCategoryIcon={getCategoryIcon}
+        categoryStats={categoryStats[selectedCategoryPopup]}
+        onViewProducts={handleViewProducts}
+        onExportCategory={handleExportCategory}
+        onSyncCategory={handleSyncCategory}
+      />
     </div>
   );
-}
-
-// Comprehensive icon mapping for all foodservice equipment categories
-function getCategoryIcon(category) {
-  // Direct category matches (exact or contains match)
-  const iconMap = {
-    // Default/General
-    'Unsorted': '📂',
-    
-    // Water & Plumbing Systems
-    'Faucets': '🚰',
-    'Electronic_Sensor_Faucets': '🚰',
-    'Utility_Faucet_&_Pot_Filler': '🚰',
-    'Krowne_Home_Faucets': '🚰',
-    'Dispensing_Faucets': '🚰',
-    'Remote_Spouts': '🚰',
-    'Spouts': '💧',
-    
-    // Sinks & Basins
-    'Sinks': '🛁',
-    'Bar_Sinks': '🍸',
-    'Dump_Sink_Stations': '🗑️',
-    'Mop_Floor_Sinks': '🧽',
-    
-    // Drainage & Flow
-    'Drains': '⭕',
-    'Drainboards': '💧',
-    'Pre-Rinse_Units': '🚿',
-    'Drainers_&_Rinsers': '💦',
-    
-    // Sanitation
-    'Soap_Dispensers': '🧼',
-    'Plumbing_Parts_&_Accessories': '🔧',
-    
-    // Beverage Equipment
-    'Beverage_Dispensing_Parts_&_Accessories': '🍺',
-    'Beverage_Dispensing_Kits': '🧰',
-    'Soda_Gun_Holders': '🔫',
-    'Liquor_Display_Units': '🍾',
-    'Specialized_Underbar_Stations': '🏗️',
-    'Mixology_Kits': '🍸',
-    'Robotic_Bartenders': '🤖',
-    
-    // Glass & Serving
-    'Glass_Washer': '🧽',
-    'Glass_Chiller': '🍸',
-    'Mug_FrosterFreezers': '🍺',
-    
-    // Draft Systems
-    'Towers': '🗼',
-    'Trunk_Lines': '〰️',
-    'Regulator_Panels': '🎛️',
-    
-    // Storage & Workspace
-    'Storage_Cabinets': '🗄️',
-    'Dry_Storage_Cabinets': '🗃️',
-    'Ice_Bin': '🧊',
-    'Workstations': '🖥️',
-    'Pass_Thru_Units': '↔️',
-    'Speed_Units': '⚡',
-    
-    // Mobility & Support
-    'Casters': '🛞',
-    'Hose_Reels': '🌊',
-    'MoveWell': '🏗️',
-    
-    // Specialized Equipment
-    'Perforated_Inserts': '🕳️',
-    'Locking_Covers': '🔒',
-    'Trash_Chute': '🗑️',
-    
-    // Cooling & Refrigeration
-    'Refrigeration': '❄️',
-    'Bottle_Coolers': '🍺',
-    'Direct_Draw_Cooler': '🍻',
-    
-    // Water Treatment
-    'HydroSift_Water_Filters': '💧',
-    
-    // Parts & Mechanical
-    'Unit_Parts_&_Accessories': '⚙️',
-    'Foodservice_Parts_&_Accessories': '🍽️',
-    
-    // Gas Systems (Safety Critical)
-    'Gas_Connectors': '⛽',
-    'Gas_System': '⛽',
-    'Gas_Connector_Parts_&_Accessories': '⛽',
-    
-    // Control Systems
-    'Air_Switches': '🔘',
-    'Power_Packs': '🔋',
-    
-    // Specialized Categories
-    'Alchemy': '⚗️',
-    'Pet_Grooming': '🐕',
-    'Vinyl_Wrap': '📦'
-  };
-
-  // Return the exact match if found
-  if (iconMap[category]) {
-    return iconMap[category];
-  }
-
-  // Fallback: Check if category contains any key words
-  const fallbackMap = {
-    'Water': '💧',
-    'Filter': '💧',
-    'Gas': '⛽',
-    'Power': '⚡',
-    'Storage': '🗄️',
-    'Cooler': '❄️',
-    'Chiller': '❄️',
-    'Washer': '🧽',
-    'Dispenser': '🚰',
-    'Parts': '⚙️',
-    'Accessories': '⚙️'
-  };
-
-  for (const [key, icon] of Object.entries(fallbackMap)) {
-    if (category.includes(key)) {
-      return icon;
-    }
-  }
-
-  // Default icon for unmatched categories
-  return '📦';
 }
 
 export default Sort;

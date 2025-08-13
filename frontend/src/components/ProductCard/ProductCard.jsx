@@ -9,6 +9,7 @@ const ProductCard = ({ productData, onSync }) => {
   const [krowneData, setKrowneData] = useState(null);
   const [mappedData, setMappedData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [expandedFields, setExpandedFields] = useState({});
 
   useEffect(() => {
@@ -35,6 +36,43 @@ const ProductCard = ({ productData, onSync }) => {
 
   const toggleDevMode = () => {
     setDevMode(!devMode);
+  };
+
+  const handleConfirmSync = async () => {
+    const sku = productData.sku || productData.SKU || productData.Id;
+    setSyncing(true);
+    
+    try {
+      const response = await fetch('/api/sync/record', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sku: sku,
+          status: 'success',
+          details: {
+            timestamp: new Date().toISOString(),
+            hasPimlyData: !!pimlyData,
+            hasKrowneData: !!krowneData,
+            syncedFields: getFieldsToCompare().length
+          }
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to confirm sync');
+      }
+      
+      const result = await response.json();
+      console.log('Sync confirmed:', result);
+      
+    } catch (error) {
+      console.error('Sync confirmation failed:', error);
+      // Optionally handle error state here
+    } finally {
+      setSyncing(false);
+    }
   };
 
   const normalizeForComparison = (value) => {
@@ -558,6 +596,9 @@ const ProductCard = ({ productData, onSync }) => {
 
   console.log("ProductCard Debug:", debugInfo);
 
+  // Check if we have data to show sync button
+  const hasDataToSync = pimlyData || krowneData;
+
   return (
     <div className="product-card-container">
       {/* Product Card */}
@@ -574,13 +615,24 @@ const ProductCard = ({ productData, onSync }) => {
           </div>
         </div>
 
-        {/* Dev Mode Toggle */}
+        {/* Dev Mode Toggle with Top Confirm Sync Button */}
         <div className="dev-mode-toggle-container">
-          <label className="toggle-switch">
-            <input type="checkbox" checked={devMode} onChange={toggleDevMode} />
-            <span className="toggle-slider"></span>
-          </label>
-          <span className="toggle-label">Dev Mode</span>
+          <div className="toggle-group">
+            <label className="toggle-switch">
+              <input type="checkbox" checked={devMode} onChange={toggleDevMode} />
+              <span className="toggle-slider"></span>
+            </label>
+            <span className="toggle-label">Dev Mode</span>
+          </div>
+          {hasDataToSync && !devMode && (
+            <button
+              className="confirm-sync-button compact"
+              onClick={handleConfirmSync}
+              disabled={syncing}
+            >
+              {syncing ? "Confirming..." : "✓ Confirm Sync"}
+            </button>
+          )}
         </div>
 
         {/* Content Area */}
@@ -690,7 +742,20 @@ const ProductCard = ({ productData, onSync }) => {
           </div>
         )}
 
-        {/* Sync Button (if needed) */}
+        {/* Bottom Confirm Sync Button */}
+        {hasDataToSync && !devMode && (
+          <div className="sync-section bottom-sync">
+            <button
+              className="confirm-sync-button"
+              onClick={handleConfirmSync}
+              disabled={syncing}
+            >
+              {syncing ? "Confirming Sync..." : "✓ Confirm Sync"}
+            </button>
+          </div>
+        )}
+
+        {/* Original Sync Button (if needed) */}
         {onSync && !devMode && (
           <div className="sync-section">
             <button

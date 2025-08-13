@@ -16,7 +16,6 @@ Thumbs.db
 
 # Environment files
 .env
-.env.*
 
 # Build output
 dist/
@@ -46,3 +45,5 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+data/
