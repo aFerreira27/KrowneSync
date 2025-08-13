@@ -152,14 +152,9 @@ function Sort({ salesforceAuth, onSelectCategory }) {
           Showing {sortedCategories.length} of {CATEGORIES.length} categories
         </span>
         <div className="stats-right">
-          {(selectedCategory || searchFilter) && (
-            <button onClick={clearSelection} className="clear-btn">
-              ✕ Clear Filters
-            </button>
-          )}
           {selectedCategory && (
-            <span className="selected-indicator">
-              Selected: {formatCategoryName(selectedCategory)}
+            <span onClick={clearSelection} className="selected-indicator">
+              Selected: {formatCategoryName(selectedCategory)} ✕
             </span>
           )}
         </div>
