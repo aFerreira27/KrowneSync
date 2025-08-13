@@ -142,7 +142,7 @@ function App() {
               <div className="view-button-bar">
                 <button 
                   className={`view-button ${viewMode === 'search' ? 'active' : ''}`}
-                  onClick={() => setViewMode('search')}
+                  onClick={() => (setViewMode('search'), setSearchedSKU(''))}
                 >
                   Search
                 </button>
