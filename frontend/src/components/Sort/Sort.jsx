@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './Sort.css';
 
 const CATEGORIES = [
+  'Unsorted',
   'Unit_Parts_&_Accessories',
   'Faucets',
   'Plumbing_Parts_&_Accessories',
@@ -67,7 +68,12 @@ function Sort({ salesforceAuth, onSelectCategory }) {
 
   // Format category name for display
   const formatCategoryName = (category) => {
-    return category.replace(/_/g, ' ').replace(/&/g, '&');
+    let formatted = category.replace(/_/g, ' ').replace(/&/g, '&');
+    
+    // Shorten "Parts & Accessories" to "P&A" for display only
+    formatted = formatted.replace(/Parts & Accessories/g, 'P&A');
+    
+    return formatted;
   };
 
   // Filter categories based on search
@@ -78,10 +84,12 @@ function Sort({ salesforceAuth, onSelectCategory }) {
   // Sort categories based on selected order
   const sortedCategories = [...filteredCategories].sort((a, b) => {
     if (sortOrder === 'alphabetical') {
+      // Keep 'Unsorted' at the top even in alphabetical order
+      if (a === 'Unsorted') return -1;
+      if (b === 'Unsorted') return 1;
       return formatCategoryName(a).localeCompare(formatCategoryName(b));
     }
-    // For 'popular', you could implement logic based on usage data
-    // For now, keeping original order as "popular"
+    // For 'popular', keep original order (Unsorted will be first)
     return CATEGORIES.indexOf(a) - CATEGORIES.indexOf(b);
   });
 
@@ -112,45 +120,49 @@ function Sort({ salesforceAuth, onSelectCategory }) {
       )}
 
       <div className="sort-controls">
-        <div className="search-box">
-          <input
-            type="text"
-            placeholder="Search categories..."
-            value={searchFilter}
-            onChange={(e) => setSearchFilter(e.target.value)}
-            className="category-search"
-          />
-          <span className="search-icon">🔍</span>
-        </div>
+        {/* Main controls row */}
+        <div className="main-controls">
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder="Search categories..."
+              value={searchFilter}
+              onChange={(e) => setSearchFilter(e.target.value)}
+              className="category-search"
+            />
+            <span className="search-icon">🔍</span>
+          </div>
 
-        <div className="sort-options">
-          <label className="sort-label">Sort by:</label>
-          <select
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
-            className="sort-select"
-          >
-            <option value="alphabetical">Alphabetical</option>
-            <option value="popular">Popular</option>
-          </select>
+          <div className="sort-options">
+            <label className="sort-label">Sort by:</label>
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              className="sort-select"
+            >
+              <option value="alphabetical">Alphabetical</option>
+              <option value="popular">Popular</option>
+            </select>
+          </div>
         </div>
-
-        {(selectedCategory || searchFilter) && (
-          <button onClick={clearSelection} className="clear-btn">
-            Clear Filters
-          </button>
-        )}
       </div>
 
       <div className="category-stats">
         <span className="stats-text">
           Showing {sortedCategories.length} of {CATEGORIES.length} categories
         </span>
-        {selectedCategory && (
-          <span className="selected-indicator">
-            Selected: {formatCategoryName(selectedCategory)}
-          </span>
-        )}
+        <div className="stats-right">
+          {(selectedCategory || searchFilter) && (
+            <button onClick={clearSelection} className="clear-btn">
+              ✕ Clear Filters
+            </button>
+          )}
+          {selectedCategory && (
+            <span className="selected-indicator">
+              Selected: {formatCategoryName(selectedCategory)}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="categories-grid">
@@ -181,9 +193,6 @@ function Sort({ salesforceAuth, onSelectCategory }) {
               </div>
               <div className="category-info">
                 <h3 className="category-name">{formatCategoryName(category)}</h3>
-                <p className="category-description">
-                  {getCategoryDescription(category)}
-                </p>
               </div>
               <div className="category-arrow">→</div>
             </div>
@@ -211,71 +220,130 @@ function Sort({ salesforceAuth, onSelectCategory }) {
   );
 }
 
-// Helper function to get category icon
+// Comprehensive icon mapping for all foodservice equipment categories
 function getCategoryIcon(category) {
+  // Direct category matches (exact or contains match)
   const iconMap = {
+    // Default/General
+    'Unsorted': '📂',
+    
+    // Water & Plumbing Systems
     'Faucets': '🚰',
-    'Sinks': '🪣',
-    'Refrigeration': '❄️',
-    'Gas_System': '🔥',
-    'Storage_Cabinets': '🗄️',
-    'Workstations': '🔧',
-    'Bar_Sinks': '🍺',
-    'Ice_Bin': '🧊',
-    'Glass_Washer': '🫧',
-    'Pet_Grooming': '🐕',
+    'Electronic_Sensor_Faucets': '🚰',
+    'Utility_Faucet_&_Pot_Filler': '🚰',
+    'Krowne_Home_Faucets': '🚰',
+    'Dispensing_Faucets': '🚰',
+    'Remote_Spouts': '🚰',
+    'Spouts': '💧',
+    
+    // Sinks & Basins
+    'Sinks': '🛁',
+    'Bar_Sinks': '🍸',
+    'Dump_Sink_Stations': '🗑️',
+    'Mop_Floor_Sinks': '🧽',
+    
+    // Drainage & Flow
+    'Drains': '⭕',
+    'Drainboards': '💧',
+    'Pre-Rinse_Units': '🚿',
+    'Drainers_&_Rinsers': '💦',
+    
+    // Sanitation
     'Soap_Dispensers': '🧼',
-    'Bottle_Coolers': '🍾',
-    'Drains': '⬇️',
-    'Casters': '🎯',
-    'Gas_Connectors': '🔗',
-    'Power_Packs': '⚡',
-    'Water_Filters': '💧',
-    'Robotic_Bartenders': '🤖'
+    'Plumbing_Parts_&_Accessories': '🔧',
+    
+    // Beverage Equipment
+    'Beverage_Dispensing_Parts_&_Accessories': '🍺',
+    'Beverage_Dispensing_Kits': '🧰',
+    'Soda_Gun_Holders': '🔫',
+    'Liquor_Display_Units': '🍾',
+    'Specialized_Underbar_Stations': '🏗️',
+    'Mixology_Kits': '🍸',
+    'Robotic_Bartenders': '🤖',
+    
+    // Glass & Serving
+    'Glass_Washer': '🧽',
+    'Glass_Chiller': '🍸',
+    'Mug_FrosterFreezers': '🍺',
+    
+    // Draft Systems
+    'Towers': '🗼',
+    'Trunk_Lines': '〰️',
+    'Regulator_Panels': '🎛️',
+    
+    // Storage & Workspace
+    'Storage_Cabinets': '🗄️',
+    'Dry_Storage_Cabinets': '🗃️',
+    'Ice_Bin': '🧊',
+    'Workstations': '🖥️',
+    'Pass_Thru_Units': '↔️',
+    'Speed_Units': '⚡',
+    
+    // Mobility & Support
+    'Casters': '🛞',
+    'Hose_Reels': '🌊',
+    'MoveWell': '🏗️',
+    
+    // Specialized Equipment
+    'Perforated_Inserts': '🕳️',
+    'Locking_Covers': '🔒',
+    'Trash_Chute': '🗑️',
+    
+    // Cooling & Refrigeration
+    'Refrigeration': '❄️',
+    'Bottle_Coolers': '🍺',
+    'Direct_Draw_Cooler': '🍻',
+    
+    // Water Treatment
+    'HydroSift_Water_Filters': '💧',
+    
+    // Parts & Mechanical
+    'Unit_Parts_&_Accessories': '⚙️',
+    'Foodservice_Parts_&_Accessories': '🍽️',
+    
+    // Gas Systems (Safety Critical)
+    'Gas_Connectors': '⛽',
+    'Gas_System': '⛽',
+    'Gas_Connector_Parts_&_Accessories': '⛽',
+    
+    // Control Systems
+    'Air_Switches': '🔘',
+    'Power_Packs': '🔋',
+    
+    // Specialized Categories
+    'Alchemy': '⚗️',
+    'Pet_Grooming': '🐕',
+    'Vinyl_Wrap': '📦'
   };
 
-  // Try to find a match in the icon map
-  for (const [key, icon] of Object.entries(iconMap)) {
+  // Return the exact match if found
+  if (iconMap[category]) {
+    return iconMap[category];
+  }
+
+  // Fallback: Check if category contains any key words
+  const fallbackMap = {
+    'Water': '💧',
+    'Filter': '💧',
+    'Gas': '⛽',
+    'Power': '⚡',
+    'Storage': '🗄️',
+    'Cooler': '❄️',
+    'Chiller': '❄️',
+    'Washer': '🧽',
+    'Dispenser': '🚰',
+    'Parts': '⚙️',
+    'Accessories': '⚙️'
+  };
+
+  for (const [key, icon] of Object.entries(fallbackMap)) {
     if (category.includes(key)) {
       return icon;
     }
   }
 
-  // Default icon
+  // Default icon for unmatched categories
   return '📦';
-}
-
-// Helper function to get category description
-function getCategoryDescription(category) {
-  const descriptions = {
-    'Faucets': 'Commercial and residential faucet solutions',
-    'Sinks': 'Stainless steel sinks for various applications',
-    'Refrigeration': 'Cooling systems and refrigerated units',
-    'Gas_System': 'Gas connections and safety equipment',
-    'Storage_Cabinets': 'Organized storage solutions',
-    'Workstations': 'Efficient workspace configurations',
-    'Bar_Sinks': 'Specialized sinks for bar areas',
-    'Ice_Bin': 'Ice storage and handling equipment',
-    'Glass_Washer': 'Glass cleaning and sanitizing equipment',
-    'Pet_Grooming': 'Professional pet care equipment',
-    'Soap_Dispensers': 'Hygiene and sanitation dispensers',
-    'Bottle_Coolers': 'Beverage cooling and storage',
-    'Drains': 'Drainage systems and components',
-    'Gas_Connectors': 'Safe gas line connections',
-    'Power_Packs': 'Electrical power and control systems',
-    'Robotic_Bartenders': 'Automated beverage dispensing'
-  };
-
-  // Try to find a match in descriptions
-  for (const [key, description] of Object.entries(descriptions)) {
-    if (category.includes(key)) {
-      return description;
-    }
-  }
-
-  // Generate a generic description
-  const formattedName = category.replace(/_/g, ' ').replace(/&/g, '&');
-  return `${formattedName} products and accessories`;
 }
 
 export default Sort;

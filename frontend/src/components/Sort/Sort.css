@@ -52,12 +52,33 @@
 
 /* Controls */
 .sort-controls {
+  margin-bottom: 24px;
+}
+
+/* Main control row */
+.main-controls {
   display: flex;
   gap: 20px;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
   flex-wrap: wrap;
+}
+
+/* Clear button row - separate line */
+.clear-btn {
+  display: block;
+  padding: 8px 16px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+  width: fit-content;
 }
 
 .search-box {
@@ -95,12 +116,14 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .sort-label {
   font-size: 14px;
   font-weight: 500;
   color: #374151;
+  white-space: nowrap;
 }
 
 .sort-select {
@@ -111,23 +134,12 @@
   background: #ffffff;
   cursor: pointer;
   transition: border-color 0.2s ease;
+  min-width: 120px;
 }
 
 .sort-select:focus {
   outline: none;
   border-color: #3b82f6;
-}
-
-.clear-btn {
-  padding: 8px 16px;
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .clear-btn:hover {
@@ -147,6 +159,10 @@
   gap: 12px;
 }
 
+.stats-text {
+  flex: 1;
+}
+
 .selected-indicator {
   background: #dbeafe;
   color: #1e40af;
@@ -156,19 +172,26 @@
   font-size: 13px;
 }
 
+/* Clear filters positioning */
+.clear-filters-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
 /* Categories Grid */
 .categories-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 16px;
-  margin-bottom: 32px;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .category-card {
   background: #ffffff;
   border: 2px solid #e5e7eb;
   border-radius: 12px;
-  padding: 20px;
+  padding: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -203,9 +226,9 @@
 }
 
 .category-icon {
-  font-size: 32px;
-  width: 60px;
-  height: 60px;
+  font-size: 20px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -229,13 +252,6 @@
   font-weight: 600;
   color: #111827;
   margin: 0 0 4px 0;
-  line-height: 1.4;
-}
-
-.category-description {
-  font-size: 13px;
-  color: #6b7280;
-  margin: 0;
   line-height: 1.4;
 }
 
@@ -349,7 +365,7 @@
     font-size: 1.75rem;
   }
   
-  .sort-controls {
+  .main-controls {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;

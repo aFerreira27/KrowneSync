@@ -234,22 +234,22 @@
   transition: all 0.2s ease;
 }
 
-.stat-card.success {
+.stat-card.recent {
   border-color: #10b981;
   background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
 }
 
-.stat-card.error {
-  border-color: #ef4444;
-  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-}
-
-.stat-card.warning {
+.stat-card.old {
   border-color: #f59e0b;
   background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
 }
 
-.stat-card.info {
+.stat-card.never {
+  border-color: #ef4444;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+}
+
+.stat-card.total {
   border-color: #3b82f6;
   background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
 }
@@ -321,25 +321,30 @@
   background-color: #f8fafc;
 }
 
-.sync-row.status-failed {
-  background-color: rgba(254, 242, 242, 0.5);
-}
-
-.sync-row.status-never {
-  background-color: rgba(255, 251, 235, 0.5);
-}
-
-.sync-row.status-success {
+.sync-row.status-recent {
   background-color: rgba(236, 253, 245, 0.5);
 }
 
-/* Table Cells */
-.sku-cell {
-  font-weight: 600;
-  min-width: 120px;
+.sync-row.status-old {
+  background-color: rgba(255, 251, 235, 0.5);
 }
 
-.sku-link {
+.sync-row.status-never {
+  background-color: rgba(254, 242, 242, 0.5);
+}
+
+/* Table Cells */
+.name-cell {
+  min-width: 200px;
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.product-name-link {
   background: none;
   border: none;
   color: #3b82f6;
@@ -348,10 +353,32 @@
   font-size: 14px;
   font-weight: 600;
   padding: 0;
+  text-align: left;
 }
 
-.sku-link:hover {
+.product-name-link:hover {
   color: #1d4ed8;
+}
+
+.product-sku {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.category-cell {
+  min-width: 140px;
+}
+
+.category-badge {
+  display: inline-block;
+  background: #f3f4f6;
+  color: #374151;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #e5e7eb;
 }
 
 .time-cell {

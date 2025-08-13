@@ -6,9 +6,9 @@ function SyncStatus({ salesforceAuth, onSelectSKU }) {
   const [syncData, setSyncData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [sortBy, setSortBy] = useState('lastSync'); // 'sku', 'lastSync', 'status'
+  const [sortBy, setSortBy] = useState('lastSync'); // 'name', 'category', 'lastSync'
   const [sortOrder, setSortOrder] = useState('desc'); // 'asc', 'desc'
-  const [filter, setFilter] = useState('all'); // 'all', 'synced', 'never', 'failed'
+  const [filter, setFilter] = useState('all'); // 'all', 'recent', 'old', 'never'
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -22,16 +22,9 @@ function SyncStatus({ salesforceAuth, onSelectSKU }) {
     setError(null);
     
     try {
-      // Try to get sync history from backend
-      try {
-        const syncHistory = await api.getSyncHistory();
-        setSyncData(syncHistory);
-      } catch (apiError) {
-        // If sync history endpoint doesn't exist, generate mock data from known SKUs
-        console.warn('Sync history endpoint not available, generating mock data');
-        const mockData = await generateMockSyncData();
-        setSyncData(mockData);
-      }
+      // Get sync history from backend
+      const syncHistory = await api.getSyncHistory();
+      setSyncData(syncHistory);
     } catch (err) {
       console.error('Failed to load sync history:', err);
       setError(err.message || 'Failed to load sync history');
@@ -40,53 +33,7 @@ function SyncStatus({ salesforceAuth, onSelectSKU }) {
     }
   };
 
-  const generateMockSyncData = async () => {
-    try {
-      // Get known SKUs from the backend using existing method
-      const response = await api.getProductSKUs();
-      const knownSKUs = response.skus || response || [];
-      
-      // Generate mock sync data
-      return knownSKUs.slice(0, 50).map((sku, index) => {
-        const now = new Date();
-        const randomDaysAgo = Math.floor(Math.random() * 30);
-        const lastSync = new Date(now.getTime() - (randomDaysAgo * 24 * 60 * 60 * 1000));
-        
-        const statuses = ['success', 'failed', 'never', 'pending'];
-        const status = randomDaysAgo === 0 ? 'pending' : 
-                     randomDaysAgo > 20 ? 'never' :
-                     Math.random() > 0.8 ? 'failed' : 'success';
-        
-        return {
-          sku: sku,
-          lastSync: status === 'never' ? null : lastSync,
-          status: status,
-          syncCount: status === 'never' ? 0 : Math.floor(Math.random() * 10) + 1,
-          errors: status === 'failed' ? Math.floor(Math.random() * 3) + 1 : 0
-        };
-      });
-    } catch {
-      // Fallback to completely mock data
-      return Array.from({ length: 25 }, (_, index) => {
-        const now = new Date();
-        const randomDaysAgo = Math.floor(Math.random() * 30);
-        const lastSync = new Date(now.getTime() - (randomDaysAgo * 24 * 60 * 60 * 1000));
-        
-        const statuses = ['success', 'failed', 'never', 'pending'];
-        const status = randomDaysAgo === 0 ? 'pending' : 
-                     randomDaysAgo > 20 ? 'never' :
-                     Math.random() > 0.8 ? 'failed' : 'success';
-        
-        return {
-          sku: `SKU-${String(index + 1).padStart(4, '0')}`,
-          lastSync: status === 'never' ? null : lastSync,
-          status: status,
-          syncCount: status === 'never' ? 0 : Math.floor(Math.random() * 10) + 1,
-          errors: status === 'failed' ? Math.floor(Math.random() * 3) + 1 : 0
-        };
-      });
-    }
-  };
+
 
   const handleSort = (column) => {
     if (sortBy === column) {
@@ -134,9 +81,20 @@ function SyncStatus({ salesforceAuth, onSelectSKU }) {
 
   // Filter and sort data
   const filteredData = syncData.filter(item => {
-    const matchesSearch = item.sku.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filter === 'all' || item.status === filter || 
-                         (filter === 'synced' && item.status === 'success');
+    const searchText = `${item.sku} ${item.name || ''} ${item.category || ''}`.toLowerCase();
+    const matchesSearch = searchText.includes(searchTerm.toLowerCase());
+    
+    let matchesFilter = true;
+    if (filter === 'recent') {
+      const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      matchesFilter = item.last_sync && new Date(item.last_sync) > weekAgo;
+    } else if (filter === 'old') {
+      const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      matchesFilter = item.last_sync && new Date(item.last_sync) < monthAgo;
+    } else if (filter === 'never') {
+      matchesFilter = !item.last_sync || item.status === 'never';
+    }
+    
     return matchesSearch && matchesFilter;
   });
 
@@ -144,17 +102,17 @@ function SyncStatus({ salesforceAuth, onSelectSKU }) {
     let aVal, bVal;
     
     switch (sortBy) {
-      case 'sku':
-        aVal = a.sku;
-        bVal = b.sku;
+      case 'name':
+        aVal = (a.name || a.sku || '').toLowerCase();
+        bVal = (b.name || b.sku || '').toLowerCase();
+        break;
+      case 'category':
+        aVal = (a.category || 'Unknown').toLowerCase();
+        bVal = (b.category || 'Unknown').toLowerCase();
         break;
       case 'lastSync':
-        aVal = a.lastSync ? new Date(a.lastSync) : new Date(0);
-        bVal = b.lastSync ? new Date(b.lastSync) : new Date(0);
-        break;
-      case 'status':
-        aVal = a.status;
-        bVal = b.status;
+        aVal = a.last_sync ? new Date(a.last_sync) : new Date(0);
+        bVal = b.last_sync ? new Date(b.last_sync) : new Date(0);
         break;
       default:
         return 0;
@@ -216,11 +174,10 @@ function SyncStatus({ salesforceAuth, onSelectSKU }) {
             onChange={(e) => setFilter(e.target.value)}
             className="status-filter"
           >
-            <option value="all">All Status</option>
-            <option value="success">Successfully Synced</option>
-            <option value="failed">Failed</option>
+            <option value="all">All Products</option>
+            <option value="recent">Recently Synced (7 days)</option>
+            <option value="old">Needs Sync (30+ days)</option>
             <option value="never">Never Synced</option>
-            <option value="pending">Pending</option>
           </select>
         </div>
 
@@ -236,21 +193,33 @@ function SyncStatus({ salesforceAuth, onSelectSKU }) {
       </div>
 
       <div className="sync-stats">
-        <div className="stat-card success">
-          <span className="stat-number">{syncData.filter(item => item.status === 'success').length}</span>
-          <span className="stat-label">Synced</span>
+        <div className="stat-card recent">
+          <span className="stat-number">
+            {syncData.filter(item => {
+              const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+              return item.last_sync && new Date(item.last_sync) > weekAgo;
+            }).length}
+          </span>
+          <span className="stat-label">Recently Synced</span>
         </div>
-        <div className="stat-card error">
-          <span className="stat-number">{syncData.filter(item => item.status === 'failed').length}</span>
-          <span className="stat-label">Failed</span>
+        <div className="stat-card old">
+          <span className="stat-number">
+            {syncData.filter(item => {
+              const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+              return item.last_sync && new Date(item.last_sync) < monthAgo;
+            }).length}
+          </span>
+          <span className="stat-label">Needs Sync</span>
         </div>
-        <div className="stat-card warning">
-          <span className="stat-number">{syncData.filter(item => item.status === 'never').length}</span>
+        <div className="stat-card never">
+          <span className="stat-number">
+            {syncData.filter(item => !item.last_sync || item.status === 'never').length}
+          </span>
           <span className="stat-label">Never Synced</span>
         </div>
-        <div className="stat-card info">
-          <span className="stat-number">{syncData.filter(item => item.status === 'pending').length}</span>
-          <span className="stat-label">Pending</span>
+        <div className="stat-card total">
+          <span className="stat-number">{syncData.length}</span>
+          <span className="stat-label">Total Products</span>
         </div>
       </div>
 
@@ -259,10 +228,16 @@ function SyncStatus({ salesforceAuth, onSelectSKU }) {
           <thead>
             <tr>
               <th 
-                className={`sortable ${sortBy === 'sku' ? 'active' : ''}`}
-                onClick={() => handleSort('sku')}
+                className={`sortable ${sortBy === 'name' ? 'active' : ''}`}
+                onClick={() => handleSort('name')}
               >
-                SKU {sortBy === 'sku' && (sortOrder === 'asc' ? '↑' : '↓')}
+                Product Name {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
+              </th>
+              <th 
+                className={`sortable ${sortBy === 'category' ? 'active' : ''}`}
+                onClick={() => handleSort('category')}
+              >
+                Category {sortBy === 'category' && (sortOrder === 'asc' ? '↑' : '↓')}
               </th>
               <th 
                 className={`sortable ${sortBy === 'lastSync' ? 'active' : ''}`}
@@ -270,55 +245,54 @@ function SyncStatus({ salesforceAuth, onSelectSKU }) {
               >
                 Last Sync {sortBy === 'lastSync' && (sortOrder === 'asc' ? '↑' : '↓')}
               </th>
-              <th 
-                className={`sortable ${sortBy === 'status' ? 'active' : ''}`}
-                onClick={() => handleSort('status')}
-              >
-                Status {sortBy === 'status' && (sortOrder === 'asc' ? '↑' : '↓')}
-              </th>
-              <th>Sync Count</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {sortedData.length === 0 ? (
               <tr>
-                <td colSpan="5" className="no-data">
-                  {searchTerm || filter !== 'all' ? 'No SKUs match your filters' : 'No sync data available'}
+                <td colSpan="4" className="no-data">
+                  {searchTerm || filter !== 'all' ? 'No products match your filters' : 'No sync data available'}
                 </td>
               </tr>
             ) : (
               sortedData.map((item, index) => {
-                const statusInfo = getStatusInfo(item.status);
+                const isRecentlySync = item.last_sync && 
+                  new Date(item.last_sync) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+                const isOldSync = item.last_sync && 
+                  new Date(item.last_sync) < new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+                const isNeverSync = !item.last_sync || item.status === 'never';
+                
+                let rowClass = 'sync-row';
+                if (isNeverSync) rowClass += ' status-never';
+                else if (isOldSync) rowClass += ' status-old';
+                else if (isRecentlySync) rowClass += ' status-recent';
+                
                 return (
-                  <tr key={item.sku} className={`sync-row status-${item.status}`}>
-                    <td className="sku-cell">
-                      <button 
-                        className="sku-link"
-                        onClick={() => onSelectSKU && onSelectSKU(item.sku)}
-                      >
-                        {item.sku}
-                      </button>
+                  <tr key={item.sku} className={rowClass}>
+                    <td className="name-cell">
+                      <div className="product-info">
+                        <button 
+                          className="product-name-link"
+                          onClick={() => onSelectSKU && onSelectSKU(item.sku)}
+                        >
+                          {item.name || item.sku}
+                        </button>
+                        <span className="product-sku">{item.sku}</span>
+                      </div>
+                    </td>
+                    <td className="category-cell">
+                      <span className="category-badge">
+                        {item.category || 'Uncategorized'}
+                      </span>
                     </td>
                     <td className="time-cell">
-                      <span className="relative-time">{formatRelativeTime(item.lastSync)}</span>
-                      {item.lastSync && (
+                      <span className="relative-time">{formatRelativeTime(item.last_sync)}</span>
+                      {item.last_sync && (
                         <span className="absolute-time">
-                          {new Date(item.lastSync).toLocaleString()}
+                          {new Date(item.last_sync).toLocaleString()}
                         </span>
                       )}
-                    </td>
-                    <td className="status-cell">
-                      <span className={`status-badge status-${statusInfo.color}`}>
-                        <span className="status-icon">{statusInfo.icon}</span>
-                        {statusInfo.label}
-                      </span>
-                      {item.errors > 0 && (
-                        <span className="error-count">({item.errors} errors)</span>
-                      )}
-                    </td>
-                    <td className="count-cell">
-                      {item.syncCount}
                     </td>
                     <td className="actions-cell">
                       <button 
@@ -338,7 +312,7 @@ function SyncStatus({ salesforceAuth, onSelectSKU }) {
 
       <div className="sync-footer">
         <span className="results-count">
-          Showing {sortedData.length} of {syncData.length} SKUs
+          Showing {sortedData.length} of {syncData.length} products
         </span>
       </div>
     </div>

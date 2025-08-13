@@ -11,7 +11,7 @@ from datetime import datetime
 from app.services.salesforce_client import SalesforceClient
 from app.services.pimly_client import PimlyClient
 from app.services.krowne_scraper import KrowneScraper
-from app.services.extract_skus import extract_known_ids_from_csv
+from app.services.sync_history import SyncHistoryService
 from app.services.format_pimly import format_pimly_data
 
 BASEURL = "https://krowne.com/"
@@ -189,26 +189,6 @@ def salesforce_logout():
         session.pop('sf_tokens', None)
         return jsonify({'success': True, 'message': 'Logged out (with errors)'})
 
-### Get Product SKUs ###
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # e.g. backend/app
-UPLOAD_PATH = os.path.abspath(os.path.join(BASE_DIR, '..', 'uploads', 'Initial_Import.csv'))
-
-@main.route("/api/products/skus", methods=["GET", "OPTIONS"])
-def list_product_skus():
-    if request.method == "OPTIONS":
-        return '', 200
-    try:
-        if not os.path.exists(UPLOAD_PATH):
-            logger.warning(f"Upload CSV not found: {UPLOAD_PATH}")
-            return jsonify({"error": "SKU file not found"}), 404
-
-        skus = extract_known_ids_from_csv(UPLOAD_PATH)
-        return jsonify(skus)
-    except Exception as e:
-        logger.error("Error loading SKUs", exc_info=True)
-        return jsonify({"error": str(e)}), 500
-
-
 ### Pimly Product Routes ###
 
 @main.route("/api/pimly/search", methods=["POST", "OPTIONS"])
@@ -237,6 +217,7 @@ def search_pimly_products():
     except Exception as e:
         logger.error(f"Error searching Pimly: {str(e)}")
         return jsonify({"error": str(e)}), 500
+    
 @main.route("/api/pimly/products/<sku>", methods=["GET", "OPTIONS"])
 def get_pimly_product_by_sku(sku):
     """
@@ -269,124 +250,6 @@ def get_pimly_product_by_sku(sku):
     
 BATCH_SIZE = int(os.environ.get("PIMLY_BATCH_SIZE", 50))
 MAX_PRODUCTS_PER_REQUEST = int(os.environ.get("MAX_PRODUCTS_PER_REQUEST", 4000))
-
-@main.route("/api/pimly/products", methods=["GET", "OPTIONS"])
-def get_pimly_products():
-    """Get products from Pimly using enhanced batched requests for known SKUs."""
-    if request.method == "OPTIONS":
-        return '', 200
-
-    try:
-        sf_client = get_authenticated_sf_client()
-        pimly_client = PimlyClient(sf_client)
-
-        # Parse query parameters
-        limit = min(request.args.get('limit', 100, type=int), MAX_PRODUCTS_PER_REQUEST)
-        offset = request.args.get('offset', 0, type=int)
-        
-        # Optional: Allow filtering by specific properties
-        properties = request.args.get('properties')
-        if properties:
-            properties = [prop.strip() for prop in properties.split(',')]
-        
-        # Optional: Channel and locale context
-        channel_id = request.args.get('channel_id', 'global')
-        locale_id = request.args.get('locale_id', 'global')
-        
-        # Optional: Custom identifier field
-        context_identifier = request.args.get('context_identifier')
-
-        # Get known SKUs from CSV
-        known_skus = extract_known_ids_from_csv() or []
-        total_available = len(known_skus)
-        
-        if not known_skus:
-            logger.warning("No known SKUs found in CSV file")
-            return jsonify({
-                'products': [],
-                'total': 0,
-                'limit': limit,
-                'offset': offset,
-                'message': 'No known SKUs available'
-            })
-
-        # Apply pagination to SKU list
-        paginated_skus = known_skus[offset:offset + limit]
-        
-        logger.info(f"Processing {len(paginated_skus)} SKUs (offset: {offset}, limit: {limit})")
-
-        # Fetch products using enhanced batch processing
-        products = []
-        batch_count = 0
-        failed_batches = 0
-        
-        if paginated_skus:
-            try:
-                # Use enhanced client with all parameters
-                batch_products = pimly_client.get_products_by_ids(
-                    ids=paginated_skus,
-                    properties=properties,
-                    context_identifier=context_identifier,
-                    channel_id=channel_id,
-                    locale_id=locale_id,
-                    max_batch_size=BATCH_SIZE
-                )
-                
-                products = batch_products or []
-                batch_count = math.ceil(len(paginated_skus) / BATCH_SIZE)
-                
-                logger.info(f"Successfully retrieved {len(products)} products from {batch_count} batches")
-                
-            except Exception as e:
-                logger.exception("Error in batch product retrieval")
-                failed_batches = 1
-                # Return partial results with error info rather than complete failure
-                products = []
-
-        # Prepare response with enhanced metadata
-        response_data = {
-            'products': products,
-            'pagination': {
-                'total': total_available,
-                'limit': limit,
-                'offset': offset,
-                'returned': len(products),
-                'has_more': (offset + limit) < total_available
-            },
-            'batch_info': {
-                'batch_size': BATCH_SIZE,
-                'total_batches': batch_count,
-                'failed_batches': failed_batches,
-                'requested_skus': len(paginated_skus)
-            },
-            'filters': {
-                'properties': properties,
-                'channel_id': channel_id,
-                'locale_id': locale_id,
-                'context_identifier': context_identifier
-            },
-            'success': failed_batches == 0
-        }
-        
-        # Add warnings if applicable
-        if failed_batches > 0:
-            response_data['warnings'] = [f"{failed_batches} batch(es) failed to process"]
-        
-        if len(products) < len(paginated_skus):
-            missing_count = len(paginated_skus) - len(products)
-            response_data['warnings'] = response_data.get('warnings', [])
-            response_data['warnings'].append(f"{missing_count} SKUs returned no data")
-
-        return jsonify(response_data)
-
-    except Exception as e:
-        logger.exception("Fatal error in get_pimly_products")
-        return jsonify({
-            "error": str(e),
-            "type": "server_error",
-            "timestamp": datetime.utcnow().isoformat()
-        }), 500
-
 
 @main.route("/api/pimly/products/batch", methods=["POST", "OPTIONS"])
 def get_pimly_products_batch():
@@ -621,3 +484,168 @@ def compare_product_data(sku):
     except Exception as e:
         logger.exception(f"Error comparing product data for SKU {sku}")
         return jsonify({"error": str(e)}), 500
+
+
+### Sync History Routes ###
+@main.route('/api/sync/history', methods=['GET', 'OPTIONS'])
+def get_sync_history():
+    """Get sync history for all SKUs or a specific SKU"""
+    if request.method == "OPTIONS":
+        return '', 200
+    
+    try:
+        # Initialize sync history service
+        sync_service = SyncHistoryService()
+        
+        # Get optional SKU parameter
+        sku = request.args.get('sku')
+        
+        # Get sync history
+        history_records = sync_service.get_sync_history(sku)
+        
+        # Get statistics
+        stats = sync_service.get_sync_stats()
+        
+        # If this is the first time loading, initialize with known SKUs
+        if not history_records and not sku:
+            try:
+                # Load known SKUs from CSV with product information
+                csv_path = os.path.join(current_app.config['UPLOAD_FOLDER'], 'Initial_Import.csv')
+                # Use the enhanced CSV loading method
+                products_data = sync_service.load_products_from_csv(csv_path)
+                if products_data:
+                    # Initialize sync records with product information
+                    sync_service.bulk_init_skus(products_data)
+                    # Get updated history
+                    history_records = sync_service.get_sync_history()
+                    stats = sync_service.get_sync_stats()
+                    logger.info(f"Initialized sync history with {len(products_data)} products from CSV")
+            except Exception as e:
+                logger.warning(f"Could not initialize sync history with known SKUs: {e}")
+        
+        return jsonify({
+            'success': True,
+            'data': history_records,
+            'stats': stats,
+            'count': len(history_records)
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error getting sync history: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@main.route('/api/sync/record', methods=['POST', 'OPTIONS'])
+def record_sync():
+    """Record a sync operation for a SKU"""
+    if request.method == "OPTIONS":
+        return '', 200
+    
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({'error': 'No JSON data provided'}), 400
+        
+        sku = data.get('sku')
+        status = data.get('status')  # 'success', 'failed', 'pending'
+        details = data.get('details', {})
+        
+        if not sku or not status:
+            return jsonify({'error': 'SKU and status are required'}), 400
+        
+        if status not in ['success', 'failed', 'pending']:
+            return jsonify({'error': 'Status must be success, failed, or pending'}), 400
+        
+        # Initialize sync history service
+        sync_service = SyncHistoryService()
+        
+        # Record the sync
+        success = sync_service.record_sync(sku, status, details)
+        
+        if success:
+            return jsonify({
+                'success': True,
+                'message': f'Sync recorded for SKU {sku}'
+            }), 200
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Failed to record sync'
+            }), 500
+            
+    except Exception as e:
+        logger.error(f"Error recording sync: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@main.route('/api/sync/stats', methods=['GET', 'OPTIONS'])
+def get_sync_stats():
+    """Get sync statistics"""
+    if request.method == "OPTIONS":
+        return '', 200
+    
+    try:
+        sync_service = SyncHistoryService()
+        stats = sync_service.get_sync_stats()
+        
+        return jsonify({
+            'success': True,
+            'stats': stats
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error getting sync stats: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@main.route('/api/sync/cleanup', methods=['POST', 'OPTIONS'])
+def cleanup_sync_history():
+    """Clean up old sync history records"""
+    if request.method == "OPTIONS":
+        return '', 200
+    
+    try:
+        data = request.get_json() or {}
+        days_old = data.get('days_old', 90)  # Default to 90 days
+        
+        sync_service = SyncHistoryService()
+        cleaned_count = sync_service.cleanup_old_records(days_old)
+        
+        return jsonify({
+            'success': True,
+            'message': f'Cleaned up {cleaned_count} old records',
+            'cleaned_count': cleaned_count
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error cleaning up sync history: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+# Helper function to record sync operations (use this in other routes)
+def record_sync_operation(sku: str, status: str, details: Optional[Dict[str, Any]] = None):
+    """Helper function to record sync operations from other parts of the app
+    
+    Args:
+        sku: Product SKU
+        status: Sync status ('success', 'failed', 'pending')
+        details: Additional details about the sync
+    """
+    try:
+        sync_service = SyncHistoryService()
+        sync_service.record_sync(sku, status, details)
+    except Exception as e:
+        logger.error(f"Failed to record sync operation for {sku}: {e}")

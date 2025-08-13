@@ -1,15 +1,16 @@
 // src/services/api.js
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL =
+  process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
 class APIService {
   async request(endpoint, options = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
-    
+
     const defaultOptions = {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      credentials: 'include', // Important for Flask session cookies
+      credentials: "include", // Important for Flask session cookies
     };
 
     // Add timeout to requests
@@ -18,63 +19,66 @@ class APIService {
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
-      const response = await fetch(url, { 
-        ...defaultOptions, 
-        ...options, 
-        signal: controller.signal 
+      const response = await fetch(url, {
+        ...defaultOptions,
+        ...options,
+        signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        const error = await response.json().catch(() => ({ error: 'Request failed' }));
-        throw new Error(error.error || error.message || 'Request failed');
+        const error = await response
+          .json()
+          .catch(() => ({ error: "Request failed" }));
+        throw new Error(error.error || error.message || "Request failed");
       }
 
       return response.json();
     } catch (error) {
       clearTimeout(timeoutId);
-      
-      if (error.name === 'AbortError') {
+
+      if (error.name === "AbortError") {
         throw new Error(`Request timeout after ${timeoutMs}ms`);
       }
-      
+
       // Enhance error message for common connection issues
-      if (error.message === 'Failed to fetch') {
-        throw new Error('Server connection failed - please check if the backend server is running');
+      if (error.message === "Failed to fetch") {
+        throw new Error(
+          "Server connection failed - please check if the backend server is running"
+        );
       }
-      
+
       throw error;
     }
   }
 
   // Salesforce OAuth Authentication
   async getSalesforceStatus() {
-    return this.request('/salesforce/status');
+    return this.request("/salesforce/status");
   }
 
   async getSalesforceUser() {
-    return this.request('/salesforce/user');
+    return this.request("/salesforce/user");
   }
 
   async initiateSalesforceAuth(config = {}) {
-    return this.request('/auth/salesforce/initiate', {
-      method: 'POST',
+    return this.request("/auth/salesforce/initiate", {
+      method: "POST",
       body: JSON.stringify(config),
     });
   }
 
   async salesforceLogout() {
-    return this.request('/salesforce/logout', {
-      method: 'POST',
+    return this.request("/salesforce/logout", {
+      method: "POST",
     });
   }
 
-    // Get available SKUs from CSV
+  // Get available SKUs from CSV
   async getProductSKUs() {
-    return this.request('/products/skus');
+    return this.request("/products/skus");
   }
-
 
   // Get product by SKU (from Pimly/Salesforce)
   async getProductBySKU(sku) {
@@ -84,47 +88,49 @@ class APIService {
   // Krowne Product Scraping
   async scrapeKrowneProduct(sku) {
     if (!sku) {
-        throw new Error('SKU is required to scrape Krowne product.');
+      throw new Error("SKU is required to scrape Krowne product.");
     }
 
     return this.request(`/krowne/scrape-product/${encodeURIComponent(sku)}`);
-}
+  }
 
   // Product Comparison
   async compareProducts(data) {
     let requestData = {};
-    
-    if (typeof data === 'string') {
+
+    if (typeof data === "string") {
       requestData = { sku: data };
     } else if (Array.isArray(data)) {
       requestData = { skus: data };
-    } else if (data && typeof data === 'object') {
+    } else if (data && typeof data === "object") {
       requestData = data;
     } else {
-      throw new Error('Invalid data format for comparison');
+      throw new Error("Invalid data format for comparison");
     }
 
-    console.log('🔍 Sending comparison request:', requestData);
+    console.log("🔍 Sending comparison request:", requestData);
 
     try {
-      const response = await this.request('/compare', {
-        method: 'POST',
+      const response = await this.request("/compare", {
+        method: "POST",
         body: JSON.stringify(requestData),
       });
 
-      console.log('✅ Comparison response received:', {
+      console.log("✅ Comparison response received:", {
         total: response.total,
         success: response.success,
-        resultsPreview: response.results?.slice(0, 3)
+        resultsPreview: response.results?.slice(0, 3),
       });
 
       if (response.results) {
-        response.results = response.results.map(result => this.validateAndEnhanceResult(result));
+        response.results = response.results.map((result) =>
+          this.validateAndEnhanceResult(result)
+        );
       }
 
       return response;
     } catch (error) {
-      console.error('❌ Comparison request failed:', error);
+      console.error("❌ Comparison request failed:", error);
       throw error;
     }
   }
@@ -141,7 +147,7 @@ class APIService {
         total_fields_compared: 0,
         mismatch_count: 0,
         match_count: 0,
-        partial_data_count: 0
+        partial_data_count: 0,
       };
     }
 
@@ -161,27 +167,70 @@ class APIService {
 
   async compareSingleProduct(sku) {
     if (!sku) {
-        throw new Error('SKU is required for comparison.');
+      throw new Error("SKU is required for comparison.");
     }
 
     console.log(`🔍 Comparing single product: ${sku}`);
-    
+
     try {
-        // Use the correct endpoint
-        const response = await this.request(`/products/compare/${encodeURIComponent(sku)}`);
-        return response;
+      // Use the correct endpoint
+      const response = await this.request(
+        `/products/compare/${encodeURIComponent(sku)}`
+      );
+      return response;
     } catch (error) {
-        console.error(`❌ Single product comparison failed for ${sku}:`, error.message);
-        throw error;
+      console.error(
+        `❌ Single product comparison failed for ${sku}:`,
+        error.message
+      );
+      throw error;
     }
   }
 
-  
+  // Sync History Methods
+  async getSyncHistory() {
+    try {
+      const response = await this.request("/sync/history");
+      return response.data || [];
+    } catch (error) {
+      console.error("Failed to get sync history:", error);
+      throw error;
+    }
+  }
+
+  // Record a sync operation
+  async recordSync(sku, status, details = {}) {
+    try {
+      const response = await this.request("/sync/record", {
+        method: "POST",
+        body: JSON.stringify({
+          sku: sku,
+          status: status, // 'success', 'failed', 'pending'
+          details: details,
+        }),
+      });
+      return response;
+    } catch (error) {
+      console.error("Failed to record sync:", error);
+      throw error;
+    }
+  }
+
+  // Get sync statistics
+  async getSyncStats() {
+    try {
+      const response = await this.request("/sync/stats");
+      return response.stats || {};
+    } catch (error) {
+      console.error("Failed to get sync stats:", error);
+      throw error;
+    }
+  }
 
   // Utility Methods
   formatComparisonResults(apiResponse) {
     if (!apiResponse || !apiResponse.results) {
-      console.warn('No results in API response:', apiResponse);
+      console.warn("No results in API response:", apiResponse);
       return [];
     }
 
@@ -205,9 +254,10 @@ class APIService {
             total_fields_compared: comparison.total_fields_compared || 0,
             mismatch_count: comparison.mismatch_count || mismatches.length,
             match_count: comparison.match_count || matches.length,
-            partial_data_count: comparison.partial_data_count || partialData.length
+            partial_data_count:
+              comparison.partial_data_count || partialData.length,
           },
-          mismatches: mismatches
+          mismatches: mismatches,
         },
         status: result.status || this.determineProductStatus(result),
         timestamp: result.timestamp,
@@ -215,7 +265,7 @@ class APIService {
         price: result.krowne_price || result.salesforce_price,
         description: result.krowne_description || result.salesforce_description,
         image: result.krowne_image,
-        url: result.krowne_url
+        url: result.krowne_url,
       };
 
       return formattedResult;
@@ -224,54 +274,34 @@ class APIService {
 
   // Determine product status based on available data
   determineProductStatus(result) {
-    const hasSalesforce = result.salesforce && Object.keys(result.salesforce).length > 0;
+    const hasSalesforce =
+      result.salesforce && Object.keys(result.salesforce).length > 0;
     const hasKrowne = result.krowne && Object.keys(result.krowne).length > 0;
-    
+
     if (hasSalesforce && hasKrowne) {
-      const mismatchCount = result.comparison?.mismatch_count || result.mismatches?.length || 0;
+      const mismatchCount =
+        result.comparison?.mismatch_count || result.mismatches?.length || 0;
       if (mismatchCount > 0) {
-        return 'mismatches_found';
+        return "mismatches_found";
       }
-      
+
       const matchCount = result.comparison?.match_count || 0;
       const partialCount = result.comparison?.partial_data_count || 0;
-      
+
       if (matchCount > 0 || partialCount > 0) {
-        return 'data_matches';
+        return "data_matches";
       }
-      
-      return 'found_both';
+
+      return "found_both";
     } else if (hasSalesforce && !hasKrowne) {
-      return 'missing_from_krowne';
+      return "missing_from_krowne";
     } else if (!hasSalesforce && hasKrowne) {
-      return 'missing_from_salesforce';
+      return "missing_from_salesforce";
     } else {
-      return 'not_found';
+      return "not_found";
     }
   }
 }
-
-// Get sync history for all SKUs
-export const getSyncHistory = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/sync/history`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Failed to get sync history:', error);
-    throw error;
-  }
-};
 
 const api = new APIService();
 export default api;
