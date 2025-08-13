@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import ConnectionStatus from './components/ConnectionStatus/ConnectionStatus';
 import SKUSearch from './components/SKUSearch/SKUSearch';
-import SyncTable from './components/SyncTable/SyncTable';
+import Sort from './components/Sort/Sort';
+import SyncStatus from './components/SyncStatus/SyncStatus';
 import api from './services/api';
 
 function App() {
@@ -14,7 +15,7 @@ function App() {
   });
 
   
-  const [viewMode, setViewMode] = useState('search'); // 'search' or 'sync'
+  const [viewMode, setViewMode] = useState('search'); // 'search', 'sort', or 'sync'
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchedSKU, setSearchedSKU] = useState('');
@@ -138,21 +139,25 @@ function App() {
         {bothServicesConnected ? (
           <>
             <div className="view-toggle-wrapper">
-              <div className="view-toggle">
-                <label className={viewMode === 'search' ? 'active' : ''}>Search SKU</label>
-                <div className="toggle-switch">
-                  <input
-                    type="checkbox"
-                    id="viewModeToggle"
-                    checked={viewMode === 'sync'}
-                    onChange={() => {
-                      const newMode = viewMode === 'search' ? 'sync' : 'search';
-                      setViewMode(newMode);
-                    }}
-                  />
-                  <label htmlFor="viewModeToggle"></label>
-                </div>
-                <label className={viewMode === 'sync' ? 'active' : ''}>Check Sync</label>
+              <div className="view-button-bar">
+                <button 
+                  className={`view-button ${viewMode === 'search' ? 'active' : ''}`}
+                  onClick={() => setViewMode('search')}
+                >
+                  Search
+                </button>
+                <button 
+                  className={`view-button ${viewMode === 'sort' ? 'active' : ''}`}
+                  onClick={() => setViewMode('sort')}
+                >
+                  Sort
+                </button>
+                <button 
+                  className={`view-button ${viewMode === 'sync' ? 'active' : ''}`}
+                  onClick={() => setViewMode('sync')}
+                >
+                  Sync
+                </button>
               </div>
             </div>
 
@@ -169,8 +174,16 @@ function App() {
                 searchedSKU={searchedSKU}
                 salesforceAuth={salesforceAuth}
               />
+            ) : viewMode === 'sort' ? (
+              <Sort
+                salesforceAuth={salesforceAuth}
+                onSelectCategory={(category) => {
+                  console.log('Selected category:', category);
+                  // You can add category-specific logic here
+                }}
+              />
             ) : (
-              <SyncTable
+              <SyncStatus
                 salesforceAuth={salesforceAuth}
                 onSelectSKU={handleSKUSearch}
               />

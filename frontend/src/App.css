@@ -80,7 +80,7 @@ body {
   width: 100%;
 }
 
-/* View Toggle */
+/* View Button Bar (New 3-Button Design) */
 .view-toggle-wrapper {
   display: flex;
   justify-content: center;
@@ -88,6 +88,68 @@ body {
   padding: 20px 0;
 }
 
+.view-button-bar {
+  display: flex;
+  background: white;
+  padding: 4px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-200);
+  gap: 2px;
+}
+
+.view-button {
+  flex: 1;
+  min-width: 120px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-600);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.view-button:hover:not(.active) {
+  background-color: var(--gray-50);
+  color: var(--gray-700);
+  transform: translateY(-1px);
+}
+
+.view-button.active {
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  transform: translateY(-1px);
+}
+
+.view-button.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+  border-radius: 8px;
+}
+
+.view-button:active {
+  transform: translateY(0);
+}
+
+.view-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Legacy toggle styles (keeping for compatibility) */
 .view-toggle {
   display: flex;
   align-items: center;
@@ -177,106 +239,96 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 60vh;
-  padding: 20px;
 }
 
 .connection-status-card {
   background: white;
   border-radius: 12px;
-  padding: 40px;
+  padding: 32px;
   box-shadow: var(--shadow-lg);
-  max-width: 600px;
-  width: 100%;
+  border: 1px solid var(--gray-200);
+  max-width: 500px;
   text-align: center;
 }
 
 .connection-status-card h2 {
-  color: var(--gray-700);
-  margin-bottom: 12px;
   font-size: 24px;
-  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 8px;
 }
 
-.connection-status-card > p {
-  color: var(--gray-500);
-  margin-bottom: 32px;
-  font-size: 16px;
+.connection-status-card p {
+  color: var(--gray-600);
+  margin-bottom: 24px;
 }
 
 .connection-checklist {
-  margin-bottom: 32px;
-  text-align: left;
+  margin: 24px 0;
 }
 
 .connection-check {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
+  align-items: center;
+  gap: 12px;
   padding: 16px;
-  margin-bottom: 16px;
   border-radius: 8px;
-  border: 2px solid var(--gray-200);
-  transition: all 0.3s ease;
+  margin-bottom: 12px;
+  text-align: left;
 }
 
 .connection-check.connected {
-  border-color: var(--success-green);
   background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
 }
 
 .connection-check.disconnected {
-  border-color: var(--error-red);
   background-color: #fef2f2;
+  border: 1px solid #fecaca;
 }
 
 .check-icon {
-  font-size: 20px;
-  line-height: 1;
-  margin-top: 2px;
-}
-
-.check-details {
-  flex: 1;
+  font-size: 18px;
 }
 
 .check-details strong {
   display: block;
-  color: var(--gray-700);
-  font-size: 16px;
+  color: var(--gray-900);
   margin-bottom: 4px;
 }
 
 .check-details p {
+  color: var(--gray-600);
   margin: 0;
-  color: var(--gray-500);
   font-size: 14px;
-  line-height: 1.4;
 }
 
 .error-text {
   color: var(--error-red) !important;
-  font-size: 13px !important;
-  margin-top: 4px !important;
+  font-size: 12px !important;
 }
 
 .connection-actions {
   display: flex;
-  gap: 12px;
   justify-content: center;
-  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.connect-btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 140px;
 }
 
 .connect-btn.primary {
   background-color: var(--primary-blue);
   color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 160px;
+  box-shadow: var(--shadow-sm);
 }
 
 .connect-btn.primary:hover:not(:disabled) {
@@ -364,6 +416,19 @@ body {
     width: 100%;
   }
   
+  .view-button-bar {
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px;
+    border-radius: 12px;
+  }
+  
+  .view-button {
+    min-width: auto;
+    width: 100%;
+  }
+  
+  /* Legacy responsive for old toggle */
   .view-toggle {
     flex-direction: column;
     gap: 12px;
@@ -379,5 +444,10 @@ body {
 @media (max-width: 480px) {
   .main-content {
     padding: 1rem;
+  }
+  
+  .view-button {
+    padding: 10px 16px;
+    font-size: 13px;
   }
 }

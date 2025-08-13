@@ -50,7 +50,7 @@ export const FIELD_MAPPINGS = {
     },
     
     "outlet": {
-      pimly: ["Outlet", "Drain_Outlet"],
+      pimly: ["Outlet", "Drain_Outlet", "Outlet_Type"],
       krowne: ["outlet", "drain_outlet"]
     },
     

@@ -79,7 +79,7 @@ def format_pimly_data(raw_data: Dict[str, Any]) -> Dict[str, Any]:
         'Spout_Size_(in.)',
         'Valve_Type',
         'Inlet',
-        'Outlet',
+        'Outlet_Type',
         'Drain_Size',
         'Drain_Location',
         'Drain_Outlet',
