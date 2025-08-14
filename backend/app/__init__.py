@@ -22,6 +22,72 @@ def load_env_file():
     else:
         print("ℹ️  No .env file found, using system environment variables")
 
+def initialize_sync_history_on_startup():
+    """Initialize sync history system during app startup"""
+    try:
+        print("🔄 Initializing sync history system...")
+        
+        from app.services.sync_history import SyncHistoryService
+        
+        # Initialize the sync history service
+        sync_service = SyncHistoryService()
+        print("✅ Sync history service initialized")
+        
+        # Try to load known products from CSV
+        csv_path = os.path.join("uploads", "Initial_Import.csv")
+        
+        if os.path.exists(csv_path):
+            print(f"📄 Loading known products from {csv_path}")
+            products_data = sync_service.load_products_from_csv(csv_path)
+            
+            if products_data:
+                print(f"📊 Found {len(products_data)} products with categories")
+                
+                # Show some examples
+                for i, product in enumerate(products_data[:3]):
+                    print(f"  📦 Example {i+1}: SKU={product['sku']}, Name={product.get('name', 'N/A')}, Category={product.get('category', 'Unsorted')}")
+                
+                # Initialize sync records for all known products
+                success = sync_service.bulk_init_skus(products_data)
+                
+                if success:
+                    print("✅ Successfully initialized sync records for all known products")
+                    
+                    # Get and display statistics
+                    stats = sync_service.get_sync_stats()
+                    print(f"📈 Sync history stats: Total SKUs: {stats.get('total_skus', 0)}")
+                    
+                    # Show category breakdown
+                    categories = {}
+                    for product in products_data:
+                        cat = product.get('category', 'Unsorted')
+                        categories[cat] = categories.get(cat, 0) + 1
+                    
+                    print("📂 Category breakdown:")
+                    for category, count in sorted(categories.items())[:5]:  # Show top 5
+                        print(f"   {category}: {count} products")
+                    
+                    if len(categories) > 5:
+                        print(f"   ... and {len(categories) - 5} more categories")
+                    
+                else:
+                    print("❌ Failed to initialize sync records")
+                    return False
+            else:
+                print("⚠️ No products found in CSV file")
+        else:
+            print(f"⚠️ CSV file not found at {csv_path}")
+            print("📝 Creating empty sync history system - products will be added as they are encountered")
+        
+        print("🎉 Sync history setup completed successfully!")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Failed to setup sync history: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
 def create_app():
     
     load_env_file()
@@ -100,6 +166,7 @@ def create_app():
     # Check environment configuration on startup
     with app.app_context():
         check_environment_config()
+        initialize_sync_history_on_startup()
     
     Session(app)
 
