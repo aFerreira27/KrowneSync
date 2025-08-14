@@ -75,6 +75,9 @@ function Sort({ salesforceAuth, onSelectCategory }) {
   useEffect(() => {
     if (salesforceAuth.authenticated) {
       loadSyncData();
+      // Set up periodic refresh every 30 seconds
+      const interval = setInterval(loadSyncData, 30000);
+      return () => clearInterval(interval);
     }
   }, [salesforceAuth.authenticated]);
 
@@ -82,15 +85,20 @@ function Sort({ salesforceAuth, onSelectCategory }) {
     setStatsLoading(true);
     try {
       // Fetch sync history from backend
-      const response = await fetch('/api/sync/history');
+      const response = await fetch('/api/sync/history', {
+        credentials: 'include'
+      });
       
       if (response.ok) {
         const data = await response.json();
-        setSyncHistory(data.data || []);
+        const syncData = data.data || [];
+        setSyncHistory(syncData);
         
         // Calculate stats per category
-        const stats = calculateCategoryStats(data.data || []);
+        const stats = calculateCategoryStats(syncData);
         setCategoryStats(stats);
+      } else {
+        console.error('Failed to fetch sync history:', response.status);
       }
     } catch (error) {
       console.error('Error loading sync data:', error);
@@ -120,20 +128,33 @@ function Sort({ salesforceAuth, onSelectCategory }) {
       
       if (stats[category]) {
         stats[category].total++;
-        stats[category].products.push(record);
         
-        // Determine sync status based on last_sync_date
+        // Add product info with consistent field names
+        const productInfo = {
+          sku: record.sku,
+          product_name: record.name || record.sku,
+          last_sync_date: record.last_sync, // Use last_sync from sync_history.json
+          status: record.status,
+          sync_count: record.sync_count || 0,
+          success_count: record.success_count || 0,
+          failed_count: record.failed_count || 0
+        };
+        
+        stats[category].products.push(productInfo);
+        
+        // Determine sync status based on status and last_sync
         if (record.status === 'pending') {
           stats[category].syncing++;
-        } else if (!record.last_sync_date) {
+        } else if (!record.last_sync || record.status === 'never') {
           stats[category].never++;
         } else {
-          const lastSync = new Date(record.last_sync_date);
-          const daysSinceSync = (Date.now() - lastSync) / (1000 * 60 * 60 * 24);
+          const lastSync = new Date(record.last_sync);
+          const now = new Date();
+          const daysSinceSync = (now - lastSync) / (1000 * 60 * 60 * 24);
           
-          if (daysSinceSync < 7) {
+          if (daysSinceSync <= 7) {
             stats[category].recent++;
-          } else if (daysSinceSync < 30) {
+          } else if (daysSinceSync <= 30) {
             stats[category].old++;
           } else {
             stats[category].never++;
@@ -229,6 +250,12 @@ function Sort({ salesforceAuth, onSelectCategory }) {
       if (b === 'Unsorted') return 1;
       return formatCategoryName(a).localeCompare(formatCategoryName(b));
     }
+    // Popular order could be based on total products or sync activity
+    if (sortOrder === 'popular') {
+      const aStats = categoryStats[a] || { total: 0 };
+      const bStats = categoryStats[b] || { total: 0 };
+      return bStats.total - aStats.total;
+    }
     return CATEGORIES.indexOf(a) - CATEGORIES.indexOf(b);
   });
 
@@ -247,20 +274,23 @@ function Sort({ salesforceAuth, onSelectCategory }) {
     const stats = categoryStats[category];
     if (!stats || !stats.products) return;
 
-    // Create CSV content
+    // Create CSV content with proper headers
     const csvContent = [
-      ['SKU', 'Product Name', 'Last Sync', 'Status', 'Sync Count'],
+      ['SKU', 'Product Name', 'Category', 'Last Sync', 'Status', 'Sync Count', 'Success Count', 'Failed Count'],
       ...stats.products.map(p => [
-        p.sku,
+        p.sku || '',
         p.product_name || '',
+        category,
         p.last_sync_date || 'Never',
         p.status || 'unknown',
-        p.sync_count || 0
+        p.sync_count || 0,
+        p.success_count || 0,
+        p.failed_count || 0
       ])
-    ].map(row => row.join(',')).join('\n');
+    ].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
 
     // Download CSV
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -279,7 +309,7 @@ function Sort({ salesforceAuth, onSelectCategory }) {
 
     // Get products that need syncing (old or never synced)
     const productsToSync = stats.products.filter(p => {
-      if (!p.last_sync_date) return true;
+      if (!p.last_sync_date || p.status === 'never') return true;
       const daysSinceSync = (Date.now() - new Date(p.last_sync_date)) / (1000 * 60 * 60 * 24);
       return daysSinceSync > 7;
     });
@@ -288,6 +318,13 @@ function Sort({ salesforceAuth, onSelectCategory }) {
       alert('All products in this category are up to date!');
       return;
     }
+
+    // Confirm sync action
+    const confirmed = window.confirm(
+      `This will sync ${productsToSync.length} products in ${formatCategoryName(category)}. Continue?`
+    );
+    
+    if (!confirmed) return;
 
     // Update stats to show syncing
     setCategoryStats(prev => ({
@@ -299,20 +336,43 @@ function Sort({ salesforceAuth, onSelectCategory }) {
     }));
 
     // Sync products
+    let successCount = 0;
+    let errorCount = 0;
+    
     for (const product of productsToSync) {
       try {
-        await fetch('/api/sync/record', {
+        const response = await fetch('/api/sync/record', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({
             sku: product.sku,
             status: 'pending',
-            details: { category, triggered_by: 'category_sync' }
+            details: { 
+              category, 
+              triggered_by: 'category_sync',
+              name: product.product_name 
+            }
           })
         });
+        
+        if (response.ok) {
+          successCount++;
+        } else {
+          errorCount++;
+          console.error(`Failed to sync ${product.sku}:`, response.status);
+        }
       } catch (error) {
+        errorCount++;
         console.error(`Error syncing ${product.sku}:`, error);
       }
+    }
+
+    // Show results
+    if (errorCount === 0) {
+      alert(`Successfully queued ${successCount} products for sync!`);
+    } else {
+      alert(`Sync initiated: ${successCount} successful, ${errorCount} failed. Check console for details.`);
     }
 
     // Reload data after sync
@@ -362,7 +422,7 @@ function Sort({ salesforceAuth, onSelectCategory }) {
               className="sort-select"
             >
               <option value="alphabetical">Alphabetical</option>
-              <option value="popular">Popular</option>
+              <option value="popular">Most Products</option>
             </select>
           </div>
         </div>

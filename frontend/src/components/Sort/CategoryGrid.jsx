@@ -38,18 +38,32 @@ function CategoryGrid({
     
     const recentPercentage = (recent / total) * 100;
     const neverPercentage = (never / total) * 100;
+    const oldPercentage = (old / total) * 100;
     
     // Determine sync icon based on health
     let syncIcon = '✅';
-    if (neverPercentage > 50) syncIcon = '❌';
-    else if (recentPercentage < 60) syncIcon = '⚠️';
+    let syncText = `${recent}/${total} synced`;
+    
+    if (neverPercentage > 50) {
+      syncIcon = '❌';
+      syncText = `${never} never synced`;
+    } else if (oldPercentage > 30) {
+      syncIcon = '⚠️';
+      syncText = `${old} need updates`;
+    } else if (recentPercentage >= 80) {
+      syncIcon = '✅';
+      syncText = `${recent}/${total} up to date`;
+    } else {
+      syncIcon = '⚠️';
+      syncText = `${recent}/${total} synced`;
+    }
     
     return { 
-      syncText: `${recent}/${total} synced`,
+      syncText,
       syncIcon,
       healthBar: {
         recent: recentPercentage,
-        old: (old / total) * 100,
+        old: oldPercentage,
         never: neverPercentage,
         syncing: false
       }
@@ -67,6 +81,7 @@ function CategoryGrid({
       ) : (
         categories.map((category, index) => {
           const statusInfo = getStatusInfo(category);
+          const stats = categoryStats[category] || {};
           
           return (
             <div
@@ -88,7 +103,7 @@ function CategoryGrid({
               <div className="category-content">
                 <h3 className="category-name">{formatCategoryName(category)}</h3>
                 
-                {statusInfo && (
+                {statusInfo && salesforceAuth.authenticated && (
                   <div className="sync-status">
                     <div className="sync-text">
                       {statusInfo.syncText}
@@ -99,14 +114,17 @@ function CategoryGrid({
                           <div 
                             className="healthbar-fill recent" 
                             style={{ width: `${statusInfo.healthBar.recent}%` }}
+                            title={`${stats.recent || 0} recently synced`}
                           ></div>
                           <div 
                             className="healthbar-fill old" 
                             style={{ width: `${statusInfo.healthBar.old}%` }}
+                            title={`${stats.old || 0} need updates`}
                           ></div>
                           <div 
                             className="healthbar-fill never" 
                             style={{ width: `${statusInfo.healthBar.never}%` }}
+                            title={`${stats.never || 0} never synced`}
                           ></div>
                           {statusInfo.healthBar.syncing && (
                             <div className="healthbar-pulse"></div>
@@ -119,15 +137,15 @@ function CategoryGrid({
                 )}
               </div>
 
-              <div className="sync-icon-container">
-                {statusInfo && statusInfo.syncIcon && (
+              <div className="card-right">
+                {statusInfo && statusInfo.syncIcon && salesforceAuth.authenticated && (
                   <div className={`sync-icon ${statusInfo.healthBar?.syncing ? 'syncing' : ''}`}>
                     {statusInfo.syncIcon}
                   </div>
                 )}
-              </div>
 
-              <div className="category-arrow">→</div>
+                <div className="category-arrow">→</div>
+              </div>
             </div>
           );
         })
