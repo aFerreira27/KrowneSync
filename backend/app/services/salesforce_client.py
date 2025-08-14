@@ -4,6 +4,7 @@ import urllib.parse
 import secrets
 import base64
 import hashlib
+import os
 from typing import List, Dict, Any, Optional, Tuple
 
 logger = logging.getLogger(__name__)
@@ -12,7 +13,7 @@ class SalesforceClient:
     def __init__(self, config: Dict[str, str]):
         self.client_id = config['client_id']
         self.client_secret = config['client_secret']
-        self.redirect_uri = config.get('redirect_uri', 'http://localhost:5000/api/auth/callback/salesforce')
+        self.redirect_uri = config.get('redirect_uri') or os.environ.get('SALESFORCE_REDIRECT_URI', 'https://krownesync-backend-production.up.railway.app/api/auth/callback/salesforce')
         self.sandbox = config.get('sandbox', False)  # True for sandbox, False for production
         self.instance_url = None
         self.access_token = None

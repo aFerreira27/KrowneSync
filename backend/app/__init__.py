@@ -57,7 +57,11 @@ def create_app():
 
     # Enable CORS for React frontend
     CORS(app,
-     resources={r"/api/*": {"origins": ["http://localhost:3000"]}},
+     resources={r"/api/*": {"origins": [
+         "http://localhost:3000",  # Local development
+         "https://krownebase.art",  # Custom domain
+         "https://ypoanbzw.up.railway.app"  # Railway frontend URL
+     ]}},
      supports_credentials=True,
      allow_headers=["Content-Type", "Authorization"],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
@@ -113,7 +117,8 @@ def check_environment_config():
         print("✅ All required Salesforce OAuth variables are configured!")
     
     # Show additional config
-    redirect_uri = os.environ.get('SALESFORCE_REDIRECT_URI', 'http://localhost:3000/api/auth/callback/salesforce')
+    redirect_uri = os.environ.get('SALESFORCE_REDIRECT_URI', 'https://krownesync-backend-production.up.railway.app/api/auth/callback/salesforce')
+
     sandbox = os.environ.get('SALESFORCE_SANDBOX', 'false').lower() == 'true'
     
     print(f"\n📍 Redirect URI: {redirect_uri}")
