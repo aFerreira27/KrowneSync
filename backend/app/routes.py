@@ -103,7 +103,7 @@ def salesforce_callback():
         code_verifier = session.get('code_verifier')
         sf_config = session.get('sf_config')
 
-        logger.log(f"State from request: {state}, Session state: {session_state}")
+        logger.info(f"State from request: {state}, Session state: {session_state}, Code Verifier: {code_verifier}, SF Config: {sf_config}")
 
         if not state or state != session_state:
             logger.error(f"State mismatch: {state} != {session_state}")
