@@ -83,7 +83,7 @@ def salesforce_callback():
     try:
         logger.info("=== SALESFORCE OAUTH CALLBACK STARTED ===")
         
-        # ✅ FIXED: Dynamic frontend URL based on environment
+        # ✅ FIXED: Dynamic frontend URL
         frontend_url = os.environ.get('FRONTEND_URL', 'https://krownebase.art')
         
         code = request.args.get('code')
@@ -93,12 +93,10 @@ def salesforce_callback():
         if error:
             error_description = request.args.get('error_description', 'Unknown error')
             logger.error(f"OAuth error: {error} - {error_description}")
-            # ✅ FIXED: Use dynamic frontend URL
             return redirect(f"{frontend_url}/?error={error}&error_description={error_description}")
 
         if not code:
             logger.error("No authorization code received from Salesforce")
-            # ✅ FIXED: Use dynamic frontend URL
             return redirect(f"{frontend_url}/?error=no_code&message=No authorization code received")
 
         session_state = session.get('oauth_state')
@@ -107,12 +105,10 @@ def salesforce_callback():
 
         if not state or state != session_state:
             logger.error(f"State mismatch: {state} != {session_state}")
-            # ✅ FIXED: Use dynamic frontend URL
             return redirect(f"{frontend_url}/?error=invalid_state&message=State parameter mismatch")
 
         if not sf_config or not code_verifier:
             logger.error("Missing session data for OAuth")
-            # ✅ FIXED: Use dynamic frontend URL
             return redirect(f"{frontend_url}/?error=session_expired&message=OAuth session expired")
 
         sf_client = SalesforceClient(sf_config)
@@ -139,7 +135,6 @@ def salesforce_callback():
         session.modified = True
 
         logger.info("=== SALESFORCE OAUTH CALLBACK COMPLETED SUCCESSFULLY ===")
-        # ✅ FIXED: Use dynamic frontend URL
         return redirect(f"{frontend_url}/?auth=success")
 
     except Exception as e:
@@ -147,7 +142,6 @@ def salesforce_callback():
         for key in ['oauth_state', 'code_verifier', 'sf_config']:
             session.pop(key, None)
         session.modified = True
-        # ✅ FIXED: Use dynamic frontend URL
         return redirect(f"{frontend_url}/?error=auth_failed&message={str(e)}")
 
 @main.route('/api/salesforce/status')
