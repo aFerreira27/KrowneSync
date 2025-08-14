@@ -42,11 +42,14 @@ def get_authenticated_sf_client():
 @main.route('/api/auth/salesforce/initiate', methods=['POST'])
 def initiate_salesforce_auth():
     try:
+        logger.info("=== INITIATING SALESFORCE OAUTH ===")
+        
         client_id = current_app.config.get('SALESFORCE_CLIENT_ID')
         client_secret = current_app.config.get('SALESFORCE_CLIENT_SECRET')
         redirect_uri = current_app.config.get('SALESFORCE_REDIRECT_URI')
         sandbox = current_app.config.get('SALESFORCE_SANDBOX', False)
         
+        logger.info(f"Config - Client ID: {client_id[:8]}..., Redirect URI: {redirect_uri}, Sandbox: {sandbox}")
 
         if not client_id or not client_secret or not redirect_uri:
             missing = [key for key, val in {
@@ -54,6 +57,7 @@ def initiate_salesforce_auth():
                 'SALESFORCE_CLIENT_SECRET': client_secret,
                 'SALESFORCE_REDIRECT_URI': redirect_uri
             }.items() if not val]
+            logger.error(f'Missing configuration: {", ".join(missing)}')
             return jsonify({'error': f'Missing configuration: {", ".join(missing)}'}), 500
 
         config = {
@@ -65,17 +69,31 @@ def initiate_salesforce_auth():
         sf_client = SalesforceClient(config)
         auth_data = sf_client.get_authorization_url()
 
+        # 🔧 FIXED: Store session data with explicit session modification
+        session.clear()  # Clear any existing session data
         session['oauth_state'] = auth_data['state']
         session['code_verifier'] = auth_data['code_verifier']
         session['sf_config'] = config
+        session['oauth_timestamp'] = datetime.now().timestamp()  # Add timestamp for debugging
+        session.permanent = True  # Make session permanent for OAuth flow
+        session.modified = True   # Explicitly mark session as modified
+        
+        logger.info(f"Session stored - State: {auth_data['state'][:8]}..., Code Verifier: {auth_data['code_verifier'][:8]}...")
+        logger.info(f"Session ID: {session.get('_id', 'No ID')}")
 
         return jsonify({
             'auth_url': auth_data['auth_url'],
             'redirect_uri': redirect_uri,
             'state': auth_data['state'],
-            'sandbox': sandbox
+            'sandbox': sandbox,
+            'session_debug': {
+                'session_id': session.get('_id', 'No ID'),
+                'state_stored': bool(session.get('oauth_state')),
+                'config_stored': bool(session.get('sf_config'))
+            }
         })
     except Exception as e:
+        logger.error(f"OAuth initiation error: {str(e)}", exc_info=True)
         return jsonify({'error': str(e)}), 500
 
 @main.route('/api/auth/callback/salesforce')
@@ -83,57 +101,79 @@ def salesforce_callback():
     try:
         logger.info("=== SALESFORCE OAUTH CALLBACK STARTED ===")
         
-        # ✅ FIXED: Dynamic frontend URL
-        frontend_url = os.environ.get('FRONTEND_URL', 'https://krownebase.art')
+        # 🔧 FIXED: Get frontend URL from config
+        frontend_url = current_app.config.get('FRONTEND_URL', 'https://krownebase.art')
         
         code = request.args.get('code')
         state = request.args.get('state')
         error = request.args.get('error')
 
+        logger.info(f"Callback params - Code: {bool(code)}, State: {state[:8] if state else 'None'}..., Error: {error}")
+        logger.info(f"Session ID: {session.get('_id', 'No ID')}")
+        
+        # Check for OAuth errors first
         if error:
             error_description = request.args.get('error_description', 'Unknown error')
-            logger.error(f"OAuth error: {error} - {error_description}")
+            logger.error(f"OAuth error from Salesforce: {error} - {error_description}")
             return redirect(f"{frontend_url}/?error={error}&error_description={error_description}")
 
         if not code:
             logger.error("No authorization code received from Salesforce")
             return redirect(f"{frontend_url}/?error=no_code&message=No authorization code received")
 
+        # 🔧 FIXED: Better session data retrieval with debugging
         session_state = session.get('oauth_state')
         code_verifier = session.get('code_verifier')
         sf_config = session.get('sf_config')
+        oauth_timestamp = session.get('oauth_timestamp')
 
-        logger.info(f"State from request: {state}, Session state: {session_state}, Code Verifier: {code_verifier}, SF Config: {sf_config}")
+        logger.info(f"Session data - State: {session_state[:8] if session_state else 'None'}..., "
+                   f"Code Verifier: {bool(code_verifier)}, Config: {bool(sf_config)}, "
+                   f"Timestamp: {oauth_timestamp}")
 
-        if not state or state != session_state:
-            logger.error(f"State mismatch: {state} != {session_state}")
-            return redirect(f"{frontend_url}/?error=invalid_state&message=State parameter mismatch")
+        # Check state parameter (CSRF protection)
+        if not state or not session_state:
+            logger.error(f"Missing state parameter - Request: {state}, Session: {session_state}")
+            return redirect(f"{frontend_url}/?error=missing_state&message=Missing state parameter")
+            
+        if state != session_state:
+            logger.error(f"State mismatch - Request: {state}, Session: {session_state}")
+            # 🔧 FIXED: Provide more debugging info in the error
+            error_msg = f"State parameter mismatch. This usually happens when the session expires or cookies are not working properly."
+            return redirect(f"{frontend_url}/?error=invalid_state&message={error_msg}&debug_state={state[:8]}")
 
         if not sf_config or not code_verifier:
-            logger.error("Missing session data for OAuth")
-            return redirect(f"{frontend_url}/?error=session_expired&message=OAuth session expired")
+            logger.error("Missing session data for OAuth - this indicates session storage issues")
+            return redirect(f"{frontend_url}/?error=session_expired&message=OAuth session expired - session storage may not be working properly")
 
+        # Exchange code for tokens
+        logger.info("Exchanging authorization code for access tokens...")
         sf_client = SalesforceClient(sf_config)
         token_info = sf_client.exchange_code_for_tokens(code, code_verifier)
 
         if not token_info.get('access_token') or not token_info.get('instance_url'):
+            logger.error("Missing tokens in response from Salesforce")
             raise Exception("Missing tokens in response")
 
+        # Store tokens in session
         session['sf_tokens'] = {
             'access_token': token_info['access_token'],
             'refresh_token': token_info.get('refresh_token'),
             'instance_url': token_info['instance_url'],
             'client_config': sf_config
         }
+        session.modified = True
 
-        # Test tokens
+        # Test tokens by getting user info
         sf_client.set_tokens(token_info['access_token'], token_info.get('refresh_token'), token_info['instance_url'])
         user_info = sf_client.get_user_info()
-        logger.info(f"User info: {user_info.get('display_name', 'Unknown')}")
+        logger.info(f"OAuth successful for user: {user_info.get('display_name', 'Unknown')}")
 
-        # Clean temporary session data
-        for key in ['oauth_state', 'code_verifier', 'sf_config']:
-            session.pop(key, None)
+        # 🔧 FIXED: Clean temporary session data more carefully
+        temp_keys = ['oauth_state', 'code_verifier', 'sf_config', 'oauth_timestamp']
+        for key in temp_keys:
+            if key in session:
+                del session[key]
         session.modified = True
 
         logger.info("=== SALESFORCE OAUTH CALLBACK COMPLETED SUCCESSFULLY ===")
@@ -141,10 +181,30 @@ def salesforce_callback():
 
     except Exception as e:
         logger.error(f"OAuth callback error: {str(e)}", exc_info=True)
-        for key in ['oauth_state', 'code_verifier', 'sf_config']:
+        
+        # Clean up session on error
+        temp_keys = ['oauth_state', 'code_verifier', 'sf_config', 'oauth_timestamp']
+        for key in temp_keys:
             session.pop(key, None)
         session.modified = True
+        
+        frontend_url = current_app.config.get('FRONTEND_URL', 'https://krownebase.art')
         return redirect(f"{frontend_url}/?error=auth_failed&message={str(e)}")
+
+@main.route('/api/auth/debug')
+def debug_auth_state():
+    """Debug endpoint to check session state - remove in production"""
+    if current_app.config.get('FLASK_ENV') == 'production':
+        return jsonify({'error': 'Debug endpoint disabled in production'}), 403
+        
+    return jsonify({
+        'session_keys': list(session.keys()),
+        'oauth_state_exists': 'oauth_state' in session,
+        'sf_tokens_exists': 'sf_tokens' in session,
+        'session_id': session.get('_id', 'No ID'),
+        'session_permanent': session.permanent,
+        'session_modified': session.modified
+    })
 
 @main.route('/api/salesforce/status')
 def salesforce_auth_status():
@@ -160,16 +220,25 @@ def salesforce_auth_status():
         try:
             user_info = sf_client.get_user_info()
             return jsonify({'authenticated': True, 'user_info': user_info, 'instance_url': sf_tokens['instance_url']})
-        except Exception:
+        except Exception as e:
+            logger.warning(f"Token validation failed: {str(e)}")
+            # Try to refresh tokens
             if sf_client.refresh_access_token():
+                # Update session with new tokens
                 session['sf_tokens']['access_token'] = sf_client.access_token
+                session.modified = True
+                
                 user_info = sf_client.get_user_info()
-                return jsonify({'authenticated': True, 'user_info': user_info, 'instance_url': sf_client.instance_url})
+                return jsonify({'authenticated': True, 'user_info': user_info, 'instance_url': sf_tokens['instance_url']})
             else:
+                # Refresh failed, clear session
                 session.pop('sf_tokens', None)
-                return jsonify({'authenticated': False})
+                session.modified = True
+                return jsonify({'authenticated': False, 'error': 'Token refresh failed'})
+
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Status check error: {str(e)}")
+        return jsonify({'authenticated': False, 'error': str(e)})
 
 @main.route('/api/salesforce/user', methods=['GET'])
 def get_salesforce_user():

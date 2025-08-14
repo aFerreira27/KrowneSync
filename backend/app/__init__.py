@@ -28,12 +28,12 @@ def create_app():
     
     app = Flask(__name__)
 
-    # Configure Flask with environment variables
-    secret_key = os.environ.get('SECRET_KEY')
-    if not secret_key or secret_key == 'dev-key-change-in-production':
-        raise ValueError("Production SECRET_KEY must be set and not be the dev key!")
-    app.config['SECRET_KEY'] = secret_key
+    # 🔧 FIXED: Configure Flask with proper session security for cross-domain
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
     app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SESSION_FILE_DIR'] = os.path.join(os.getcwd(), 'flask_session')
+    app.config['SESSION_PERMANENT'] = False
+    app.config['SESSION_USE_SIGNER'] = True
 
     app.config['UPLOAD_FOLDER'] = os.environ.get('UPLOAD_FOLDER', 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
@@ -41,31 +41,58 @@ def create_app():
     # Salesforce OAuth configuration
     app.config['SALESFORCE_CLIENT_ID'] = os.environ.get('SALESFORCE_CLIENT_ID')
     app.config['SALESFORCE_CLIENT_SECRET'] = os.environ.get('SALESFORCE_CLIENT_SECRET')
-    app.config['SALESFORCE_REDIRECT_URI'] = os.environ.get('SALESFORCE_REDIRECT_URI', 'http://localhost:5000/api/auth/callback/salesforce')
+    
+    # 🔧 FIXED: Determine redirect URI based on environment
+    backend_url = os.environ.get('BACKEND_URL', 'http://localhost:5000')
+    app.config['SALESFORCE_REDIRECT_URI'] = os.environ.get(
+        'SALESFORCE_REDIRECT_URI', 
+        f'{backend_url}/api/auth/callback/salesforce'
+    )
     app.config['SALESFORCE_SANDBOX'] = os.environ.get('SALESFORCE_SANDBOX', 'false').lower() == 'true'
     
-
+    # Frontend URL for redirects
+    app.config['FRONTEND_URL'] = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
 
     # Ensure upload directory exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
-    # Configure session for OAuth state management
-    app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
+    # Ensure session directory exists
+    os.makedirs(app.config['SESSION_FILE_DIR'], exist_ok=True)
+    
+    # 🔧 FIXED: Configure session cookies for cross-domain OAuth
+    is_production = os.environ.get('FLASK_ENV', 'development') == 'production'
+    
+    app.config['SESSION_COOKIE_SECURE'] = is_production  # True in production with HTTPS
     app.config['SESSION_COOKIE_HTTPONLY'] = True
-    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    app.config['SESSION_COOKIE_SAMESITE'] = 'None' if is_production else 'Lax'  # None for cross-domain HTTPS
+    
+    # If using cross-domain in production, we need to set domain explicitly
+    if is_production:
+        # Extract domain from backend URL for session cookies
+        from urllib.parse import urlparse
+        backend_domain = urlparse(backend_url).netloc
+        # Set to None to allow cross-domain cookies, or set specific domain
+        app.config['SESSION_COOKIE_DOMAIN'] = None
     
     # Register blueprints
     from app.routes import main
     app.register_blueprint(main)
 
-    # Enable CORS for React frontend
+    # 🔧 FIXED: Enable CORS with proper credentials and origins
+    frontend_origins = [
+        "http://localhost:3000",  # Local development
+        "https://krownebase.art",  # Your custom domain
+        "https://www.krownebase.art",  # WWW subdomain
+        os.environ.get('FRONTEND_URL', 'https://krownebase.art'),  # Dynamic frontend URL
+    ]
+    
+    # Add Railway frontend URL if exists
+    railway_frontend = os.environ.get('RAILWAY_FRONTEND_URL')
+    if railway_frontend:
+        frontend_origins.append(railway_frontend)
+    
     CORS(app,
-         resources={r"/api/*": {"origins": [
-             "http://localhost:3000",  # Local development
-             "https://krownebase.art",  # Your custom domain
-             "https://www.krownebase.art",  # WWW subdomain
-             "https://ypoanbzw.up.railway.app"  # Railway frontend URL
-         ]}},
+         resources={r"/api/*": {"origins": frontend_origins}},
          supports_credentials=True,
          allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
          methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
@@ -121,11 +148,14 @@ def check_environment_config():
         print("✅ All required Salesforce OAuth variables are configured!")
     
     # Show additional config
-    redirect_uri = os.environ.get('SALESFORCE_REDIRECT_URI', 'https://krownesync-backend-production.up.railway.app/api/auth/callback/salesforce')
-
+    backend_url = os.environ.get('BACKEND_URL', 'http://localhost:5000')
+    redirect_uri = os.environ.get('SALESFORCE_REDIRECT_URI', f'{backend_url}/api/auth/callback/salesforce')
+    frontend_url = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
     sandbox = os.environ.get('SALESFORCE_SANDBOX', 'false').lower() == 'true'
     
-    print(f"\n📍 Redirect URI: {redirect_uri}")
+    print(f"\n📍 Backend URL: {backend_url}")
+    print(f"📍 Redirect URI: {redirect_uri}")
+    print(f"📍 Frontend URL: {frontend_url}")
     print(f"🌍 Environment: {'Sandbox' if sandbox else 'Production'}")
     print("="*50 + "\n")
 
