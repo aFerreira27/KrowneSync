@@ -22,68 +22,86 @@ def load_env_file():
     else:
         print("ℹ️  No .env file found, using system environment variables")
 
-def initialize_sync_history_on_startup():
-    """Initialize sync history system during app startup"""
+def initialize_sync_status_on_startup():
+    """Initialize sync status system during app startup"""
     try:
-        print("🔄 Initializing sync history system...")
+        print("🔄 Initializing sync status system...")
         
-        from app.services.sync_service import SyncHistoryService
+        from app.services.sync_service import SyncService
+        from app.models import SyncStatus
         
-        # Initialize the sync history service
-        sync_service = SyncHistoryService()
-        print("✅ Sync history service initialized")
+        # Check if we have any sync status records
+        existing_count = SyncStatus.query.count()
+        print(f"📊 Found {existing_count} existing sync status records")
         
-        # Try to load known products from CSV
-        csv_path = os.path.join("uploads", "Initial_Import.csv")
-        
-        if os.path.exists(csv_path):
-            print(f"📄 Loading known products from {csv_path}")
-            products_data = sync_service.load_products_from_csv(csv_path)
+        # If no records exist, try to initialize from CSV
+        if existing_count == 0:
+            csv_path = os.path.join("uploads", "Initial_Import.csv")
             
-            if products_data:
-                print(f"📊 Found {len(products_data)} products with categories")
+            if os.path.exists(csv_path):
+                print(f"📄 Initializing sync status from {csv_path}")
                 
-                # Show some examples
-                for i, product in enumerate(products_data[:3]):
-                    print(f"  📦 Example {i+1}: SKU={product['sku']}, Name={product.get('name', 'N/A')}, Category={product.get('category', 'Unsorted')}")
+                import csv
+                initialized_count = 0
                 
-                # Initialize sync records for all known products
-                success = sync_service.bulk_init_skus(products_data)
-                
-                if success:
-                    print("✅ Successfully initialized sync records for all known products")
+                try:
+                    with open(csv_path, 'r', encoding='utf-8') as file:
+                        reader = csv.reader(file)
+                        
+                        for row_num, row in enumerate(reader):
+                            if row and row[0].strip():
+                                sku = row[0].strip()
+                                name = row[1].strip() if len(row) > 1 and row[1].strip() else None
+                                category = row[2].strip() if len(row) > 2 and row[2].strip() else 'Unknown'
+                                
+                                # Create sync status record
+                                sync_status = SyncStatus(
+                                    sku=sku,
+                                    name=name,
+                                    category=category,
+                                    sync_count=0,
+                                    success_count=0,
+                                    failed_count=0,
+                                    status='never',
+                                    sync_history=[]
+                                )
+                                
+                                from app.models import db
+                                db.session.add(sync_status)
+                                initialized_count += 1
+                                
+                                # Commit in batches for better performance
+                                if initialized_count % 100 == 0:
+                                    db.session.commit()
+                                    print(f"  📦 Initialized {initialized_count} SKUs...")
                     
-                    # Get and display statistics
-                    stats = sync_service.get_sync_stats()
-                    print(f"📈 Sync history stats: Total SKUs: {stats.get('total_skus', 0)}")
+                    # Final commit
+                    db.session.commit()
+                    print(f"✅ Successfully initialized {initialized_count} SKUs from CSV")
                     
-                    # Show category breakdown
-                    categories = {}
-                    for product in products_data:
-                        cat = product.get('category', 'Unsorted')
-                        categories[cat] = categories.get(cat, 0) + 1
+                    # Show some statistics
+                    stats = SyncService.get_sync_stats()
+                    print(f"📈 Total sync status records: {stats.get('total_records', 0)}")
                     
-                    print("📂 Category breakdown:")
-                    for category, count in sorted(categories.items())[:5]:  # Show top 5
-                        print(f"   {category}: {count} products")
-                    
-                    if len(categories) > 5:
-                        print(f"   ... and {len(categories) - 5} more categories")
-                    
-                else:
-                    print("❌ Failed to initialize sync records")
-                    return False
+                except Exception as e:
+                    print(f"❌ Failed to initialize from CSV: {e}")
+                    from app.models import db
+                    db.session.rollback()
             else:
-                print("⚠️ No products found in CSV file")
+                print(f"⚠️ CSV file not found at {csv_path}")
+                print("📝 Empty sync status system - SKUs will be added when first synced")
         else:
-            print(f"⚠️ CSV file not found at {csv_path}")
-            print("📝 Creating empty sync history system - products will be added as they are encountered")
+            print("✅ Sync status system already initialized")
+            
+            # Show statistics
+            stats = SyncService.get_sync_stats()
+            print(f"📈 Current stats: {stats}")
         
-        print("🎉 Sync history setup completed successfully!")
+        print("🎉 Sync status setup completed successfully!")
         return True
         
     except Exception as e:
-        print(f"❌ Failed to setup sync history: {e}")
+        print(f"❌ Failed to setup sync status: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -94,6 +112,7 @@ def create_app():
     
     app = Flask(__name__)
 
+    # Database configuration
     database_url = os.environ.get('DATABASE_URL')
     if database_url:
         # Railway provides DATABASE_URL
@@ -122,10 +141,12 @@ def create_app():
         try:
             from app.services.database_service import DatabaseService
             DatabaseService.init_database()
+            print("✅ Database initialized successfully")
         except Exception as e:
             app.logger.error(f"Database initialization failed: {e}")
+            print(f"❌ Database initialization failed: {e}")
 
-    # 🔧 FIXED: Configure Flask with proper session security for cross-domain
+    # Flask configuration
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SESSION_FILE_DIR'] = os.path.join(os.getcwd(), 'flask_session')
@@ -139,7 +160,7 @@ def create_app():
     app.config['SALESFORCE_CLIENT_ID'] = os.environ.get('SALESFORCE_CLIENT_ID')
     app.config['SALESFORCE_CLIENT_SECRET'] = os.environ.get('SALESFORCE_CLIENT_SECRET')
     
-    # 🔧 FIXED: Determine redirect URI based on environment
+    # Determine redirect URI based on environment
     backend_url = os.environ.get('BACKEND_URL', 'http://localhost:5000')
     app.config['SALESFORCE_REDIRECT_URI'] = os.environ.get(
         'SALESFORCE_REDIRECT_URI', 
@@ -150,32 +171,25 @@ def create_app():
     # Frontend URL for redirects
     app.config['FRONTEND_URL'] = os.environ.get('FRONTEND_URL', 'http://localhost:3000')
 
-    # Ensure upload directory exists
+    # Ensure directories exist
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    
-    # Ensure session directory exists
     os.makedirs(app.config['SESSION_FILE_DIR'], exist_ok=True)
     
-    # 🔧 FIXED: Configure session cookies for cross-domain OAuth
+    # Configure session cookies for cross-domain OAuth
     is_production = os.environ.get('FLASK_ENV', 'development') == 'production'
     
-    app.config['SESSION_COOKIE_SECURE'] = is_production  # True in production with HTTPS
+    app.config['SESSION_COOKIE_SECURE'] = is_production
     app.config['SESSION_COOKIE_HTTPONLY'] = True
-    app.config['SESSION_COOKIE_SAMESITE'] = 'None' if is_production else 'Lax'  # None for cross-domain HTTPS
+    app.config['SESSION_COOKIE_SAMESITE'] = 'None' if is_production else 'Lax'
     
-    # If using cross-domain in production, we need to set domain explicitly
     if is_production:
-        # Extract domain from backend URL for session cookies
-        from urllib.parse import urlparse
-        backend_domain = urlparse(backend_url).netloc
-        # Set to None to allow cross-domain cookies, or set specific domain
         app.config['SESSION_COOKIE_DOMAIN'] = None
     
     # Register blueprints
     from app.routes import main
     app.register_blueprint(main)
 
-    # 🔧 FIXED: Enable CORS with proper credentials and origins
+    # Configure CORS
     frontend_origins = [
         "http://localhost:3000",  # Local development
         "https://krownebase.art",  # Your custom domain
@@ -194,12 +208,13 @@ def create_app():
          allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
          methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
     
-    # Check environment configuration on startup
+    # Initialize session
+    Session(app)
+    
+    # Check environment and initialize sync status on startup
     with app.app_context():
         check_environment_config()
-        initialize_sync_history_on_startup()
-    
-    Session(app)
+        initialize_sync_status_on_startup()
 
     return app
 
