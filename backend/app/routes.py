@@ -82,6 +82,10 @@ def initiate_salesforce_auth():
 def salesforce_callback():
     try:
         logger.info("=== SALESFORCE OAUTH CALLBACK STARTED ===")
+        
+        # ✅ FIXED: Dynamic frontend URL based on environment
+        frontend_url = os.environ.get('FRONTEND_URL', 'https://krownebase.art')
+        
         code = request.args.get('code')
         state = request.args.get('state')
         error = request.args.get('error')
@@ -89,11 +93,13 @@ def salesforce_callback():
         if error:
             error_description = request.args.get('error_description', 'Unknown error')
             logger.error(f"OAuth error: {error} - {error_description}")
-            return redirect(f"http://localhost:3000/?error={error}&error_description={error_description}")
+            # ✅ FIXED: Use dynamic frontend URL
+            return redirect(f"{frontend_url}/?error={error}&error_description={error_description}")
 
         if not code:
             logger.error("No authorization code received from Salesforce")
-            return redirect("http://localhost:3000/?error=no_code&message=No authorization code received")
+            # ✅ FIXED: Use dynamic frontend URL
+            return redirect(f"{frontend_url}/?error=no_code&message=No authorization code received")
 
         session_state = session.get('oauth_state')
         code_verifier = session.get('code_verifier')
@@ -101,11 +107,13 @@ def salesforce_callback():
 
         if not state or state != session_state:
             logger.error(f"State mismatch: {state} != {session_state}")
-            return redirect("http://localhost:3000/?error=invalid_state&message=State parameter mismatch")
+            # ✅ FIXED: Use dynamic frontend URL
+            return redirect(f"{frontend_url}/?error=invalid_state&message=State parameter mismatch")
 
         if not sf_config or not code_verifier:
             logger.error("Missing session data for OAuth")
-            return redirect("http://localhost:3000/?error=session_expired&message=OAuth session expired")
+            # ✅ FIXED: Use dynamic frontend URL
+            return redirect(f"{frontend_url}/?error=session_expired&message=OAuth session expired")
 
         sf_client = SalesforceClient(sf_config)
         token_info = sf_client.exchange_code_for_tokens(code, code_verifier)
@@ -131,14 +139,16 @@ def salesforce_callback():
         session.modified = True
 
         logger.info("=== SALESFORCE OAUTH CALLBACK COMPLETED SUCCESSFULLY ===")
-        return redirect("http://localhost:3000/?auth=success")
+        # ✅ FIXED: Use dynamic frontend URL
+        return redirect(f"{frontend_url}/?auth=success")
 
     except Exception as e:
         logger.error(f"OAuth callback error: {str(e)}", exc_info=True)
         for key in ['oauth_state', 'code_verifier', 'sf_config']:
             session.pop(key, None)
         session.modified = True
-        return redirect(f"http://localhost:3000/?error=auth_failed&message={str(e)}")
+        # ✅ FIXED: Use dynamic frontend URL
+        return redirect(f"{frontend_url}/?error=auth_failed&message={str(e)}")
 
 @main.route('/api/salesforce/status')
 def salesforce_auth_status():
