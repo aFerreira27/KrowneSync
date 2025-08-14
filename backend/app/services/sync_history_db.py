@@ -288,28 +288,7 @@ class SyncHistoryService:
         Update product data (pimly_data, krowne_data, salesforce_data)
         """
         try:
-            product = self.db_service.get_product(sku)
-            if not product:
-                product = self.db_service.add_product(sku)
-            
-            # Update the appropriate data field
-            if data_type == 'pimly':
-                product.pimly_data = data
-            elif data_type == 'krowne':
-                product.krowne_data = data
-            elif data_type == 'salesforce':
-                product.salesforce_data = data
-            else:
-                if not product.metadata:
-                    product.metadata = {}
-                product.metadata[data_type] = data
-            
-            product.updated_at = datetime.utcnow()
-            db.session.commit()
-            
-            logger.info(f"Updated {data_type} data for SKU {sku}")
-            return True
-            
+            return self.db_service.update_product_data(sku, data_type, data)
         except Exception as e:
             logger.error(f"Failed to update product data for SKU {sku}: {e}")
             return False
@@ -324,3 +303,10 @@ class SyncHistoryService:
         except Exception as e:
             logger.error(f"Failed to get categories: {e}")
             return []
+    
+    # Backward compatibility methods for existing code
+    def cleanup_old_records(self, days_old: int = 90) -> int:
+        """Clean up old sync records (placeholder for now)"""
+        # TODO: Implement if needed
+        logger.info(f"Cleanup requested for records older than {days_old} days")
+        return 0
