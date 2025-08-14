@@ -564,100 +564,85 @@ def compare_product_data(sku):
 ### Sync History Routes ###
 @main.route('/api/sync/history', methods=['GET', 'OPTIONS'])
 def get_sync_history():
-    """Get sync history for all SKUs or a specific SKU"""
+    """Get sync history for all SKUs or a specific SKU - Database version"""
     if request.method == "OPTIONS":
         return '', 200
     
     try:
-        # Initialize sync history service
+        # Initialize database-powered sync history service
         sync_service = SyncHistoryService()
         
-        # Get optional SKU parameter
+        # Get optional parameters
         sku = request.args.get('sku')
+        sync_type = request.args.get('sync_type')
         
-        # Get sync history
-        history_records = sync_service.get_sync_history(sku)
+        # Get sync history from database
+        history_records = sync_service.get_sync_history(sku, sync_type)
         
         # Get statistics
         stats = sync_service.get_sync_stats()
         
-        # If this is the first time loading, initialize with known SKUs
+        # If this is the first time and no data exists, initialize from CSV
         if not history_records and not sku:
             try:
-                # Load known SKUs from CSV with product information
                 csv_path = os.path.join(current_app.config['UPLOAD_FOLDER'], 'Initial_Import.csv')
-                # Use the enhanced CSV loading method
-                products_data = sync_service.load_products_from_csv(csv_path)
-                if products_data:
-                    # Initialize sync records with product information
-                    sync_service.bulk_init_skus(products_data)
-                    # Get updated history
-                    history_records = sync_service.get_sync_history()
-                    stats = sync_service.get_sync_stats()
-                    logger.info(f"Initialized sync history with {len(products_data)} products from CSV")
+                if os.path.exists(csv_path):
+                    products_data = sync_service.load_products_from_csv(csv_path)
+                    if products_data:
+                        sync_service.bulk_init_skus(products_data)
+                        # Refresh stats after initialization
+                        stats = sync_service.get_sync_stats()
+                        history_records = sync_service.get_sync_history()
             except Exception as e:
-                logger.warning(f"Could not initialize sync history with known SKUs: {e}")
+                logger.warning(f"Could not initialize from CSV: {e}")
         
         return jsonify({
             'success': True,
-            'data': history_records,
+            'history': history_records,
             'stats': stats,
-            'count': len(history_records)
+            'total_records': len(history_records)
         }), 200
         
     except Exception as e:
-        logger.error(f"Error getting sync history: {str(e)}")
+        logger.exception("Error getting sync history from database")
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': str(e),
+            'history': [],
+            'stats': {}
         }), 500
-
 
 @main.route('/api/sync/record', methods=['POST', 'OPTIONS'])
 def record_sync():
-    """Record a sync operation for a SKU"""
+    """Record a new sync operation - Database version"""
     if request.method == "OPTIONS":
         return '', 200
     
     try:
         data = request.get_json()
-        
         if not data:
             return jsonify({'error': 'No JSON data provided'}), 400
         
         sku = data.get('sku')
-        status = data.get('status')  # 'success', 'failed', 'pending'
-        details = data.get('details', {})
+        sync_type = data.get('sync_type')
+        status = data.get('status', 'pending')
+        sync_data = data.get('data', {})
+        error_message = data.get('error_message')
         
-        if not sku or not status:
-            return jsonify({'error': 'SKU and status are required'}), 400
+        if not sku or not sync_type:
+            return jsonify({'error': 'SKU and sync_type are required'}), 400
         
-        if status not in ['success', 'failed', 'pending']:
-            return jsonify({'error': 'Status must be success, failed, or pending'}), 400
-        
-        # Initialize sync history service
         sync_service = SyncHistoryService()
-        
-        # Record the sync
-        success = sync_service.record_sync(sku, status, details)
+        success = sync_service.record_sync(sku, sync_type, status, sync_data, error_message)
         
         if success:
-            return jsonify({
-                'success': True,
-                'message': f'Sync recorded for SKU {sku}'
-            }), 200
+            return jsonify({'success': True, 'message': 'Sync recorded successfully'}), 200
         else:
-            return jsonify({
-                'success': False,
-                'error': 'Failed to record sync'
-            }), 500
+            return jsonify({'success': False, 'error': 'Failed to record sync'}), 500
             
     except Exception as e:
-        logger.error(f"Error recording sync: {str(e)}")
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
+        logger.exception("Error recording sync")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @main.route('/api/sync/stats', methods=['GET', 'OPTIONS'])
@@ -724,3 +709,46 @@ def record_sync_operation(sku: str, status: str, details: Optional[Dict[str, Any
         sync_service.record_sync(sku, status, details)
     except Exception as e:
         logger.error(f"Failed to record sync operation for {sku}: {e}")
+
+@main.route('/api/products/search', methods=['GET', 'OPTIONS'])
+def search_products():
+    """Search products in database"""
+    if request.method == "OPTIONS":
+        return '', 200
+    
+    try:
+        search_term = request.args.get('q', '').strip()
+        if not search_term:
+            return jsonify({'error': 'Search term is required'}), 400
+        
+        sync_service = SyncHistoryService()
+        products = sync_service.search_products(search_term)
+        
+        return jsonify({
+            'success': True,
+            'products': products,
+            'total': len(products)
+        }), 200
+        
+    except Exception as e:
+        logger.exception("Error searching products")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@main.route('/api/products/categories', methods=['GET', 'OPTIONS'])
+def get_categories():
+    """Get all product categories"""
+    if request.method == "OPTIONS":
+        return '', 200
+    
+    try:
+        sync_service = SyncHistoryService()
+        categories = sync_service.get_categories()
+        
+        return jsonify({
+            'success': True,
+            'categories': categories
+        }), 200
+        
+    except Exception as e:
+        logger.exception("Error getting categories")
+        return jsonify({'success': False, 'error': str(e)}), 500

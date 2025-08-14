@@ -94,6 +94,37 @@ def create_app():
     
     app = Flask(__name__)
 
+    database_url = os.environ.get('DATABASE_URL')
+    if database_url:
+        # Railway provides DATABASE_URL
+        if database_url.startswith('postgres://'):
+            database_url = database_url.replace('postgres://', 'postgresql://')
+        app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    else:
+        # Fallback for local development
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+            'SQLALCHEMY_DATABASE_URI',
+            'postgresql://localhost/krownesync_dev'
+        )
+    
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_pre_ping': True,
+        'pool_recycle': 300,
+    }
+    
+    # Initialize database
+    from app.models import db
+    db.init_app(app)
+    
+    # Create tables on first run
+    with app.app_context():
+        try:
+            from app.services.database_service import DatabaseService
+            DatabaseService.init_database()
+        except Exception as e:
+            app.logger.error(f"Database initialization failed: {e}")
+
     # 🔧 FIXED: Configure Flask with proper session security for cross-domain
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
     app.config['SESSION_TYPE'] = 'filesystem'

@@ -188,41 +188,98 @@ class APIService {
   }
 
   // Sync History Methods
-  async getSyncHistory() {
+  async getSyncHistory(sku = null, syncType = null) {
     try {
-      const response = await this.request("/sync/history");
-      return response.data || [];
+      const params = new URLSearchParams();
+      if (sku) params.append('sku', sku);
+      if (syncType) params.append('sync_type', syncType);
+      
+      const response = await fetch(`${API_BASE_URL}/api/sync/history?${params}`, {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
     } catch (error) {
-      console.error("Failed to get sync history:", error);
+      console.error('Error getting sync history:', error);
       throw error;
     }
   }
 
-  // Record a sync operation
-  async recordSync(sku, status, details = {}) {
+  // Record sync operation
+  async recordSync(sku, syncType, status = 'pending', data = {}, errorMessage = null) {
     try {
-      const response = await this.request("/sync/record", {
-        method: "POST",
+      const response = await fetch(`${API_BASE_URL}/api/sync/record`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          sku: sku,
-          status: status, // 'success', 'failed', 'pending'
-          details: details,
+          sku,
+          sync_type: syncType,
+          status,
+          data,
+          error_message: errorMessage
         }),
       });
-      return response;
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
     } catch (error) {
-      console.error("Failed to record sync:", error);
+      console.error('Error recording sync:', error);
       throw error;
     }
   }
 
-  // Get sync statistics
-  async getSyncStats() {
+  // Search products
+  async searchProducts(searchTerm) {
     try {
-      const response = await this.request("/sync/stats");
-      return response.stats || {};
+      const params = new URLSearchParams({ q: searchTerm });
+      const response = await fetch(`${API_BASE_URL}/api/products/search?${params}`, {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
     } catch (error) {
-      console.error("Failed to get sync stats:", error);
+      console.error('Error searching products:', error);
+      throw error;
+    }
+  }
+
+  // Get categories
+  async getCategories() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/products/categories`, {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error getting categories:', error);
       throw error;
     }
   }
