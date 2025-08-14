@@ -19,7 +19,7 @@ class Product(db.Model):
     pimly_data = db.Column(JSONB)
     krowne_data = db.Column(JSONB)
     salesforce_data = db.Column(JSONB)
-    metadata = db.Column(JSONB)
+    product_metadata = db.Column(JSONB)  # FIXED: renamed from 'metadata'
     
     # Timestamps
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
@@ -41,7 +41,7 @@ class Product(db.Model):
             'pimly_data': self.pimly_data,
             'krowne_data': self.krowne_data,
             'salesforce_data': self.salesforce_data,
-            'metadata': self.metadata,
+            'product_metadata': self.product_metadata,  # FIXED: renamed
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }

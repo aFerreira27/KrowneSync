@@ -752,3 +752,187 @@ def get_categories():
     except Exception as e:
         logger.exception("Error getting categories")
         return jsonify({'success': False, 'error': str(e)}), 500
+    
+    
+@main.route('/api/migrate/run', methods=['POST', 'GET'])
+def run_migration():
+    """
+    HTTP endpoint to run database migration
+    Can be triggered via browser or curl command
+    """
+    try:
+        from app.services.database_service import DatabaseService
+        from app.services.sync_history import SyncHistoryService
+        import os
+        import json
+        
+        migration_log = []
+        
+        # Step 1: Initialize database
+        migration_log.append("🔄 Initializing database...")
+        try:
+            DatabaseService.init_database()
+            migration_log.append("✅ Database tables created successfully")
+        except Exception as e:
+            migration_log.append(f"❌ Database initialization failed: {e}")
+            return jsonify({
+                'success': False,
+                'error': str(e),
+                'log': migration_log
+            }), 500
+        
+        # Step 2: Migrate CSV data
+        migration_log.append("🔄 Migrating CSV data...")
+        csv_path = os.path.join(current_app.config.get('UPLOAD_FOLDER', 'uploads'), 'Initial_Import.csv')
+        
+        if os.path.exists(csv_path):
+            try:
+                # Use existing CSV parsing logic
+                sync_service = SyncHistoryService()
+                products_data = sync_service.load_products_from_csv(csv_path)
+                
+                if products_data:
+                    # Bulk add to database
+                    count = DatabaseService.bulk_add_products(products_data)
+                    migration_log.append(f"✅ Migrated {count} products from CSV to database")
+                else:
+                    migration_log.append("⚠️ No products found in CSV file")
+            except Exception as e:
+                migration_log.append(f"❌ CSV migration failed: {e}")
+        else:
+            migration_log.append(f"⚠️ CSV file not found: {csv_path}")
+        
+        # Step 3: Migrate existing sync history (if exists)
+        migration_log.append("🔄 Migrating sync history...")
+        try:
+            history_file = os.path.join("data", "sync_history.json")
+            if os.path.exists(history_file):
+                with open(history_file, 'r') as f:
+                    history_data = json.load(f)
+                
+                sync_records = history_data.get('sync_records', {})
+                migrated_records = 0
+                
+                for sku, records in sync_records.items():
+                    # Get or create product
+                    product = DatabaseService.get_product(sku)
+                    if not product:
+                        product = DatabaseService.add_product(sku, source='migration')
+                    
+                    # Add sync records
+                    if isinstance(records, list):
+                        for record in records:
+                            try:
+                                DatabaseService.add_sync_record(
+                                    product_id=str(product.id),
+                                    sync_type=record.get('sync_type', 'unknown'),
+                                    status=record.get('status', 'completed'),
+                                    sync_data=record,
+                                    sync_started_at=datetime.fromisoformat(record.get('timestamp', datetime.utcnow().isoformat()).replace('Z', '+00:00'))
+                                )
+                                migrated_records += 1
+                            except Exception as e:
+                                migration_log.append(f"⚠️ Failed to migrate sync record for {sku}: {e}")
+                
+                migration_log.append(f"✅ Migrated {migrated_records} sync history records")
+            else:
+                migration_log.append("ℹ️ No existing sync history file found")
+        except Exception as e:
+            migration_log.append(f"❌ Sync history migration failed: {e}")
+        
+        # Step 4: Get final statistics
+        try:
+            stats = DatabaseService.get_sync_stats()
+            migration_log.append(f"📊 Final stats: {stats}")
+        except Exception as e:
+            migration_log.append(f"⚠️ Could not retrieve final stats: {e}")
+        
+        migration_log.append("🎉 Migration completed successfully!")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Migration completed successfully',
+            'log': migration_log,
+            'stats': stats if 'stats' in locals() else {}
+        }), 200
+        
+    except Exception as e:
+        logger.exception("Migration failed")
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'log': migration_log if 'migration_log' in locals() else []
+        }), 500
+
+@main.route('/api/migrate/status', methods=['GET'])
+def migration_status():
+    """Check if migration has been run and database status"""
+    try:
+        from app.services.database_service import DatabaseService
+        
+        # Check if tables exist and have data
+        stats = DatabaseService.get_sync_stats()
+        
+        has_products = stats.get('total_products', 0) > 0
+        has_sync_records = stats.get('total_syncs', 0) > 0
+        
+        status = {
+            'database_initialized': True,
+            'has_products': has_products,
+            'has_sync_records': has_sync_records,
+            'migration_needed': not (has_products or has_sync_records),
+            'stats': stats
+        }
+        
+        return jsonify({
+            'success': True,
+            'status': status
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'status': {
+                'database_initialized': False,
+                'migration_needed': True
+            }
+        }), 500
+
+@main.route('/api/migrate/reset', methods=['POST'])
+def reset_database():
+    """
+    DANGER: Reset database - only for development
+    Requires confirmation parameter
+    """
+    try:
+        data = request.get_json()
+        if not data or data.get('confirm') != 'YES_DELETE_ALL_DATA':
+            return jsonify({
+                'success': False,
+                'error': 'Confirmation required. Send {"confirm": "YES_DELETE_ALL_DATA"}'
+            }), 400
+        
+        from app.models import db
+        
+        # Drop all tables
+        db.drop_all()
+        migration_log = ["🗑️ All tables dropped"]
+        
+        # Recreate tables
+        db.create_all()
+        migration_log.append("🔄 Tables recreated")
+        
+        migration_log.append("✅ Database reset completed")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Database reset completed',
+            'log': migration_log
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500

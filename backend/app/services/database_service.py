@@ -234,3 +234,34 @@ class DatabaseService:
             'status_breakdown': dict(status_counts),
             'category_breakdown': dict(category_counts)
         }
+    
+    @staticmethod
+    def update_product_data(sku: str, data_type: str, data: Dict) -> bool:
+        """Update product data (pimly_data, krowne_data, salesforce_data)"""
+        try:
+            product = DatabaseService.get_product(sku)
+            if not product:
+                product = DatabaseService.add_product(sku)
+            
+            # Update the appropriate data field
+            if data_type == 'pimly':
+                product.pimly_data = data
+            elif data_type == 'krowne':
+                product.krowne_data = data
+            elif data_type == 'salesforce':
+                product.salesforce_data = data
+            else:
+                # FIXED: Use product_metadata instead of metadata
+                if not product.product_metadata:
+                    product.product_metadata = {}
+                product.product_metadata[data_type] = data
+            
+            product.updated_at = datetime.utcnow()
+            db.session.commit()
+            
+            logger.info(f"Updated {data_type} data for SKU {sku}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to update product data for SKU {sku}: {e}")
+            return False
