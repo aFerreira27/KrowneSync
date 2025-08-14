@@ -1,6 +1,6 @@
 // src/services/api.js
 const API_BASE_URL =
-  process.env.REACT_APP_API_URL || 'https://krownesync-backend-production.up.railway.app';
+  process.env.REACT_APP_API_URL || 'https://krownesync-backend-production.up.railway.app/api';
 
 class APIService {
   async request(endpoint, options = {}) {

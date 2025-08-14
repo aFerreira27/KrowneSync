@@ -57,14 +57,15 @@ def create_app():
 
     # Enable CORS for React frontend
     CORS(app,
-     resources={r"/api/*": {"origins": [
-         "http://localhost:3000",  # Local development
-         "https://krownebase.art",  # Custom domain
-         "https://ypoanbzw.up.railway.app"  # Railway frontend URL
-     ]}},
-     supports_credentials=True,
-     allow_headers=["Content-Type", "Authorization"],
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+         resources={r"/api/*": {"origins": [
+             "http://localhost:3000",  # Local development
+             "https://krownebase.art",  # Your custom domain
+             "https://www.krownebase.art",  # WWW subdomain
+             "https://ypoanbzw.up.railway.app"  # Railway frontend URL
+         ]}},
+         supports_credentials=True,
+         allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
     
     # Check environment configuration on startup
     with app.app_context():
