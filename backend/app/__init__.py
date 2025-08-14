@@ -27,7 +27,7 @@ def initialize_sync_history_on_startup():
     try:
         print("🔄 Initializing sync history system...")
         
-        from app.services.sync_history_db import SyncHistoryService
+        from backend.app.services.sync_service import SyncHistoryService
         
         # Initialize the sync history service
         sync_service = SyncHistoryService()

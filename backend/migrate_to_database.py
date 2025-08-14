@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from app import create_app
 from app.models import db
 from app.services.database_service import DatabaseService
-from app.services.sync_history_db import SyncHistoryService
+from backend.app.services.sync_service import SyncHistoryService
 
 def migrate_csv_data():
     """Migrate existing CSV data to database"""

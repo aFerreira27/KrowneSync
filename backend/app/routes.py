@@ -11,7 +11,7 @@ from datetime import datetime
 from app.services.salesforce_client import SalesforceClient
 from app.services.pimly_client import PimlyClient
 from app.services.krowne_scraper import KrowneScraper
-from app.services.sync_history_db import SyncHistoryService
+from app.services.sync_service import SyncService
 from app.services.format_pimly import format_pimly_data
 from app.services.database_service import DatabaseService
 
@@ -566,53 +566,38 @@ def compare_product_data(sku):
 ### Sync History Routes ###
 @main.route('/api/sync/history', methods=['GET', 'OPTIONS'])
 def get_sync_history():
-    """Get sync history for all SKUs or a specific SKU - Database version"""
+    """Get sync history (returns array of sync records like original)"""
     if request.method == "OPTIONS":
         return '', 200
     
     try:
-        # Get optional parameters
-        sku = request.args.get('sku')
-        sync_type = request.args.get('sync_type')
-        limit = int(request.args.get('limit', 100))
+        # Get all sync statuses
+        sync_statuses = SyncService.get_all_sync_statuses()
         
-        # Get sync history from database
-        if sku:
-            # Get specific product first
-            product = DatabaseService.get_product(sku)
-            if product:
-                product_id = str(product.id)
-                history_records = DatabaseService.get_sync_history(product_id, sync_type, limit)
-            else:
-                history_records = []
-        else:
-            history_records = DatabaseService.get_sync_history(None, sync_type, limit)
-        
-        # Convert to dict format
-        history_data = [record.to_dict() for record in history_records]
-        
-        # Get statistics
-        stats = DatabaseService.get_sync_stats()
+        # Convert to array format for frontend compatibility
+        history_data = []
+        for status in sync_statuses:
+            sync_record = status.to_dict()
+            # Add any additional fields the frontend expects
+            history_data.append(sync_record)
         
         return jsonify({
             'success': True,
-            'history': history_data,
-            'stats': stats,
-            'total_records': len(history_data)
+            'data': history_data,
+            'total': len(history_data)
         }), 200
         
     except Exception as e:
-        logger.exception("Error getting sync history from database")
+        logger.exception("Error getting sync history")
         return jsonify({
             'success': False,
             'error': str(e),
-            'history': [],
-            'stats': {}
+            'data': []
         }), 500
 
 @main.route('/api/sync/record', methods=['POST', 'OPTIONS'])
 def record_sync():
-    """Record a new sync operation - Database version"""
+    """Record a sync operation (matches your frontend recordSync method)"""
     if request.method == "OPTIONS":
         return '', 200
     
@@ -622,224 +607,43 @@ def record_sync():
             return jsonify({'error': 'No JSON data provided'}), 400
         
         sku = data.get('sku')
-        sync_type = data.get('sync_type')
-        status = data.get('status', 'pending')
-        sync_data = data.get('data', {})
-        error_message = data.get('error_message')
+        status = data.get('status')  # success, failed, pending
+        details = data.get('details', {})
         
-        if not sku or not sync_type:
-            return jsonify({'error': 'SKU and sync_type are required'}), 400
+        if not sku or not status:
+            return jsonify({'error': 'SKU and status are required'}), 400
         
-        # Get or create product
-        product = DatabaseService.get_product(sku)
-        if not product:
-            product = DatabaseService.add_product(sku, source='api')
+        # Extract name and category from details if provided
+        name = details.get('name')
+        category = details.get('category')
         
-        # Create sync record
-        sync_record = DatabaseService.add_sync_record(
-            product_id=str(product.id),
-            sync_type=sync_type,
-            status=status,
-            sync_data=sync_data,
-            error_message=error_message
-        )
+        success = SyncService.record_manual_sync(sku, status, name, category, details)
         
-        return jsonify({
-            'success': True, 
-            'message': 'Sync recorded successfully',
-            'sync_record_id': str(sync_record.id)
-        }), 200
+        if success:
+            return jsonify({
+                'success': True,
+                'message': f'Sync recorded for SKU {sku}',
+                'sku': sku,
+                'status': status
+            }), 200
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Failed to record sync'
+            }), 500
             
     except Exception as e:
         logger.exception("Error recording sync")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-
-@main.route('/api/products/search', methods=['GET', 'OPTIONS'])
-def search_products():
-    """Search products in database"""
+@main.route('/api/sync/stats', methods=['GET', 'OPTIONS'])
+def get_sync_stats():
+    """Get sync statistics (matches your frontend getSyncStats method)"""
     if request.method == "OPTIONS":
         return '', 200
     
     try:
-        search_term = request.args.get('q', '').strip()
-        limit = int(request.args.get('limit', 50))
-        
-        if not search_term:
-            # If no search term, return recent products
-            products = DatabaseService.get_products(limit=limit)
-        else:
-            # Search by term
-            products = DatabaseService.search_products(search_term, limit)
-        
-        # Convert to dict format
-        products_data = [product.to_dict() for product in products]
-        
-        return jsonify({
-            'success': True,
-            'products': products_data,
-            'total': len(products_data),
-            'search_term': search_term
-        }), 200
-        
-    except Exception as e:
-        logger.exception("Error searching products")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@main.route('/api/products/categories', methods=['GET', 'OPTIONS'])
-def get_categories():
-    """Get all product categories"""
-    if request.method == "OPTIONS":
-        return '', 200
-    
-    try:
-        # Get category breakdown from stats
-        stats = DatabaseService.get_sync_stats()
-        categories = list(stats.get('category_breakdown', {}).keys())
-        
-        # Sort categories
-        categories.sort()
-        
-        return jsonify({
-            'success': True,
-            'categories': categories,
-            'category_counts': stats.get('category_breakdown', {})
-        }), 200
-        
-    except Exception as e:
-        logger.exception("Error getting categories")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@main.route('/api/products/by-category/<category>', methods=['GET', 'OPTIONS'])
-def get_products_by_category(category):
-    """Get products by category"""
-    if request.method == "OPTIONS":
-        return '', 200
-    
-    try:
-        limit = int(request.args.get('limit', 100))
-        offset = int(request.args.get('offset', 0))
-        
-        products = DatabaseService.get_products(
-            category=category, 
-            limit=limit, 
-            offset=offset
-        )
-        
-        products_data = [product.to_dict() for product in products]
-        
-        return jsonify({
-            'success': True,
-            'products': products_data,
-            'category': category,
-            'total': len(products_data),
-            'limit': limit,
-            'offset': offset
-        }), 200
-        
-    except Exception as e:
-        logger.exception(f"Error getting products for category {category}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@main.route('/api/products/list', methods=['GET', 'OPTIONS'])
-def list_products():
-    """List all products with pagination and filtering"""
-    if request.method == "OPTIONS":
-        return '', 200
-    
-    try:
-        # Get query parameters
-        page = int(request.args.get('page', 1))
-        per_page = int(request.args.get('per_page', 50))
-        category = request.args.get('category')
-        source = request.args.get('source')
-        
-        # Calculate offset
-        offset = (page - 1) * per_page
-        
-        # Get products
-        products = DatabaseService.get_products(
-            category=category,
-            source=source,
-            limit=per_page,
-            offset=offset
-        )
-        
-        products_data = [product.to_dict() for product in products]
-        
-        # Get total count for pagination
-        total_count = DatabaseService.get_sync_stats()['total_products']
-        total_pages = math.ceil(total_count / per_page)
-        
-        return jsonify({
-            'success': True,
-            'products': products_data,
-            'pagination': {
-                'page': page,
-                'per_page': per_page,
-                'total': total_count,
-                'total_pages': total_pages,
-                'has_next': page < total_pages,
-                'has_prev': page > 1
-            },
-            'filters': {
-                'category': category,
-                'source': source
-            }
-        }), 200
-        
-    except Exception as e:
-        logger.exception("Error listing products")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@main.route('/api/products/<sku>', methods=['GET', 'OPTIONS'])
-def get_product_details(sku):
-    """Get detailed product information"""
-    if request.method == "OPTIONS":
-        return '', 200
-    
-    try:
-        product = DatabaseService.get_product(sku)
-        
-        if not product:
-            return jsonify({
-                'success': False,
-                'error': f'Product with SKU {sku} not found'
-            }), 404
-        
-        # Get sync history for this product
-        sync_records = DatabaseService.get_sync_history(
-            product_id=str(product.id),
-            limit=10
-        )
-        
-        product_data = product.to_dict()
-        product_data['sync_history'] = [record.to_dict() for record in sync_records]
-        
-        return jsonify({
-            'success': True,
-            'product': product_data
-        }), 200
-        
-    except Exception as e:
-        logger.exception(f"Error getting product details for {sku}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@main.route('/api/stats', methods=['GET', 'OPTIONS'])
-def get_app_stats():
-    """Get comprehensive application statistics"""
-    if request.method == "OPTIONS":
-        return '', 200
-    
-    try:
-        stats = DatabaseService.get_sync_stats()
-        
-        # Add some additional stats
-        stats['migration_status'] = {
-            'database_initialized': True,
-            'migration_completed': True,
-            'has_data': stats['total_products'] > 0
-        }
+        stats = SyncService.get_sync_stats()
         
         return jsonify({
             'success': True,
@@ -847,28 +651,60 @@ def get_app_stats():
         }), 200
         
     except Exception as e:
-        logger.exception("Error getting application stats")
-        return jsonify({'success': False, 'error': str(e)}), 500
-    
+        logger.exception("Error getting sync stats")
+        return jsonify({
+            'success': False, 
+            'error': str(e),
+            'stats': {}
+        }), 500
 
+# Optional: Add endpoint to get specific SKU sync status (bonus)
+@main.route('/api/sync/status/<sku>', methods=['GET', 'OPTIONS'])
+def get_sync_status_for_sku(sku):
+    """Get sync status for specific SKU"""
+    if request.method == "OPTIONS":
+        return '', 200
+    
+    try:
+        sync_status = SyncService.get_sync_status(sku)
+        
+        if sync_status:
+            return jsonify({
+                'success': True,
+                'data': sync_status.to_dict()
+            }), 200
+        else:
+            return jsonify({
+                'success': False,
+                'error': f'No sync status found for SKU {sku}',
+                'data': None
+            }), 404
+        
+    except Exception as e:
+        logger.exception(f"Error getting sync status for SKU {sku}")
+        return jsonify({
+            'success': False, 
+            'error': str(e),
+            'data': None
+        }), 500
+    
 @main.route('/api/migrate/run', methods=['POST', 'GET'])
 def run_migration():
     """
-    HTTP endpoint to run database migration
-    Can be triggered via browser or curl command
+    HTTP endpoint to run database migration - SyncStatus only
     """
     try:
-        from app.services.database_service import DatabaseService
-        from app.services.sync_history_db import SyncHistoryService
+        from app.services.sync_service import SyncService
+        from app.models import db
         import os
         import json
         
         migration_log = []
         
-        # Step 1: Initialize database
+        # Step 1: Initialize database (just SyncStatus table)
         migration_log.append("🔄 Initializing database...")
         try:
-            DatabaseService.init_database()
+            db.create_all()
             migration_log.append("✅ Database tables created successfully")
         except Exception as e:
             migration_log.append(f"❌ Database initialization failed: {e}")
@@ -878,29 +714,10 @@ def run_migration():
                 'log': migration_log
             }), 500
         
-        # Step 2: Migrate CSV data
-        migration_log.append("🔄 Migrating CSV data...")
-        csv_path = os.path.join(current_app.config.get('UPLOAD_FOLDER', 'uploads'), 'Initial_Import.csv')
+        # Step 2: Migrate existing sync history JSON to SyncStatus table
+        migration_log.append("🔄 Migrating sync history to SyncStatus table...")
+        migrated_count = 0
         
-        if os.path.exists(csv_path):
-            try:
-                # Use existing CSV parsing logic
-                sync_service = SyncHistoryService()
-                products_data = sync_service.load_products_from_csv(csv_path)
-                
-                if products_data:
-                    # Bulk add to database
-                    count = DatabaseService.bulk_add_products(products_data)
-                    migration_log.append(f"✅ Migrated {count} products from CSV to database")
-                else:
-                    migration_log.append("⚠️ No products found in CSV file")
-            except Exception as e:
-                migration_log.append(f"❌ CSV migration failed: {e}")
-        else:
-            migration_log.append(f"⚠️ CSV file not found: {csv_path}")
-        
-        # Step 3: Migrate existing sync history (if exists)
-        migration_log.append("🔄 Migrating sync history...")
         try:
             history_file = os.path.join("data", "sync_history.json")
             if os.path.exists(history_file):
@@ -908,41 +725,104 @@ def run_migration():
                     history_data = json.load(f)
                 
                 sync_records = history_data.get('sync_records', {})
-                migrated_records = 0
                 
-                for sku, records in sync_records.items():
-                    # Get or create product
-                    product = DatabaseService.get_product(sku)
-                    if not product:
-                        product = DatabaseService.add_product(sku, source='migration')
-                    
-                    # Add sync records
-                    if isinstance(records, list):
-                        for record in records:
-                            try:
-                                DatabaseService.add_sync_record(
-                                    product_id=str(product.id),
-                                    sync_type=record.get('sync_type', 'unknown'),
-                                    status=record.get('status', 'completed'),
-                                    sync_data=record,
-                                    sync_started_at=datetime.fromisoformat(record.get('timestamp', datetime.utcnow().isoformat()).replace('Z', '+00:00'))
-                                )
-                                migrated_records += 1
-                            except Exception as e:
-                                migration_log.append(f"⚠️ Failed to migrate sync record for {sku}: {e}")
+                for sku, record_data in sync_records.items():
+                    try:
+                        # Extract data from JSON format
+                        name = record_data.get('name')
+                        category = record_data.get('category', 'Unknown')
+                        first_sync = record_data.get('first_sync')
+                        last_sync = record_data.get('last_sync')
+                        sync_count = record_data.get('sync_count', 0)
+                        success_count = record_data.get('success_count', 0)
+                        failed_count = record_data.get('failed_count', 0)
+                        status = record_data.get('status', 'never')
+                        sync_history = record_data.get('sync_history', [])
+                        
+                        # Create SyncStatus record
+                        from app.models import SyncStatus
+                        from datetime import datetime
+                        
+                        sync_status = SyncStatus(
+                            sku=sku,
+                            name=name,
+                            category=category,
+                            first_sync=datetime.fromisoformat(first_sync.replace('Z', '+00:00')) if first_sync else None,
+                            last_sync=datetime.fromisoformat(last_sync.replace('Z', '+00:00')) if last_sync else None,
+                            sync_count=sync_count,
+                            success_count=success_count,
+                            failed_count=failed_count,
+                            status=status,
+                            sync_history=sync_history
+                        )
+                        
+                        db.session.add(sync_status)
+                        migrated_count += 1
+                        
+                    except Exception as e:
+                        migration_log.append(f"⚠️ Failed to migrate sync record for {sku}: {e}")
                 
-                migration_log.append(f"✅ Migrated {migrated_records} sync history records")
+                db.session.commit()
+                migration_log.append(f"✅ Migrated {migrated_count} sync records to SyncStatus table")
             else:
                 migration_log.append("ℹ️ No existing sync history file found")
         except Exception as e:
             migration_log.append(f"❌ Sync history migration failed: {e}")
+            db.session.rollback()
+        
+        # Step 3: Initialize any missing SKUs from CSV (if exists)
+        migration_log.append("🔄 Checking for SKUs in CSV to initialize...")
+        try:
+            csv_path = os.path.join(current_app.config.get('UPLOAD_FOLDER', 'uploads'), 'Initial_Import.csv')
+            
+            if os.path.exists(csv_path):
+                # Simple CSV parsing for SKU initialization
+                import csv
+                initialized_count = 0
+                
+                with open(csv_path, 'r', encoding='utf-8') as file:
+                    reader = csv.reader(file)
+                    for row_num, row in enumerate(reader):
+                        if row and row[0].strip():
+                            sku = row[0].strip()
+                            
+                            # Check if SKU already exists in SyncStatus
+                            existing = SyncService.get_sync_status(sku)
+                            if not existing:
+                                # Initialize with basic info
+                                name = row[1].strip() if len(row) > 1 and row[1].strip() else None
+                                category = row[2].strip() if len(row) > 2 and row[2].strip() else 'Unknown'
+                                
+                                from app.models import SyncStatus
+                                sync_status = SyncStatus(
+                                    sku=sku,
+                                    name=name,
+                                    category=category,
+                                    sync_count=0,
+                                    success_count=0,
+                                    failed_count=0,
+                                    status='never',
+                                    sync_history=[]
+                                )
+                                
+                                db.session.add(sync_status)
+                                initialized_count += 1
+                
+                db.session.commit()
+                migration_log.append(f"✅ Initialized {initialized_count} new SKUs from CSV")
+            else:
+                migration_log.append("ℹ️ No CSV file found for SKU initialization")
+        except Exception as e:
+            migration_log.append(f"❌ CSV initialization failed: {e}")
+            db.session.rollback()
         
         # Step 4: Get final statistics
         try:
-            stats = DatabaseService.get_sync_stats()
+            stats = SyncService.get_sync_stats()
             migration_log.append(f"📊 Final stats: {stats}")
         except Exception as e:
             migration_log.append(f"⚠️ Could not retrieve final stats: {e}")
+            stats = {}
         
         migration_log.append("🎉 Migration completed successfully!")
         
@@ -950,7 +830,7 @@ def run_migration():
             'success': True,
             'message': 'Migration completed successfully',
             'log': migration_log,
-            'stats': stats if 'stats' in locals() else {}
+            'stats': stats
         }), 200
         
     except Exception as e:
@@ -965,19 +845,17 @@ def run_migration():
 def migration_status():
     """Check if migration has been run and database status"""
     try:
-        from app.services.database_service import DatabaseService
+        from app.services.sync_service import SyncService
         
         # Check if tables exist and have data
-        stats = DatabaseService.get_sync_stats()
+        stats = SyncService.get_sync_stats()
         
-        has_products = stats.get('total_products', 0) > 0
-        has_sync_records = stats.get('total_syncs', 0) > 0
+        has_sync_records = stats.get('total_records', 0) > 0
         
         status = {
             'database_initialized': True,
-            'has_products': has_products,
             'has_sync_records': has_sync_records,
-            'migration_needed': not (has_products or has_sync_records),
+            'migration_needed': not has_sync_records,
             'stats': stats
         }
         
@@ -1033,10 +911,10 @@ def reset_database():
             'success': False,
             'error': str(e)
         }), 500
-    
+
 @main.route('/api/upload-csv', methods=['POST'])
 def upload_csv():
-    """Upload CSV file and add products to database"""
+    """Upload CSV file and initialize SKUs in SyncStatus table"""
     try:
         if 'file' not in request.files:
             return jsonify({'error': 'No file provided'}), 400
@@ -1053,29 +931,61 @@ def upload_csv():
         upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
         file.save(upload_path)
         
-        # Parse CSV and add to database
-        from app.services.sync_history_db import SyncHistoryService
-        sync_service = SyncHistoryService()
+        # Parse CSV and initialize SKUs in SyncStatus table
+        import csv
+        from app.models import SyncStatus, db
+        from app.services.sync_service import SyncService
         
-        products_data = sync_service.load_products_from_csv(upload_path)
+        initialized_count = 0
+        updated_count = 0
         
-        if products_data:
-            count = DatabaseService.bulk_add_products(products_data)
+        with open(upload_path, 'r', encoding='utf-8') as csvfile:
+            reader = csv.reader(csvfile)
             
-            return jsonify({
-                'success': True,
-                'message': f'Successfully uploaded and processed {count} products',
-                'filename': filename,
-                'total_products': count
-            }), 200
-        else:
-            return jsonify({
-                'success': False,
-                'error': 'No valid products found in CSV file'
-            }), 400
+            for row_num, row in enumerate(reader):
+                if row and row[0].strip():
+                    sku = row[0].strip()
+                    name = row[1].strip() if len(row) > 1 and row[1].strip() else None
+                    category = row[2].strip() if len(row) > 2 and row[2].strip() else 'Unknown'
+                    
+                    # Check if SKU already exists
+                    existing = SyncService.get_sync_status(sku)
+                    
+                    if existing:
+                        # Update existing record
+                        if name:
+                            existing.name = name
+                        existing.category = category
+                        existing.updated_at = datetime.utcnow()
+                        updated_count += 1
+                    else:
+                        # Create new record
+                        sync_status = SyncStatus(
+                            sku=sku,
+                            name=name,
+                            category=category,
+                            sync_count=0,
+                            success_count=0,
+                            failed_count=0,
+                            status='never',
+                            sync_history=[]
+                        )
+                        db.session.add(sync_status)
+                        initialized_count += 1
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'Successfully processed CSV: {initialized_count} new SKUs initialized, {updated_count} existing SKUs updated',
+            'filename': filename,
+            'initialized_count': initialized_count,
+            'updated_count': updated_count
+        }), 200
             
     except Exception as e:
         logger.exception("Error uploading CSV")
+        db.session.rollback()
         return jsonify({
             'success': False,
             'error': str(e)
