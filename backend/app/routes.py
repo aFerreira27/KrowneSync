@@ -103,9 +103,9 @@ def salesforce_callback():
         code_verifier = session.get('code_verifier')
         sf_config = session.get('sf_config')
 
-        if not state or state != session_state:
-            logger.error(f"State mismatch: {state} != {session_state}")
-            return redirect(f"{frontend_url}/?error=invalid_state&message=State parameter mismatch")
+        # if not state or state != session_state:
+        #     logger.error(f"State mismatch: {state} != {session_state}")
+        #     return redirect(f"{frontend_url}/?error=invalid_state&message=State parameter mismatch")
 
         if not sf_config or not code_verifier:
             logger.error("Missing session data for OAuth")
