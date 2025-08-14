@@ -818,7 +818,8 @@ def run_migration():
         
         # Step 4: Get final statistics
         try:
-            stats = SyncService.get_sync_stats()
+            from app.services.database_service import DatabaseService
+            stats = DatabaseService.get_sync_stats()
             migration_log.append(f"📊 Final stats: {stats}")
         except Exception as e:
             migration_log.append(f"⚠️ Could not retrieve final stats: {e}")
@@ -845,10 +846,10 @@ def run_migration():
 def migration_status():
     """Check if migration has been run and database status"""
     try:
-        from app.services.sync_service import SyncService
+        from app.services.database_service import DatabaseService
         
         # Check if tables exist and have data
-        stats = SyncService.get_sync_stats()
+        stats = DatabaseService.get_sync_stats()
         
         has_sync_records = stats.get('total_records', 0) > 0
         
