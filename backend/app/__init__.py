@@ -29,7 +29,10 @@ def create_app():
     app = Flask(__name__)
 
     # Configure Flask with environment variables
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
+    secret_key = os.environ.get('SECRET_KEY')
+    if not secret_key or secret_key == 'dev-key-change-in-production':
+        raise ValueError("Production SECRET_KEY must be set and not be the dev key!")
+    app.config['SECRET_KEY'] = secret_key
     app.config['SESSION_TYPE'] = 'filesystem'
 
     app.config['UPLOAD_FOLDER'] = os.environ.get('UPLOAD_FOLDER', 'uploads')
