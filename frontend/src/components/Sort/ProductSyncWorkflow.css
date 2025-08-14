@@ -1,0 +1,827 @@
+/* ProductSyncWorkflow.css - Product Sync Workflow Styles */
+
+.workflow-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.workflow-container {
+  background: #ffffff;
+  border-radius: 16px;
+  max-width: 95vw;
+  max-height: 95vh;
+  width: 1400px; /* Increased width for ProductCard */
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+/* Header */
+.workflow-header {
+  padding: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.category-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.category-icon {
+  font-size: 32px;
+}
+
+.category-details h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.category-details p {
+  font-size: 14px;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.workflow-stats {
+  display: flex;
+  gap: 24px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+.workflow-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.workflow-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Content */
+.workflow-content {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.product-workflow-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+}
+
+/* Product Progress */
+.product-progress {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.progress-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+  font-family: 'Monaco', 'Menlo', monospace;
+}
+
+.sync-badge {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.sync-badge.never {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.sync-badge.recent {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.sync-badge.old {
+  background: #fef3cd;
+  color: #92400e;
+}
+
+.sync-badge.stale {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+  min-width: 80px;
+  text-align: right;
+}
+
+/* Loading/Error States */
+.loading-state,
+.error-state,
+.no-data-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  min-height: 300px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f4f6;
+  border-left: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-state h3,
+.error-state h3,
+.no-data-state h3 {
+  font-size: 18px;
+  margin: 0 0 8px 0;
+  color: #374151;
+}
+
+.error-state h3 {
+  color: #dc2626;
+}
+
+.loading-state p,
+.error-state p,
+.no-data-state p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* ProductCard Integration */
+.product-workflow-card .product-card-container {
+  margin: 0;
+  max-width: none;
+}
+
+.product-workflow-card .product-card {
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Override ProductCard styles for workflow context */
+.product-workflow-card .dev-mode-toggle-container {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Hide all ProductCard sync buttons and sections */
+.product-workflow-card .sync-section {
+  display: none !important;
+}
+
+.product-workflow-card .sync-section.top-sync {
+  display: none !important;
+}
+
+.product-workflow-card .sync-section.bottom-sync {
+  display: none !important;
+}
+
+.product-workflow-card .confirm-sync-button {
+  display: none !important;
+}
+
+.product-workflow-card .confirm-sync-button.compact {
+  display: none !important;
+}
+
+.product-workflow-card .sync-button {
+  display: none !important;
+}
+
+/* Workflow Action Buttons */
+.workflow-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  margin-top: auto;
+}
+
+.action-btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 140px;
+  justify-content: center;
+}
+
+.action-btn.primary {
+  background: #10b981;
+  color: white;
+}
+
+.action-btn.primary:hover:not(:disabled) {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.action-btn.secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.action-btn.secondary:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.action-btn.skip {
+  background: #fef3cd;
+  color: #92400e;
+}
+
+.action-btn.skip:hover:not(:disabled) {
+  background: #fde68a;
+}
+
+.action-btn:disabled {
+  background: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Footer */
+.workflow-footer {
+  padding: 16px 24px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.footer-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #6b7280;
+  justify-content: center;
+}
+
+/* No Products State */
+.no-products {
+  text-align: center;
+  padding: 60px 40px;
+  color: #6b7280;
+}
+
+.no-products h2 {
+  font-size: 24px;
+  color: #374151;
+  margin: 0 0 12px 0;
+}
+
+.no-products p {
+  font-size: 16px;
+  margin: 0 0 32px 0;
+}
+
+.close-btn {
+  padding: 12px 24px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #2563eb;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .workflow-container {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .workflow-header {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .workflow-stats {
+    justify-content: center;
+  }
+  
+  .workflow-actions {
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    min-width: auto;
+  }
+  
+  .progress-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .progress-header h3 {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .workflow-content {
+    padding: 16px;
+  }
+  
+  .product-progress {
+    padding: 16px;
+  }
+  
+  .workflow-actions {
+    padding: 16px;
+  }
+  
+  .progress-bar-container {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+  
+  .progress-text {
+    text-align: center;
+    min-width: auto;
+  }
+}
+
+/* Comparison Card */
+.comparison-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.comparison-card.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.loading-header {
+  text-align: center;
+  color: #6b7280;
+}
+
+.loading-header h3 {
+  font-size: 18px;
+  margin: 16px 0 8px 0;
+  color: #374151;
+}
+
+.loading-header p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f4f6;
+  border-left: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.comparison-card.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.error-content {
+  text-align: center;
+  color: #dc2626;
+}
+
+.error-content h3 {
+  font-size: 18px;
+  margin: 0 0 8px 0;
+}
+
+.error-content p {
+  margin: 0 0 24px 0;
+  color: #6b7280;
+}
+
+/* Card Header */
+.card-header {
+  padding: 20px 24px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.product-info h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: #111827;
+  font-family: 'Monaco', 'Menlo', monospace;
+}
+
+.product-name {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0 0 16px 0;
+}
+
+.progress-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-text {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.progress-bar {
+  width: 200px;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+  transition: width 0.3s ease;
+}
+
+.sync-status {
+  display: flex;
+  align-items: center;
+}
+
+.sync-badge {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.sync-badge.never {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.sync-badge.recent {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.sync-badge.old {
+  background: #fef3cd;
+  color: #92400e;
+}
+
+.sync-badge.stale {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Comparison Content */
+.comparison-content {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.data-section h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.data-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.data-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 6px;
+  gap: 12px;
+}
+
+.data-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: capitalize;
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.data-value {
+  font-size: 13px;
+  color: #374151;
+  text-align: right;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+.no-data {
+  padding: 40px 20px;
+  text-align: center;
+  color: #6b7280;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.no-data p {
+  margin: 8px 0;
+}
+
+.error-details {
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* Card Actions */
+.card-actions {
+  padding: 20px 24px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.view-details-btn,
+.skip-btn,
+.confirm-sync-btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.view-details-btn {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.view-details-btn:hover {
+  background: #e5e7eb;
+}
+
+.skip-btn {
+  background: #fef3cd;
+  color: #92400e;
+}
+
+.skip-btn:hover {
+  background: #fde68a;
+}
+
+.confirm-sync-btn {
+  background: #10b981;
+  color: white;
+}
+
+.confirm-sync-btn:hover:not(:disabled) {
+  background: #059669;
+}
+
+.confirm-sync-btn:disabled {
+  background: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Footer */
+.workflow-footer {
+  padding: 16px 24px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.progress-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #6b7280;
+  justify-content: center;
+}
+
+/* No Products State */
+.no-products {
+  text-align: center;
+  padding: 60px 40px;
+  color: #6b7280;
+}
+
+.no-products h2 {
+  font-size: 24px;
+  color: #374151;
+  margin: 0 0 12px 0;
+}
+
+.no-products p {
+  font-size: 16px;
+  margin: 0 0 32px 0;
+}
+
+.close-btn {
+  padding: 12px 24px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #2563eb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .workflow-container {
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .workflow-header {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .workflow-stats {
+    justify-content: center;
+  }
+  
+  .comparison-content {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .card-actions {
+    flex-direction: column;
+  }
+  
+  .progress-bar {
+    width: 100%;
+  }
+  
+  .card-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+}

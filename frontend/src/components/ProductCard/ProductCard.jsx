@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./ProductCard.css";
 import { FIELD_MAPPINGS, findCanonicalField } from "./fieldMappings";
 
-const ProductCard = ({ productData, onSync }) => {
+const ProductCard = ({ productData, onSync, onNavigateToSort }) => {
   const [devMode, setDevMode] = useState(false);
   const [activeTab, setActiveTab] = useState("comparison");
   const [pimlyData, setPimlyData] = useState(null);
@@ -39,7 +39,7 @@ const ProductCard = ({ productData, onSync }) => {
   };
 
   const handleConfirmSync = async () => {
-    const sku = productData.sku || productData.SKU || productData.Id;
+    const sku = productData.sku.toUpperCase() || productData.SKU.toUpperCase() || productData.Id.toUpperCase();
     setSyncing(true);
     
     try {
@@ -49,7 +49,7 @@ const ProductCard = ({ productData, onSync }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          sku: sku,
+          sku: sku.toUpperCase(),
           status: 'success',
           details: {
             timestamp: new Date().toISOString(),
@@ -67,11 +67,40 @@ const ProductCard = ({ productData, onSync }) => {
       const result = await response.json();
       console.log('Sync confirmed:', result);
       
+      // Navigate back to sort page after successful sync
+      if (onNavigateToSort) {
+        // Small delay to show success before navigating
+        setTimeout(() => {
+          onNavigateToSort();
+        }, 500);
+      }
+      
     } catch (error) {
       console.error('Sync confirmation failed:', error);
       // Optionally handle error state here
     } finally {
       setSyncing(false);
+    }
+  };
+
+  const handleSyncToCSM = async (sku) => {
+    if (onSync) {
+      setSyncing(true);
+      try {
+        await onSync(sku);
+        
+        // Navigate back to sort page after successful sync
+        if (onNavigateToSort) {
+          // Small delay to show success before navigating
+          setTimeout(() => {
+            onNavigateToSort();
+          }, 500);
+        }
+      } catch (error) {
+        console.error('Sync to CMS failed:', error);
+      } finally {
+        setSyncing(false);
+      }
     }
   };
 
@@ -579,7 +608,7 @@ const ProductCard = ({ productData, onSync }) => {
     return null;
   }
 
-  const sku = productData.sku || productData.SKU || productData.Id;
+  const sku = productData.sku.toUpperCase() || productData.SKU.toUpperCase() || productData.Id.toUpperCase();
   const productName =
     pimlyData?.Name ||
     pimlyData?.name ||
@@ -751,19 +780,6 @@ const ProductCard = ({ productData, onSync }) => {
               disabled={syncing}
             >
               {syncing ? "Confirming Sync..." : "✓ Confirm Sync"}
-            </button>
-          </div>
-        )}
-
-        {/* Original Sync Button (if needed) */}
-        {onSync && !devMode && (
-          <div className="sync-section">
-            <button
-              className="sync-button"
-              onClick={() => onSync(sku)}
-              disabled={loading}
-            >
-              {loading ? "Syncing..." : "Sync to CMS"}
             </button>
           </div>
         )}

@@ -3,7 +3,7 @@ import ProductCard from '../ProductCard/ProductCard';
 import api from '../../services/api';
 import "./SKUSearch.css";
 
-const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
+const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth, onNavigateToSort }) => {
   const [sku, setSku] = useState(searchedSKU || '');
   const [productData, setProductData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -42,20 +42,12 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
     try {
       console.log('Searching for SKU:', skuToSearch);
       
-      // First, try to search Pimly for the product
-      const searchResults = await api.getProductBySKU(skuToSearch);
-      console.log('Pimly search results:', searchResults);
-
-      let pimlyProduct = null;
-      let krowneData = null;
-      let pimlyRaw = null;
-      let krowneRaw = null;
-      
+      // Use the single product comparison endpoint
       const result = await api.compareSingleProduct(skuToSearch);
-      pimlyProduct = result.salesforce;
-      krowneData = result.krowne;
-      pimlyRaw = result.raw_data.pimly_data;
-      krowneRaw = result.raw_data.krowne_data;
+      console.log('✅ Comparison result:', result);
+
+      let pimlyProduct = result.salesforce;
+      let krowneData = result.krowne;
 
       // Determine product status
       let status = 'not_found';
@@ -73,12 +65,12 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
         salesforce: pimlyProduct,
         krowne: krowneData,
         raw_data: {
-          pimly: pimlyRaw,
-          krowne: krowneRaw
+          pimly: pimlyProduct,
+          krowne: krowneData
         },
         status: status,
         // Additional display properties
-        name:  pimlyProduct?.Name || krowneData?.name || skuToSearch,
+        name: pimlyProduct?.Name || krowneData?.name || skuToSearch,
         price: pimlyProduct?.ListPrice || krowneData?.price,
         description: pimlyProduct?.Description || krowneData?.description
       };
@@ -97,6 +89,37 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
     } finally {
       setLoading(false);
       isSearchingRef.current = false;
+    }
+  };
+
+  // Handle syncing product from ProductCard
+  const handleSyncProduct = async (sku) => {
+    try {
+      const response = await fetch('/api/sync/record', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sku: sku.toUpperCase(),
+          status: 'success',
+          details: {
+            timestamp: new Date().toISOString(),
+            triggered_by: 'search_view_sync',
+            hasComparison: !!productData
+          }
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to record sync');
+      }
+      
+      console.log('Sync recorded successfully for:', sku);
+      
+    } catch (error) {
+      console.error('Sync recording failed:', error);
+      throw error; // Re-throw so ProductCard can handle it
     }
   };
 
@@ -253,7 +276,11 @@ const SKUSearch = ({ onSearch, searchedSKU, salesforceAuth }) => {
           </div>
 
           {/* Product Card */}
-          <ProductCard productData={productData} />
+          <ProductCard 
+            productData={productData} 
+            onSync={handleSyncProduct}
+            onNavigateToSort={onNavigateToSort}
+          />
           
           {/* Sync Section */}
           {productData.mismatches && productData.mismatches.length > 0 && (

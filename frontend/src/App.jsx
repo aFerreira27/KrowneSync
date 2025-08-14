@@ -14,7 +14,6 @@ function App() {
     error: null
   });
 
-  
   const [viewMode, setViewMode] = useState('search'); // 'search', 'sort', or 'sync'
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -117,6 +116,26 @@ function App() {
     setViewMode('search');
   };
 
+  const handleCategorySelection = (category, sku = null) => {
+    if (sku) {
+      // If a specific SKU is provided, navigate to search view with that SKU
+      setSearchedSKU(sku);
+      setViewMode('search');
+    } else if (category) {
+      // If only category is provided, you could handle category-specific logic here
+      console.log('Selected category:', category);
+      // For now, this doesn't change the view mode
+    }
+  };
+
+  const handleViewModeChange = (mode) => {
+    setViewMode(mode);
+    if (mode !== 'search') {
+      // Clear searched SKU when switching away from search
+      setSearchedSKU('');
+    }
+  };
+
   // Check if both services are connected
   const bothServicesConnected = salesforceAuth.authenticated;
 
@@ -142,19 +161,23 @@ function App() {
               <div className="view-button-bar">
                 <button 
                   className={`view-button ${viewMode === 'search' ? 'active' : ''}`}
-                  onClick={() => (setViewMode('search'), setSearchedSKU(''))}
+                  onClick={() => handleViewModeChange('search')}
                 >
                   Search
+                  {searchedSKU && (
+                    <span className="search-indicator">
+                    </span>
+                  )}
                 </button>
                 <button 
                   className={`view-button ${viewMode === 'sort' ? 'active' : ''}`}
-                  onClick={() => setViewMode('sort')}
+                  onClick={() => handleViewModeChange('sort')}
                 >
                   Sort
                 </button>
                 <button 
                   className={`view-button ${viewMode === 'sync' ? 'active' : ''}`}
-                  onClick={() => setViewMode('sync')}
+                  onClick={() => handleViewModeChange('sync')}
                 >
                   Sync
                 </button>
@@ -173,14 +196,12 @@ function App() {
                 onSearch={handleSKUSearch}
                 searchedSKU={searchedSKU}
                 salesforceAuth={salesforceAuth}
+                onNavigateToSort={() => handleViewModeChange('sort')}
               />
             ) : viewMode === 'sort' ? (
               <Sort
                 salesforceAuth={salesforceAuth}
-                onSelectCategory={(category) => {
-                  console.log('Selected category:', category);
-                  // You can add category-specific logic here
-                }}
+                onSelectCategory={handleCategorySelection}
               />
             ) : (
               <SyncStatus
@@ -216,16 +237,16 @@ function App() {
                   </div>
                 </div>
 
-              <div className="connection-actions">
-                {!salesforceAuth.authenticated && (
-                  <button 
-                    className="connect-btn primary"
-                    onClick={handleSalesforceConnect}
-                    disabled={salesforceAuth.loading}
-                  >
-                    {salesforceAuth.loading ? 'Connecting...' : 'Connect Salesforce'}
-                  </button>
-                )}
+                <div className="connection-actions">
+                  {!salesforceAuth.authenticated && (
+                    <button 
+                      className="connect-btn primary"
+                      onClick={handleSalesforceConnect}
+                      disabled={salesforceAuth.loading}
+                    >
+                      {salesforceAuth.loading ? 'Connecting...' : 'Connect Salesforce'}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

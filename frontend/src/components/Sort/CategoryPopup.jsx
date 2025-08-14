@@ -39,6 +39,22 @@ function CategoryPopup({
     return colors[status] || '#6b7280';
   };
 
+  const getHealthScore = () => {
+    if (stats.total === 0) return 0;
+    const healthyProducts = stats.recent;
+    return Math.round((healthyProducts / stats.total) * 100);
+  };
+
+  const getHealthStatus = () => {
+    const score = getHealthScore();
+    if (score >= 80) return { label: 'Excellent', color: '#10b981', icon: '🎉' };
+    if (score >= 60) return { label: 'Good', color: '#059669', icon: '✅' };
+    if (score >= 40) return { label: 'Fair', color: '#f59e0b', icon: '⚠️' };
+    return { label: 'Needs Attention', color: '#ef4444', icon: '❌' };
+  };
+
+  const healthStatus = getHealthStatus();
+
   return (
     <div className="popup-overlay" onClick={onClose}>
       <div className="category-popup" onClick={(e) => e.stopPropagation()}>
@@ -121,39 +137,50 @@ function CategoryPopup({
                 </div>
               </div>
 
-              <div className="sync-progress-bar">
-                <div className="progress-header">
-                  <span>Sync Health</span>
-                  <span>{calculatePercentage(stats.recent, stats.total)}% up to date</span>
+              <div className="health-summary">
+                <div className="health-header">
+                  <h4>Category Health: {getHealthScore()}%</h4>
+                  <div className="health-badge" style={{ color: healthStatus.color }}>
+                    <span className="health-icon">{healthStatus.icon}</span>
+                    <span className="health-label">{healthStatus.label}</span>
+                  </div>
                 </div>
-                <div className="progress-track">
-                  <div 
-                    className="progress-fill recent" 
-                    style={{ 
-                      width: `${calculatePercentage(stats.recent, stats.total)}%`,
-                      backgroundColor: getStatusColor('recent')
-                    }}
-                  ></div>
-                  <div 
-                    className="progress-fill old" 
-                    style={{ 
-                      width: `${calculatePercentage(stats.old, stats.total)}%`,
-                      backgroundColor: getStatusColor('old')
-                    }}
-                  ></div>
-                  <div 
-                    className="progress-fill never" 
-                    style={{ 
-                      width: `${calculatePercentage(stats.never, stats.total)}%`,
-                      backgroundColor: getStatusColor('never')
-                    }}
-                  ></div>
+                <div className="sync-progress-bar">
+                  <div className="progress-track">
+                    <div 
+                      className="progress-fill recent" 
+                      style={{ 
+                        width: `${calculatePercentage(stats.recent, stats.total)}%`,
+                        backgroundColor: getStatusColor('recent')
+                      }}
+                    ></div>
+                    <div 
+                      className="progress-fill old" 
+                      style={{ 
+                        width: `${calculatePercentage(stats.old, stats.total)}%`,
+                        backgroundColor: getStatusColor('old')
+                      }}
+                    ></div>
+                    <div 
+                      className="progress-fill never" 
+                      style={{ 
+                        width: `${calculatePercentage(stats.never, stats.total)}%`,
+                        backgroundColor: getStatusColor('never')
+                      }}
+                    ></div>
+                  </div>
                 </div>
               </div>
 
               <div className="category-insights">
                 <h4>Quick Insights</h4>
                 <div className="insights-list">
+                  {stats.total === 0 && (
+                    <div className="insight warning">
+                      <span className="insight-icon">📦</span>
+                      <span>No products found in this category</span>
+                    </div>
+                  )}
                   {stats.never > 0 && (
                     <div className="insight warning">
                       <span className="insight-icon">⚠️</span>
@@ -166,16 +193,22 @@ function CategoryPopup({
                       <span>{stats.old} products need sync updates</span>
                     </div>
                   )}
-                  {stats.recent > stats.total * 0.8 && (
+                  {stats.recent > stats.total * 0.8 && stats.total > 0 && (
                     <div className="insight success">
                       <span className="insight-icon">🎉</span>
                       <span>Category is mostly up to date!</span>
                     </div>
                   )}
-                  {stats.total === 0 && (
-                    <div className="insight warning">
-                      <span className="insight-icon">📦</span>
-                      <span>No products found in this category</span>
+                  {stats.syncing > 0 && (
+                    <div className="insight info">
+                      <span className="insight-icon">🔄</span>
+                      <span>Sync operation in progress...</span>
+                    </div>
+                  )}
+                  {stats.total > 0 && stats.recent === 0 && stats.syncing === 0 && (
+                    <div className="insight alert">
+                      <span className="insight-icon">🚨</span>
+                      <span>All products need immediate attention</span>
                     </div>
                   )}
                 </div>
@@ -190,7 +223,7 @@ function CategoryPopup({
             onClick={() => onViewProducts(category)}
             disabled={loading || stats.total === 0}
           >
-            👁️ View Products
+            👁️ View Products ({stats.total})
           </button>
           <button 
             className="action-btn secondary" 
@@ -202,12 +235,14 @@ function CategoryPopup({
           <button 
             className="action-btn secondary sync-btn" 
             onClick={() => onSyncCategory(category)}
-            disabled={loading || stats.syncing > 0 || stats.total === 0}
+            disabled={loading || stats.syncing > 0 || stats.total === 0 || (stats.never === 0 && stats.old === 0)}
           >
             {stats.syncing > 0 ? (
-              <>🔄 Syncing...</>
+              <>🔄 Syncing {stats.syncing} products...</>
+            ) : stats.never === 0 && stats.old === 0 ? (
+              <>✅ All Up to Date</>
             ) : (
-              <>🔄 Sync Category</>
+              <>🔄 Start Sync Workflow ({stats.never + stats.old} products)</>
             )}
           </button>
         </div>

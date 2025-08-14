@@ -95,6 +95,11 @@ export const FIELD_MAPPINGS = {
       krowne: ["case_weight", "caseWeight"]
     },
     
+    "bowl_dimensions": {
+      pimly: ["Bowl_Dimensions_(in.)", "Bowl Dimensions (in.)", "Bowl_Size_(in.)", "Bowl Size (in.)"],
+      krowne: ["bowl_dimensions", "bowlDimensions", "bowl_size"]
+    },
+
     // Capacity & Performance
     "ice_capacity": {
       pimly: ["Ice_Capacity_(lbs.)", "Ice Capacity (lbs.)"],
